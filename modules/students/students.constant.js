@@ -1,0 +1,6 @@
+module.exports = {
+  LOGGER: {
+    SERVICE: 'STUDENTS_SERVICE',
+    CONTROLLER: 'STUDENTS_CONTROLLER',
+  },
+};

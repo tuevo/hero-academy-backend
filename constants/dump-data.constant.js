@@ -1,16 +1,17 @@
-const UserConstant = require('../modules/user/user.constant');
+const UserConstant = require('../modules/users/users.constant');
 
 module.exports = {
   USER: {
-    usersInfo: ["master"],
+    usersInfo: ['Admin'],
     userDetail: {
-      ["master"]: {
-        username: 'master',
-        role: UserConstant.ROLE.MASTER,
-        email: 'master2020@gmail.com',
-        fullName: 'master',
-        phoneNumber: '0328836666'
-      }
-    }
-  }
-}
+      ['Admin']: {
+        role: UserConstant.ROLE.ADMIN,
+        email: 'admin2020@gmail.com',
+        fullName: 'Admin',
+        avatarUrl:
+          'https://c0.klipartz.com/pngpicture/306/70/gratis-png-gestion-de-iconos-de-ordenador-admin-thumbnail.png',
+        isConfirmed: true,
+      },
+    },
+  },
+};
