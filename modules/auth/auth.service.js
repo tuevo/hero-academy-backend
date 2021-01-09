@@ -99,7 +99,7 @@ const checkAccountValidity = ({ userAccount, password }) => {
       return responseData;
     }
 
-    //
+    // account has not been confirmed
     if (!userAccount.isConfirmed) {
       responseData = {
         status: HttpStatus.BAD_REQUEST,
@@ -186,5 +186,5 @@ module.exports = {
   isValidPasswordHash,
   generateToken,
   checkAccountValidity,
-  checkAndGetRoleInfo,
+  checkAndGetRoleInfo
 };
