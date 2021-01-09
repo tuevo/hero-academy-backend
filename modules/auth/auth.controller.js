@@ -7,6 +7,9 @@ const AuthConstant = require('./auth.constant');
 const AuthServices = require('./auth.service');
 const UserServices = require('../users/users.service');
 
+const JwtConfig = require('../../constants/jwt.constant');
+const jwt = require('jsonwebtoken');
+
 const login = async (req, res, next) => {
   logger.info(`${AuthConstant.LOGGER.CONTROLLER}::Login::is called`);
   try {
@@ -55,6 +58,49 @@ const login = async (req, res, next) => {
   }
 };
 
+const refresh = async (req, res, next) => {
+  logger.info(`${AuthConstant.LOGGER.CONTROLLER}::Refresh::is called`);
+  try {
+    const { accessToken, refreshToken } = req.body;
+    jwt.verify(accessToken, JwtConfig.secret, { ignoreExpiration: true },
+      async (err, payload) => {
+        if (err) {
+          return res.status(HttpStatus.UNAUTHORIZED).json({
+            status: HttpStatus.UNAUTHORIZED,
+            messages: [err.message]
+          });
+        }
+
+        const { _id } = payload.user;
+
+        const isValidRefreshToken = await UserServices.isValidRefreshToken(_id, refreshToken);
+
+        if (!isValidRefreshToken) {
+          return res.status(HttpStatus.BAD_REQUEST).json({
+            status: HttpStatus.BAD_REQUEST,
+            messages: [AuthConstant.MESSAGES.REFRESH.INVALID_REFRESH_TOKEN]
+          });
+        }
+
+        const newAccessToken = jwt.sign({ user: payload.user }, JwtConfig.secret, { expiresIn: 60 * 60 * AuthConstant.TOKEN_EXPIRED_IN_HOUR });
+        return res.status(HttpStatus.OK).json({
+          status: HttpStatus.OK,
+          messages: [AuthConstant.MESSAGES.REFRESH.REFRESH_SUCCESSFULLY],
+          data: {
+            accessToken: newAccessToken
+          },
+        });
+      }
+    );
+
+    logger.info(`${AuthConstant.LOGGER.CONTROLLER}::Refresh::Success`);
+  } catch (e) {
+    logger.error(`${AuthConstant.LOGGER.CONTROLLER}::Refresh::Error`, e);
+    return next(e);
+  }
+};
+
 module.exports = {
   login,
+  refresh
 };
