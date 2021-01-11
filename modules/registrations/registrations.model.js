@@ -5,8 +5,8 @@ const Schema = mongoose.Schema;
 
 const registrationSchema = new Schema(
   {
-    studentId: { type: ObjectId },
-    courseId: { type: ObjectId },
+    studentId: { type: ObjectId, default: null },
+    courseId: { type: ObjectId, default: null },
     price: { type: Number, default: 0 },
     isPaid: { type: Boolean, default: false },
   },

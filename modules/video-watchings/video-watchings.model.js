@@ -5,8 +5,8 @@ const Schema = mongoose.Schema;
 
 const videoWatchingSchema = new Schema(
   {
-    studentId: { type: ObjectId },
-    videoId: { type: ObjectId },
+    studentId: { type: ObjectId, default: null },
+    videoId: { type: ObjectId, default: null },
   },
   { timestamps: true, paranoid: true }
 );

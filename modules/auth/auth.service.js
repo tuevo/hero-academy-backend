@@ -42,6 +42,7 @@ const generateToken = (data) => {
     delete userData.refreshToken;
     delete userData.__v;
     delete userData.isConfirmed;
+    delete userData.otpCode;
 
     logger.info(`${AuthConstant.LOGGER.SERVICE}::generateToken::success`);
 
@@ -186,5 +187,5 @@ module.exports = {
   isValidPasswordHash,
   generateToken,
   checkAccountValidity,
-  checkAndGetRoleInfo
+  checkAndGetRoleInfo,
 };

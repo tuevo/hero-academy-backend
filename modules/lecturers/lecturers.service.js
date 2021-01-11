@@ -26,6 +26,25 @@ const findLecturerByUserId = async (userId) => {
   }
 };
 
+const createLecturer = async (userId) => {
+  logger.info(`${LecturersConstant.LOGGER.SERVICE}::createLecturer::is called`);
+  try {
+    const newLecturer = new LecturersModel({
+      userId,
+    });
+
+    logger.info(`${LecturersConstant.LOGGER.SERVICE}::createLecturer::success`);
+    return await newLecturer.save();
+  } catch (e) {
+    logger.error(
+      `${LecturersConstant.LOGGER.SERVICE}::createLecturer::Error`,
+      e
+    );
+    throw new Error(e);
+  }
+};
+
 module.exports = {
   findLecturerByUserId,
+  createLecturer,
 };

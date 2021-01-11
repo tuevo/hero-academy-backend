@@ -5,9 +5,9 @@ const Schema = mongoose.Schema;
 
 const feedbackSchema = new Schema(
   {
-    studentId: { type: ObjectId },
-    courseId: { type: ObjectId },
-    content: { type: String },
+    studentId: { type: ObjectId, default: null },
+    courseId: { type: ObjectId, default: null },
+    content: { type: String, default: null },
   },
   { timestamps: true, paranoid: true }
 );

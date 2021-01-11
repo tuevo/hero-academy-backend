@@ -22,6 +22,22 @@ const findAdminByUserId = async (userId) => {
   }
 };
 
+const createdAdmin = async (userId) => {
+  logger.info(`${AdminsConstant.LOGGER.SERVICE}::createdAdmin::is called`);
+  try {
+    const newAdmin = new AdminsModel({
+      userId,
+    });
+
+    logger.info(`${AdminsConstant.LOGGER.SERVICE}::createdAdmin::success`);
+    return newAdmin.save();
+  } catch (e) {
+    logger.error(`${AdminsConstant.LOGGER.SERVICE}::createdAdmin::Error`, e);
+    throw new Error(e);
+  }
+};
+
 module.exports = {
   findAdminByUserId,
+  createdAdmin,
 };

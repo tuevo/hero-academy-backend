@@ -5,9 +5,9 @@ const Schema = mongoose.Schema;
 
 const documentSchema = new Schema(
   {
-    title: { type: String },
-    link: { type: String },
-    courseId: { type: ObjectId },
+    title: { type: String, default: null },
+    link: { type: String, default: null },
+    courseId: { type: ObjectId, default: null },
   },
   { timestamps: true, paranoid: true }
 );

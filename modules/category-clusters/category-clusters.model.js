@@ -1,13 +1,10 @@
 const mongoose = require('mongoose');
-const ObjectId = mongoose.Types.ObjectId;
 
 const Schema = mongoose.Schema;
 
 const categoryClusterSchema = new Schema(
   {
-    categoryId: { type: ObjectId },
-    name: { type: String },
-    numberOfCourses: { type: Number, default: 0 },
+    name: { type: String, default: null },
   },
   { timestamps: true, paranoid: true }
 );

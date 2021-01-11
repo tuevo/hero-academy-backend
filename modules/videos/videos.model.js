@@ -5,11 +5,11 @@ const Schema = mongoose.Schema;
 
 const videoSchema = new Schema(
   {
-    courseId: { type: ObjectId },
-    chapterId: { type: ObjectId },
-    title: { type: String },
-    description: { type: String },
-    url: { type: String },
+    courseId: { type: ObjectId, default: null },
+    chapterId: { type: ObjectId, default: null },
+    title: { type: String, default: null },
+    description: { type: String, default: null },
+    url: { type: String, default: null },
     numberOfViews: { type: Number, default: 0 },
   },
   { timestamps: true, paranoid: true }

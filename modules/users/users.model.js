@@ -7,9 +7,9 @@ const Schema = mongoose.Schema;
 const userSchema = new Schema(
   {
     email: { type: String, default: null },
-    passwordHash: { type: String },
-    passwordSalt: { type: String },
-    otpCode: { type: String },
+    passwordHash: { type: String, default: null },
+    passwordSalt: { type: String, default: null },
+    otpCode: { type: String, default: null },
     fullName: { type: String, default: null },
     role: { type: Number, default: UserConstant.ROLE.STUDENT },
     avatarUrl: { type: String, default: null },

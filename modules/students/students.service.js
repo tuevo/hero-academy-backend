@@ -26,6 +26,22 @@ const findStudentByUserId = async (userId) => {
   }
 };
 
+const createStudent = async (userId) => {
+  logger.info(`${StudentsConstant.LOGGER.SERVICE}::createStudent::is called`);
+  try {
+    const newUser = new StudentsModel({
+      userId,
+    });
+
+    logger.info(`${StudentsConstant.LOGGER.SERVICE}::createStudent::success`);
+    return newUser.save();
+  } catch (e) {
+    logger.error(`${StudentsConstant.LOGGER.SERVICE}::createStudent::Error`, e);
+    throw new Error(e);
+  }
+};
+
 module.exports = {
   findStudentByUserId,
+  createStudent,
 };

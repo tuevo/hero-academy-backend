@@ -6,19 +6,33 @@ const ParametersConstant = require('../../constants/parameters.constant');
 const ValidateMiddleware = require('../../middleware/validate.middleware');
 
 const { LoginValidationSchema } = require('./validations/login.schema');
-const { RefreshValidationSchema } = require('./validations/refresh.schema');
-
+const {
+  RefreshTokenValidationSchema,
+} = require('./validations/refresh-token.schema');
+const { RegisterValidationSchema } = require('./validations/register.schema');
+const {
+  ConfirmOptCodeValidationSchema,
+} = require('./validations/confim-otp-code.schema');
 
 router.post(
   '/login',
   ValidateMiddleware(LoginValidationSchema, [ParametersConstant.BODY]),
   AuthController.login
 );
-
 router.post(
   '/refresh',
-  ValidateMiddleware(RefreshValidationSchema, [ParametersConstant.BODY]),
-  AuthController.refresh
+  ValidateMiddleware(RefreshTokenValidationSchema, [ParametersConstant.BODY]),
+  AuthController.refreshToken
+);
+router.post(
+  '/register',
+  ValidateMiddleware(RegisterValidationSchema, [ParametersConstant.BODY]),
+  AuthController.register
+);
+router.post(
+  '/confirm',
+  ValidateMiddleware(ConfirmOptCodeValidationSchema, [ParametersConstant.BODY]),
+  AuthController.confirmOtpCode
 );
 
 module.exports = router;

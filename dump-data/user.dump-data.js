@@ -8,6 +8,9 @@ const UserModel = require('../modules/users/users.model');
 const UserConstant = require('../modules/users/users.constant');
 const AdminsModel = require('../modules/admins/admins.model');
 const AdminsService = require('../modules/admins/admins.service');
+const LecturerService = require('../modules/lecturers/lecturers.service');
+const LecturerModel = require('../modules/lecturers/lecturers.model');
+const AuthConstant = require('../modules/auth/auth.constant');
 
 const createUsers = () => {
   const dumpData = async () => {
@@ -28,7 +31,7 @@ const createUsers = () => {
             );
 
             let userInfo = config[fullName];
-            const salt = bcrypt.genSaltSync(UserConstant.SALT_LENGTH);
+            const salt = bcrypt.genSaltSync(AuthConstant.SALT_LENGTH);
             userInfo.passwordSalt = salt;
             userInfo.passwordHash = bcrypt.hashSync('123456789', salt);
 
@@ -36,18 +39,38 @@ const createUsers = () => {
             await user.save();
           }
 
-          const admin = await AdminsService.findAdminByUserId(user._id);
+          if (user.role === UserConstant.ROLE.ADMIN) {
+            const admin = await AdminsService.findAdminByUserId(user._id);
 
-          if (!admin) {
-            const newAdmin = new AdminsModel({
-              userId: user._id,
-            });
+            if (!admin) {
+              const newAdmin = new AdminsModel({
+                userId: user._id,
+              });
 
-            logger.info(
-              `${LoggerConstant.DUMP_DATA.USER_DUMP_DATA}::createAdmin::creating admin by id ${user._id}`
+              logger.info(
+                `${LoggerConstant.DUMP_DATA.USER_DUMP_DATA}::createAdmin::creating admin by id ${user._id}`
+              );
+
+              await newAdmin.save();
+            }
+          }
+
+          if (user.role === UserConstant.ROLE.LECTURER) {
+            const lecturer = await LecturerService.findLecturerByUserId(
+              user._id
             );
 
-            await newAdmin.save();
+            if (!lecturer) {
+              const newLecturer = new LecturerModel({
+                userId: user._id,
+              });
+
+              logger.info(
+                `${LoggerConstant.DUMP_DATA.USER_DUMP_DATA}::createAdmin::creating lecturer by id ${user._id}`
+              );
+
+              await newLecturer.save();
+            }
           }
         })
       );

@@ -5,12 +5,12 @@ const Schema = mongoose.Schema;
 
 const courseSchema = new Schema(
   {
-    categoryId: { type: ObjectId },
-    lecturerId: { type: ObjectId },
-    thumbnailUrl: { type: String },
-    title: { type: String },
-    description: { type: String },
-    content: { type: String },
+    categoryClusterId: { type: ObjectId, default: null },
+    lecturerId: { type: ObjectId, default: null },
+    thumbnailUrl: { type: String, default: null },
+    title: { type: String, default: null },
+    description: { type: String, default: null },
+    content: { type: String, default: null },
     numberOfRatings: { type: Number, default: 0 },
     numberOfRegistrations: { type: Number, default: 0 },
     numberOfViews: { type: Number, default: 0 },

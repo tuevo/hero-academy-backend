@@ -4,71 +4,49 @@ const HttpStatus = require('http-status-codes');
 
 const UserConstant = require('./users.constant');
 const UserServices = require('./users.service');
+const AuthServices = require('../auth/auth.service');
 
-// const login = async (req, res, next) => {
-//   logger.info(`${UserConstant.LOGGER.CONTROLLER}::Login::is called`);
-//   try {
-//     const { username, password } = req.body;
+const getUserInfo = async (req, res, next) => {
+  logger.info(`${UserConstant.LOGGER.CONTROLLER}::getUserInfo::is called`);
+  try {
+    const { _id } = req.user;
+    let responseData = null;
 
-//     let info = {};
-//     let user = await UserServices.findUserByUsernameOrEmail(username);
+    let user = await UserServices.findUserById(_id);
 
-//     //user not found
-//     if (!user) {
-//       info = {
-//         status: HttpStatus.BAD_REQUEST,
-//         messages: [
-//           UserConstant.MESSAGES.LOGIN.MAIL_NOT_FOUND_OR_PASSWORD_NOT_MATCH,
-//         ],
-//       };
+    if (!user) {
+      responseData = {
+        status: HttpStatus.NOT_FOUND,
+        messages: [UserConstant.MESSAGES.GET_USER_INFO.USER_NOT_FOUND],
+      };
 
-//       logger.info(`${UserConstant.LOGGER.CONTROLLER}::Login::user not found`);
-//       return res.status(HttpStatus.BAD_REQUEST).json(info);
-//     }
+      logger.info(`${UserConstant.LOGGER.CONTROLLER}::getUserInfo::not found`);
+      return res.status(HttpStatus.NOT_FOUND).json(responseData);
+    }
 
-//     //password not match
-//     if (
-//       !UserServices.isValidPasswordHash({
-//         passwordHash: user.passwordHash,
-//         password,
-//       })
-//     ) {
-//       info = {
-//         status: HttpStatus.BAD_REQUEST,
-//         messages: [
-//           UserConstant.MESSAGES.LOGIN.MAIL_NOT_FOUND_OR_PASSWORD_NOT_MATCH,
-//         ],
-//       };
+    const roleInfo = await AuthServices.checkAndGetRoleInfo({
+      userId: _id,
+      role: user.role,
+    });
 
-//       logger.info(
-//         `${UserConstant.LOGGER.CONTROLLER}::Login::password not match`
-//       );
-//       return res.status(HttpStatus.BAD_REQUEST).json(info);
-//     }
+    responseData = {
+      status: HttpStatus.OK,
+      messages: [
+        UserConstant.MESSAGES.GET_USER_INFO.GET_USER_INFO_SUCCESSFULLY,
+      ],
+      data: {
+        user: { roleInfo, ...UserServices.mapUserInfo(user) },
+      },
+    };
 
-//     user.refreshToken = uuid.v4();
-//     await user.save();
+    logger.info(`${UserConstant.LOGGER.CONTROLLER}::getUserInfo::success`);
+    return res.status(HttpStatus.OK).json(responseData);
+  } catch (e) {
+    logger.error(`${UserConstant.LOGGER.CONTROLLER}::getUserInfo::error`, e);
+    return next(e);
+  }
+};
 
-//     //success
-//     info = {
-//       status: HttpStatus.OK,
-//       messages: [UserConstant.MESSAGES.LOGIN.LOGIN_SUCCESSFULLY],
-//       data: {
-//         user: UserServices.mapUserInfo(user),
-//         meta: {
-//           accessToken: UserServices.generateToken(user),
-//         },
-//       },
-//     };
-
-//     logger.info(`${UserConstant.LOGGER.CONTROLLER}::Login::success`);
-//     return res.status(HttpStatus.OK).json(info);
-//   } catch (e) {
-//     logger.error(`${UserConstant.LOGGER.CONTROLLER}::Login::error`, e);
-//     return next(e);
-//   }
-// };
-
-// module.exports = {
-//   login,
-// };
+module.exports = {
+  getUserInfo,
+};

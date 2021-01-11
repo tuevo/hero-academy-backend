@@ -5,9 +5,9 @@ const Schema = mongoose.Schema;
 
 const ratingSchema = new Schema(
   {
-    studentId: { type: ObjectId },
-    courseId: { type: ObjectId },
-    price: { type: Number },
+    studentId: { type: ObjectId, default: null },
+    courseId: { type: ObjectId, default: null },
+    rating: { type: Number, default: 0 },
   },
   { timestamps: true, paranoid: true }
 );

@@ -8,5 +8,10 @@ module.exports = {
     LECTURER: 2,
     STUDENT: 3,
   },
-  MESSAGES: {},
+  MESSAGES: {
+    GET_USER_INFO: {
+      USER_NOT_FOUND: 'USER_NOT_FOUND',
+      GET_USER_INFO_SUCCESSFULLY: 'GET_USER_INFO_SUCCESSFULLY',
+    },
+  },
 };

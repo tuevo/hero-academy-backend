@@ -5,8 +5,8 @@ const Schema = mongoose.Schema;
 
 const chapterSchema = new Schema(
   {
-    courseId: { type: ObjectId },
-    title: { type: String },
+    courseId: { type: ObjectId, default: null },
+    title: { type: String, default: null },
     numberOfVideos: { type: Number, default: 0 },
   },
   { timestamps: true, paranoid: true }
