@@ -9,7 +9,7 @@ const AuthConstant = require('./auth.constant');
 const AuthServices = require('./auth.service');
 const UserServices = require('../users/users.service');
 const jwtConstant = require('../../constants/jwt.constant');
-const Mailer = require('../../utils/mailer');
+const SendGrid = require('../../utils/send-grid');
 
 const login = async (req, res, next) => {
   logger.info(`${AuthConstant.LOGGER.CONTROLLER}::Login::is called`);
@@ -143,14 +143,14 @@ const register = async (req, res, next) => {
       length: 8,
       charset: 'alphanumeric',
     });
-    // user = await UserServices.createUser({
-    //   avatar,
-    //   password,
-    //   fullName,
-    //   email,
-    //   otpCode,
-    // });
-    await Mailer.sendConfirmMail({ email, otp: otpCode });
+    user = await UserServices.createUser({
+      avatar,
+      password,
+      fullName,
+      email,
+      otpCode,
+    });
+    SendGrid.sendConfirmMail({ email, otpCode, fullName });
 
     responseData = {
       status: HttpStatus.CREATED,
