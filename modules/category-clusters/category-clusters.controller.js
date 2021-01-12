@@ -23,11 +23,17 @@ const getCategoryClustersInfo = async (req, res, next) => {
     let { meta } = categoryData[0];
 
     if (entries.length !== 0) {
+      entries = await CategoryClustersServices.mapCategoryClusterDataWithCategoriesData(
+        entries
+      );
     }
 
     responseData = {
       status: HttpStatus.OK,
-      messages: [],
+      messages: [
+        CategoryClustersConstant.MESSAGES.GET_CATEGORY_CLUSTERS_INFO
+          .GET_CATEGORY_CLUSTERS_INFO_SUCCESSFULLY,
+      ],
       data: {
         entries,
         meta,
@@ -44,6 +50,62 @@ const getCategoryClustersInfo = async (req, res, next) => {
   }
 };
 
+const addCategoryCLuster = async (req, res, next) => {
+  logger.info(
+    `${CategoryClustersConstant.LOGGER.CONTROLLER}::addCategoryCLuster::is called`
+  );
+  try {
+    const { name } = req.body;
+    let responseData = null;
+
+    let categoryCluster = await CategoryClustersServices.findCategoryClusterByName(
+      name
+    );
+
+    if (categoryCluster) {
+      responseData = {
+        status: HttpStatus.BAD_REQUEST,
+        messages: [
+          CategoryClustersConstant.MESSAGES.ADD_CATEGORY_CLUSTER
+            .CATEGORY_CLUSTER_ALREADY_EXISTS,
+        ],
+      };
+
+      logger.info(
+        `${CategoryClustersConstant.LOGGER.CONTROLLER}::addCategoryCLuster::name already exists`
+      );
+      return res.status(HttpStatus.BAD_REQUEST).json(responseData);
+    }
+
+    categoryCluster = await CategoryClustersServices.createCategoryCluster(
+      name
+    );
+
+    responseData = {
+      status: HttpStatus.OK,
+      messages: [
+        CategoryClustersConstant.MESSAGES.ADD_CATEGORY_CLUSTER
+          .ADD_CATEGORY_CLUSTER_SUCCESSFULLY,
+      ],
+      data: {
+        categoryCluster,
+      },
+    };
+
+    logger.info(
+      `${CategoryClustersConstant.LOGGER.CONTROLLER}::addCategoryCLuster::success`
+    );
+    return res.status(HttpStatus.OK).json(responseData);
+  } catch (e) {
+    logger.error(
+      `${CategoryClustersConstant.LOGGER.CONTROLLER}::addCategoryCLuster::error`,
+      e
+    );
+    return next(e);
+  }
+};
+
 module.exports = {
   getCategoryClustersInfo,
+  addCategoryCLuster,
 };

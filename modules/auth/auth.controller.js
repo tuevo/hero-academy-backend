@@ -9,6 +9,7 @@ const AuthConstant = require('./auth.constant');
 const AuthServices = require('./auth.service');
 const UserServices = require('../users/users.service');
 const jwtConstant = require('../../constants/jwt.constant');
+const AdminsServices = require('../admins/admins.service');
 const SendGrid = require('../../utils/send-grid');
 
 const login = async (req, res, next) => {
@@ -189,6 +190,7 @@ const confirmOtpCode = async (req, res, next) => {
 
     user.isConfirmed = true;
     await user.save();
+    await AdminsServices.updateNumberOfStudents();
 
     responseData = {
       status: HttpStatus.OK,

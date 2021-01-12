@@ -103,7 +103,7 @@ const checkAccountValidity = ({ userAccount, password }) => {
     // account has not been confirmed
     if (!userAccount.isConfirmed) {
       responseData = {
-        status: HttpStatus.BAD_REQUEST,
+        status: HttpStatus.UNAUTHORIZED,
         messages: [AuthConstant.MESSAGES.LOGIN.ACCOUNT_HAS_NOT_BEEN_CONFIRMED],
       };
 
