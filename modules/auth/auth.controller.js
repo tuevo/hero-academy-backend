@@ -145,9 +145,9 @@ const register = async (req, res, next) => {
       length: 8,
       charset: 'alphanumeric',
     });
-    const upLoadInfo = await cloudinary.upLoadByBuffer(req);
+    const uploadInfo = await cloudinary.uploadByBuffer(req);
     user = await UserServices.createUser({
-      avatar: upLoadInfo.url,
+      avatar: uploadInfo.url,
       password,
       fullName,
       email,

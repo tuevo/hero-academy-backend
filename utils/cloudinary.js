@@ -10,31 +10,31 @@ cloudinary.config({
 });
 
 const uploadByLink = (link) => {
-  logger.info(`Utils::upload::is called`);
+  logger.info(`Utils::uploadByLink::is called`);
   return new Promise((res, rej) => {
     try {
       cloudinary.uploader.upload(link, (error, result) => {
         if (error) {
-          logger.error(`Utils::upload::error`, error);
+          logger.error(`Utils::uploadByLink::error`, error);
           return rej(error);
         }
 
-        logger.info(`Utils::upload::success`);
+        logger.info(`Utils::uploadByLink::success`);
         return res(result);
       });
     } catch (e) {
-      logger.error(`Utils::upload::error`, e);
+      logger.error(`Utils::uploadByLink::error`, e);
       return rej(e);
     }
   });
 };
 
-const upLoadByBuffer = (req) => {
+const uploadByBuffer = (req) => {
   return new Promise((resolve, reject) => {
-    logger.info(`Utils::upload::is called`);
+    logger.info(`Utils::uploadByBuffer::is called`);
     try {
       if (!req.file) {
-        logger.info(`Utils::upload::file not found`);
+        logger.info(`Utils::uploadByBuffer::file not found`);
         return resolve({
           url: '',
         });
@@ -42,23 +42,23 @@ const upLoadByBuffer = (req) => {
 
       let stream = cloudinary.uploader.upload_stream((error, result) => {
         if (result) {
-          logger.info(`Utils::upload::success`);
+          logger.info(`Utils::uploadByBuffer::success`);
           return resolve(result);
         } else {
-          logger.error(`Utils::upload::error`, error);
+          logger.error(`Utils::uploadByBuffer::error`, error);
           return reject(error);
         }
       });
 
       streamifier.createReadStream(req.file.buffer).pipe(stream);
     } catch (e) {
-      logger.error(`Utils::upload::error`, e);
+      logger.error(`Utils::uploadByBuffer::error`, e);
       return reject(e);
     }
   });
 };
 
 module.exports = {
-  upLoadByBuffer,
+  uploadByBuffer,
   uploadByLink,
 };
