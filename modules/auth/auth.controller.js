@@ -11,6 +11,7 @@ const UserServices = require('../users/users.service');
 const jwtConstant = require('../../constants/jwt.constant');
 const AdminsServices = require('../admins/admins.service');
 const SendGrid = require('../../utils/send-grid');
+const cloudinary = require('../../utils/cloudinary');
 
 const login = async (req, res, next) => {
   logger.info(`${AuthConstant.LOGGER.CONTROLLER}::Login::is called`);
@@ -108,7 +109,7 @@ const refreshToken = async (req, res, next) => {
 const register = async (req, res, next) => {
   logger.info(`${AuthConstant.LOGGER.CONTROLLER}::register::is called`);
   try {
-    const { avatar, password, confirmPassword, fullName, email } = req.body;
+    const { password, confirmPassword, fullName, email } = req.body;
     let responseData = null;
 
     let user = await UserServices.findUserByNameOrEmail(email);
@@ -144,14 +145,15 @@ const register = async (req, res, next) => {
       length: 8,
       charset: 'alphanumeric',
     });
+    const upLoadInfo = await cloudinary.upLoadByBuffer(req);
     user = await UserServices.createUser({
-      avatar,
+      avatar: upLoadInfo.url,
       password,
       fullName,
       email,
       otpCode,
     });
-    SendGrid.sendConfirmMail({ email, otpCode, fullName });
+    await SendGrid.sendConfirmMail({ email, otpCode, fullName });
 
     responseData = {
       status: HttpStatus.CREATED,

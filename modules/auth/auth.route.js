@@ -1,5 +1,7 @@
 const express = require('express');
 const router = express.Router({});
+const multer = require('multer');
+const upload = multer();
 
 const AuthController = require('./auth.controller');
 const ParametersConstant = require('../../constants/parameters.constant');
@@ -26,6 +28,7 @@ router.post(
 );
 router.post(
   '/register',
+  upload.single('avatar'),
   ValidateMiddleware(RegisterValidationSchema, [ParametersConstant.BODY]),
   AuthController.register
 );
