@@ -3,4 +3,9 @@ module.exports = {
     CONTROLLER: 'VIDEOS_CONTROLLER',
     SERVICE: 'VIDEOS_SERVICE',
   },
+  MESSAGES: {
+    ADD_VIDEO: {
+      VIDEO_ADDED_SUCCESSFULLY: 'VIDEO_ADDED_SUCCESSFULLY',
+    },
+  },
 };

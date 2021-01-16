@@ -29,28 +29,31 @@ const uploadByLink = (link) => {
   });
 };
 
-const uploadByBuffer = (req) => {
+const uploadByBuffer = (file, type) => {
   return new Promise((resolve, reject) => {
     logger.info(`Utils::uploadByBuffer::is called`);
     try {
-      if (!req.file) {
+      if (!file) {
         logger.info(`Utils::uploadByBuffer::file not found`);
         return resolve({
           url: '',
         });
       }
 
-      let stream = cloudinary.uploader.upload_stream((error, result) => {
-        if (result) {
-          logger.info(`Utils::uploadByBuffer::success`);
-          return resolve(result);
-        } else {
-          logger.error(`Utils::uploadByBuffer::error`, error);
-          return reject(error);
+      let stream = cloudinary.uploader.upload_stream(
+        { resource_type: type },
+        (error, result) => {
+          if (result) {
+            logger.info(`Utils::uploadByBuffer::success`);
+            return resolve(result);
+          } else {
+            logger.error(`Utils::uploadByBuffer::error`, error);
+            return reject(error);
+          }
         }
-      });
+      );
 
-      streamifier.createReadStream(req.file.buffer).pipe(stream);
+      streamifier.createReadStream(file.buffer).pipe(stream);
     } catch (e) {
       logger.error(`Utils::uploadByBuffer::error`, e);
       return reject(e);

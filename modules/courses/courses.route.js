@@ -3,16 +3,17 @@ const router = express.Router({});
 const multer = require('multer');
 const upload = multer();
 
+const RoleConstant = require('../users/users.constant');
+const FileTypesConstant = require('../../constants/file-types.constant');
+const ParametersConstant = require('../../constants/parameters.constant');
 const CoursesController = require('./courses.controller');
 const VideosController = require('../videos/videos.controller');
-const ParametersConstant = require('../../constants/parameters.constant');
 const ValidateMiddleware = require('../../middleware/validate.middleware');
-const FileTypesConstant = require('../../constants/file-types.constant');
 const ValidateFileTypesMiddleware = require('../../middleware/validate-file-types.middleware');
 const CheckAccessTokenMiddleware = require('../../middleware/check-access-token.middleware');
 const CheckCourseIdMiddleware = require('../../middleware/check-course-id.middleware');
 const CheckRoleMiddleware = require('../../middleware/check-role.middleware');
-const RoleConstant = require('../users/users.constant');
+const CheckChapterIdMiddleware = require('../../middleware/check-chapter-id.middleware');
 
 const {
   AddVideoValidationSchema,
@@ -32,6 +33,7 @@ router.post(
   CheckAccessTokenMiddleware,
   CheckRoleMiddleware([RoleConstant.ROLE.LECTURER]),
   CheckCourseIdMiddleware,
+  CheckChapterIdMiddleware,
   VideosController.addVideo
 );
 

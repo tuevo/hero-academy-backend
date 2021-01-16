@@ -6,6 +6,7 @@ const jwt = require('jsonwebtoken');
 const randomString = require('randomstring');
 
 const AuthConstant = require('./auth.constant');
+const FileTypesCloudinaryConstant = require('../../constants/file-types-cloudinary.constant');
 const AuthServices = require('./auth.service');
 const UserServices = require('../users/users.service');
 const jwtConstant = require('../../constants/jwt.constant');
@@ -110,6 +111,7 @@ const register = async (req, res, next) => {
   logger.info(`${AuthConstant.LOGGER.CONTROLLER}::register::is called`);
   try {
     const { password, confirmPassword, fullName, email } = req.body;
+    const avatar = req.files.avatar[0];
     let responseData = null;
 
     let user = await UserServices.findUserByNameOrEmail(email);
@@ -145,7 +147,10 @@ const register = async (req, res, next) => {
       length: 8,
       charset: 'alphanumeric',
     });
-    const uploadInfo = await cloudinary.uploadByBuffer(req);
+    const uploadInfo = await cloudinary.uploadByBuffer(
+      avatar,
+      FileTypesCloudinaryConstant.image
+    );
     user = await UserServices.createUser({
       avatar: uploadInfo.url,
       password,
