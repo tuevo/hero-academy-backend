@@ -7,5 +7,7 @@ module.exports = {
     VALIDATE: 'MIDDLEWARE::validate',
     CHECK_ROLE: 'MIDDLEWARE::checkRole',
     VALIDATE_FILE_TYPES: 'MIDDLEWARE::validateFileTypes',
+    CHECK_COURSE_ID: 'MIDDLEWARE::checkCourseId',
+    CHECK_CHAPTER_ID: 'MIDDLEWARE::checkChapterId',
   },
 };

@@ -4,44 +4,46 @@ const HttpStatus = require('http-status-codes');
 
 const LoggerConstant = require('../constants/logger.constant');
 
-module.exports = (filesType, fieldNames) => (req, res, next) => {
+module.exports = (filesInfo) => (req, res, next) => {
   logger.info(`${LoggerConstant.MIDDLEWARE.VALIDATE_FILE_TYPES}::is called`);
   try {
     const files = req.files;
     let isError = false;
     let responseData = null;
 
-    fieldNames.forEach((fieldName) => {
+    filesInfo.forEach((info) => {
       if (
         !files ||
-        !files[fieldName] ||
-        !files[fieldName][0] ||
-        !files[fieldName][0]['mimetype']
+        !files[info.name] ||
+        !files[info.name][0] ||
+        !files[info.name][0]['mimetype']
       ) {
         logger.info(
-          `${LoggerConstant.MIDDLEWARE.VALIDATE_FILE_TYPES}::${fieldName} is required`
+          `${LoggerConstant.MIDDLEWARE.VALIDATE_FILE_TYPES}::${info.name} is required`
         );
         isError = true;
         responseData = {
           status: HttpStatus.BAD_REQUEST,
-          messages: [`${fieldName} is required`],
+          messages: [`${info.name} is required`],
           data: {},
         };
 
         return;
       }
 
-      const file = files[fieldName][0];
-      const isValid = filesType.find((type) => file['mimetype'].includes(type));
+      const file = files[info.name][0];
+      const isValid = info.fileTypes.find((type) =>
+        file['mimetype'].includes(type)
+      );
 
       if (!isValid) {
         logger.info(
-          `${LoggerConstant.MIDDLEWARE.VALIDATE_FILE_TYPES}::Invalid file type`
+          `${LoggerConstant.MIDDLEWARE.VALIDATE_FILE_TYPES}::${info.name} is an invalid file type`
         );
         isError = true;
         responseData = {
           status: HttpStatus.BAD_REQUEST,
-          messages: [`Invalid file type`],
+          messages: [`${info.name} is an invalid file type`],
           data: {},
         };
 

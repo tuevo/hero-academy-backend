@@ -6,7 +6,7 @@ const LoggerConstant = require('../constants/logger.constant');
 
 module.exports = (roles) => async (req, res, next) => {
   logger.info(
-    `${LoggerConstant.MIDDLEWARE.CHECK_ADMIN_ROLE}::checkAdminRole::is called`
+    `${LoggerConstant.MIDDLEWARE.CHECK_ROLE}::checkAdminRole::is called`
   );
   try {
     const { role } = req.user;

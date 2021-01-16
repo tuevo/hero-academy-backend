@@ -6,6 +6,7 @@ const logger = log4js.getLogger('Middlewares');
 const JwtConfig = require('../constants/jwt.constant');
 const LoggerConstant = require('../constants/logger.constant');
 const ApiTokenNameConstant = require('../constants/api-token-name.constant');
+const AuthServices = require('../modules/auth/auth.service');
 
 const returnInvalidToken = (req, res) => {
   return res.status(HttpStatus.UNAUTHORIZED).json({
@@ -42,6 +43,10 @@ module.exports = async (req, res, next) => {
     }
 
     const user = data['user'];
+    const roleInfo = await AuthServices.checkAndGetRoleInfo({
+      userId: user._id,
+      role: user.role,
+    });
 
     if (user === null || user === undefined || user === '') {
       logger.info(
@@ -51,7 +56,10 @@ module.exports = async (req, res, next) => {
       return;
     }
 
-    req.user = user;
+    req.user = {
+      ...user,
+      roleInfo,
+    };
     logger.info(`${LoggerConstant.MIDDLEWARE.CHECK_ACCESS_TOKEN}::success.`);
     return next();
   } catch (e) {

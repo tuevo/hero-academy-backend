@@ -1,5 +1,5 @@
 const log4js = require('log4js');
-const logger = log4js.getLogger('Sevices');
+const logger = log4js.getLogger('Services');
 
 const CategoryClusterModel = require('./category-clusters.model');
 const CategoryClusterConstant = require('./category-clusters.constant');

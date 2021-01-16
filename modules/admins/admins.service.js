@@ -1,5 +1,5 @@
 const log4js = require('log4js');
-const logger = log4js.getLogger('Sevices');
+const logger = log4js.getLogger('Services');
 const mongoose = require('mongoose');
 
 const AdminsModel = require('./admins.model');
