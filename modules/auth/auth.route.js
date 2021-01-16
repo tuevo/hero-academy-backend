@@ -5,7 +5,9 @@ const upload = multer();
 
 const AuthController = require('./auth.controller');
 const ParametersConstant = require('../../constants/parameters.constant');
+const FileTypesConstant = require('../../constants/file-types.constant');
 const ValidateMiddleware = require('../../middleware/validate.middleware');
+const ValidateFileTypesMiddleware = require('../../middleware/validate-file-types.middleware');
 
 const { LoginValidationSchema } = require('./validations/login.schema');
 const {
@@ -28,8 +30,12 @@ router.post(
 );
 router.post(
   '/register',
-  upload.single('avatar'),
+  upload.fields([{ name: 'avatar' }]),
   ValidateMiddleware(RegisterValidationSchema, [ParametersConstant.BODY]),
+  ValidateFileTypesMiddleware(
+    [FileTypesConstant.IMAGE, FileTypesConstant.VIDEO],
+    ['avatar']
+  ),
   AuthController.register
 );
 router.post(

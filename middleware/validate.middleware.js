@@ -20,10 +20,10 @@ module.exports = (schema, parameters) => (req, res, next) => {
       return requestUtil.joiValidationResponse(error, res);
     }
 
-    logger.info(`${LoggerConstant.MIDDLEWARE.VALIDATE}:validate::success`);
+    logger.info(`${LoggerConstant.MIDDLEWARE.VALIDATE}::success`);
     return next();
   } catch (e) {
-    logger.info(`${LoggerConstant.MIDDLEWARE.VALIDATE}:validate::error`, e);
+    logger.info(`${LoggerConstant.MIDDLEWARE.VALIDATE}::error`, e);
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
       status: HttpStatus.INTERNAL_SERVER_ERROR,
       messages: [e],

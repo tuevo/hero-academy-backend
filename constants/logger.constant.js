@@ -6,5 +6,6 @@ module.exports = {
     CHECK_ACCESS_TOKEN: 'MIDDLEWARE::checkAccessToken',
     VALIDATE: 'MIDDLEWARE::validate',
     CHECK_ROLE: 'MIDDLEWARE::checkRole',
+    VALIDATE_FILE_TYPES: 'MIDDLEWARE::validateFileTypes',
   },
 };
