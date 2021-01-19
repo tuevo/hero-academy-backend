@@ -6,16 +6,19 @@ const VideosConstant = require('./videos.constant');
 const FileTypesCloudDinaryConstant = require('../../constants/file-types-cloudinary.constant');
 const VideosServices = require('./videos.service');
 const cloudinary = require('../../utils/cloudinary');
+const getDuration = require('../../services/get-duration');
+const ChaptersServices = require('../chapters/chapters.service');
 
 const addVideo = async (req, res, next) => {
   logger.info(`${VideosConstant.LOGGER.CONTROLLER}::addVideo::is called`);
   try {
-    const { title, duration } = req.body;
+    const { title } = req.body;
     const { courseId, chapterId } = req.params;
     const video = req.files.video[0];
     const thumbnail = req.files.thumbnail[0];
     let responseData = null;
 
+    const duration = await getDuration(video);
     const videoInfo = await cloudinary.uploadByBuffer(
       video,
       FileTypesCloudDinaryConstant.video
@@ -35,7 +38,7 @@ const addVideo = async (req, res, next) => {
     };
 
     const newVideo = await VideosServices.createVideo(newVideoInfo);
-
+    await ChaptersServices.updateNumberOfVideos(chapterId, 1);
     responseData = {
       status: HttpStatus.CREATED,
       messages: [VideosConstant.MESSAGES.ADD_VIDEO.VIDEO_ADDED_SUCCESSFULLY],

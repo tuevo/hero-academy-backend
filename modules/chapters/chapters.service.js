@@ -33,6 +33,32 @@ const findChapterHasCondition = async ({ chapterId, courseId }) => {
   }
 };
 
+const updateNumberOfVideos = async (chapterId, cumulativeValue) => {
+  logger.info(
+    `${ChaptersConstant.LOGGER.SERVICE}::updateNumberOfVideos::is called`
+  );
+  try {
+    const condition = { $inc: { numberOfVideos: cumulativeValue } };
+
+    await ChaptersModel.updateOne(
+      { _id: mongoose.Types.ObjectId(chapterId) },
+      condition
+    );
+
+    logger.info(
+      `${AdminsConstant.LOGGER.SERVICE}::updateNumberOfVideos::success`
+    );
+    return;
+  } catch (e) {
+    logger.error(
+      `${ChaptersConstant.LOGGER.SERVICE}::updateNumberOfVideos::error`,
+      e
+    );
+    throw new Error(e);
+  }
+};
+
 module.exports = {
   findChapterHasCondition,
+  updateNumberOfVideos,
 };
