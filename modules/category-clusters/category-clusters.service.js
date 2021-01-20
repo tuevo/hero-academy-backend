@@ -1,5 +1,6 @@
 const log4js = require('log4js');
 const logger = log4js.getLogger('Services');
+const mongoose = require('mongoose');
 
 const CategoryClusterModel = require('./category-clusters.model');
 const CategoryClusterConstant = require('./category-clusters.constant');
@@ -120,9 +121,30 @@ const createCategoryCluster = async (name) => {
   }
 };
 
+const findCategoryClusterById = async (categoryClusterId) => {
+  logger.info(
+    `${CategoryClusterConstant.LOGGER.SERVICE}::findCategoryClusterById::is called`
+  );
+  try {
+    logger.info(
+      `${CategoryClusterConstant.LOGGER.SERVICE}::findCategoryClusterById::success`
+    );
+    return await CategoryClusterModel.findOne({
+      _id: mongoose.Types.ObjectId(categoryClusterId),
+    });
+  } catch (e) {
+    logger.error(
+      `${CategoryClusterConstant.LOGGER.SERVICE}::findCategoryClusterById::error`,
+      e
+    );
+    throw new Error(e);
+  }
+};
+
 module.exports = {
   getCategoryClustersInfoHasPagination,
   mapCategoryClusterDataWithCategoriesData,
   findCategoryClusterByName,
   createCategoryCluster,
+  findCategoryClusterById,
 };
