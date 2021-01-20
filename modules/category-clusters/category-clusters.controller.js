@@ -66,18 +66,22 @@ const addCategoryCLuster = async (req, res, next) => {
     );
 
     if (categoryCluster) {
-      responseData = {
-        status: HttpStatus.BAD_REQUEST,
-        messages: [
-          CategoryClustersConstant.MESSAGES.ADD_CATEGORY_CLUSTER
-            .CATEGORY_CLUSTER_ALREADY_EXISTS,
-        ],
-      };
+      if (
+        categoryCluster.name.toLocaleLowerCase() === name.toLocaleLowerCase()
+      ) {
+        responseData = {
+          status: HttpStatus.BAD_REQUEST,
+          messages: [
+            CategoryClustersConstant.MESSAGES.ADD_CATEGORY_CLUSTER
+              .CATEGORY_CLUSTER_ALREADY_EXISTS,
+          ],
+        };
 
-      logger.info(
-        `${CategoryClustersConstant.LOGGER.CONTROLLER}::addCategoryCLuster::name already exists`
-      );
-      return res.status(HttpStatus.BAD_REQUEST).json(responseData);
+        logger.info(
+          `${CategoryClustersConstant.LOGGER.CONTROLLER}::addCategoryCLuster::name already exists`
+        );
+        return res.status(HttpStatus.BAD_REQUEST).json(responseData);
+      }
     }
 
     categoryCluster = await CategoryClustersServices.createCategoryCluster(

@@ -34,17 +34,19 @@ const addCategory = async (req, res, next) => {
     let category = await CategoriesServices.findCategoryByName(name);
 
     if (category) {
-      responseData = {
-        status: HttpStatus.BAD_REQUEST,
-        messages: [
-          CategoriesConstant.MESSAGES.ADD_CATEGORY.CATEGORY_ALREADY_EXISTS,
-        ],
-      };
+      if (category.name.toLocaleLowerCase() === name.toLocaleLowerCase()) {
+        responseData = {
+          status: HttpStatus.BAD_REQUEST,
+          messages: [
+            CategoriesConstant.MESSAGES.ADD_CATEGORY.CATEGORY_ALREADY_EXISTS,
+          ],
+        };
 
-      logger.info(
-        `${CategoriesConstant.LOGGER.CONTROLLER}::addCategory::category already exists`
-      );
-      return res.status(HttpStatus.BAD_REQUEST).json(responseData);
+        logger.info(
+          `${CategoriesConstant.LOGGER.CONTROLLER}::addCategory::category already exists`
+        );
+        return res.status(HttpStatus.BAD_REQUEST).json(responseData);
+      }
     }
 
     category = await CategoriesServices.createCategory({
