@@ -1,5 +1,6 @@
 const log4js = require('log4js');
 const logger = log4js.getLogger('Services');
+const mongoose = require('mongoose');
 
 const VideosModel = require('./videos.model');
 const VideosConstant = require('./videos.constant');
@@ -17,6 +18,51 @@ const createVideo = async (videoInfo) => {
   }
 };
 
+const getVideoByChapterHasPagination = async ({ page, limit, chapterId }) => {
+  logger.info(
+    `${VideosConstant.LOGGER.SERVICE}::getVideoByChapterHasPagination::is called`
+  );
+  try {
+    const matchStage = {
+      $match: {
+        chapterId: mongoose.Types.ObjectId(chapterId),
+      },
+    };
+    const sortStage = {
+      $sort: {
+        createdAt: -1,
+      },
+    };
+
+    const facetStage = {
+      $facet: {
+        entries: [{ $skip: (page - 1) * limit }, { $limit: limit }],
+        meta: [{ $group: { _id: null, totalItems: { $sum: 1 } } }],
+      },
+    };
+
+    const query = [matchStage, sortStage, facetStage];
+
+    logger.info(
+      `${VideosConstant.LOGGER.SERVICE}::getVideoByChapterHasPagination::query`,
+      JSON.stringify(query)
+    );
+    const result = await VideosModel.aggregate(query);
+
+    logger.info(
+      `${VideosConstant.LOGGER.SERVICE}::getVideoByChapterHasPagination::success`
+    );
+    return result;
+  } catch (e) {
+    logger.error(
+      `${VideosConstant.LOGGER.SERVICE}::getVideoByChapterHasPagination::error`,
+      e
+    );
+    throw new Error(e);
+  }
+};
+
 module.exports = {
   createVideo,
+  getVideoByChapterHasPagination,
 };

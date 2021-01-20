@@ -18,6 +18,9 @@ const CheckChapterIdMiddleware = require('../../middleware/check-chapter-id.midd
 const {
   AddVideoValidationSchema,
 } = require('../videos/validations/add-video.schema');
+const {
+  GetVideosByChapterValidationSchema,
+} = require('../videos/validations/get-videos-by-chapter.schema');
 
 router.post(
   '/:courseId/chapters/:chapterId/videos',
@@ -35,6 +38,15 @@ router.post(
   CheckCourseIdMiddleware,
   CheckChapterIdMiddleware,
   VideosController.addVideo
+);
+router.get(
+  '/:courseId/chapters/:chapterId/videos',
+  ValidateMiddleware(GetVideosByChapterValidationSchema, [
+    ParametersConstant.BODY,
+    ParametersConstant.PARAMS,
+  ]),
+  CheckChapterIdMiddleware,
+  VideosController.getVideosByChapter
 );
 
 module.exports = router;

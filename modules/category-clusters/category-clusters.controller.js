@@ -40,6 +40,9 @@ const getCategoryClustersInfo = async (req, res, next) => {
       },
     };
 
+    logger.info(
+      `${CategoryClustersConstant.LOGGER.CONTROLLER}::getCategoryClustersInfo::success`
+    );
     return res.status(HttpStatus.OK).json(responseData);
   } catch (e) {
     logger.error(

@@ -8,6 +8,7 @@ const VideosServices = require('./videos.service');
 const cloudinary = require('../../utils/cloudinary');
 const getDuration = require('../../services/get-duration');
 const ChaptersServices = require('../chapters/chapters.service');
+const PaginationConstant = require('../../constants/pagination.constant');
 
 const addVideo = async (req, res, next) => {
   logger.info(`${VideosConstant.LOGGER.CONTROLLER}::addVideo::is called`);
@@ -55,6 +56,48 @@ const addVideo = async (req, res, next) => {
   }
 };
 
+const getVideosByChapter = async (req, res, next) => {
+  logger.info(
+    `${VideosConstant.LOGGER.CONTROLLER}::getVideosByChapter::is called`
+  );
+  try {
+    const { chapterId } = req.params;
+    const page = Number(req.query.page) || PaginationConstant.PAGE;
+    const limit = Number(req.query.limit) || PaginationConstant.LIMIT;
+    let responseData = null;
+
+    const videoData = await VideosServices.getVideoByChapterHasPagination({
+      page,
+      limit,
+      chapterId,
+    });
+
+    let { entries } = videoData[0];
+    let { meta } = videoData[0];
+
+    responseData = {
+      status: HttpStatus.OK,
+      messages: [VideosConstant.MESSAGES.GET_VIDEOS_BY_CHAPTER.SUCCESS],
+      data: {
+        entries,
+        meta,
+      },
+    };
+
+    logger.info(
+      `${VideosConstant.LOGGER.CONTROLLER}::getVideosByChapter::success`
+    );
+    return res.status(HttpStatus.OK).json(responseData);
+  } catch (e) {
+    logger.error(
+      `${VideosConstant.LOGGER.CONTROLLER}::getVideosByChapter::error`,
+      e
+    );
+    return next(e);
+  }
+};
+
 module.exports = {
   addVideo,
+  getVideosByChapter,
 };
