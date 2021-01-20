@@ -89,7 +89,7 @@ const addCategoryCLuster = async (req, res, next) => {
     );
 
     responseData = {
-      status: HttpStatus.OK,
+      status: HttpStatus.CREATED,
       messages: [
         CategoryClustersConstant.MESSAGES.ADD_CATEGORY_CLUSTER
           .ADD_CATEGORY_CLUSTER_SUCCESSFULLY,
@@ -102,7 +102,7 @@ const addCategoryCLuster = async (req, res, next) => {
     logger.info(
       `${CategoryClustersConstant.LOGGER.CONTROLLER}::addCategoryCLuster::success`
     );
-    return res.status(HttpStatus.OK).json(responseData);
+    return res.status(HttpStatus.CREATED).json(responseData);
   } catch (e) {
     logger.error(
       `${CategoryClustersConstant.LOGGER.CONTROLLER}::addCategoryCLuster::error`,

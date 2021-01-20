@@ -89,9 +89,26 @@ const findCategoryByName = async (name) => {
   }
 };
 
+const getCategoryById = async (categoryId) => {
+  logger.info(`${CategoryConstant.LOGGER.SERVICE}::getCategoryById::is called`);
+  try {
+    logger.info(`${CategoryConstant.LOGGER.SERVICE}::getCategoryById::success`);
+    return await CategoryModel.findOne({
+      _id: mongoose.Types.ObjectId(categoryId),
+    });
+  } catch (e) {
+    logger.error(
+      `${CategoryConstant.LOGGER.SERVICE}::getCategoryById::error`,
+      e
+    );
+    throw new Error(e);
+  }
+};
+
 module.exports = {
   getCategoriesByCategoryClusterId,
   updateNumberOfCourses,
   createCategory,
   findCategoryByName,
+  getCategoryById,
 };

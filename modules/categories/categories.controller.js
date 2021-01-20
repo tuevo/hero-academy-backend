@@ -55,7 +55,7 @@ const addCategory = async (req, res, next) => {
     });
 
     responseData = {
-      status: HttpStatus.OK,
+      status: HttpStatus.CREATED,
       messages: [
         CategoriesConstant.MESSAGES.ADD_CATEGORY.CATEGORY_ADDED_SUCCESSFULLY,
       ],
@@ -67,7 +67,7 @@ const addCategory = async (req, res, next) => {
     logger.info(
       `${CategoriesConstant.LOGGER.CONTROLLER}::addCategory::success`
     );
-    return res.status(HttpStatus.OK).json(responseData);
+    return res.status(HttpStatus.CREATED).json(responseData);
   } catch (e) {
     logger.error(
       `${CategoriesConstant.LOGGER.CONTROLLER}::addCategory::error`,
@@ -77,6 +77,41 @@ const addCategory = async (req, res, next) => {
   }
 };
 
+const getCategoryDetails = async (req, res, next) => {
+  logger.info(
+    `${CategoriesConstant.LOGGER.CONTROLLER}::getCategoryDetails::is called`
+  );
+  try {
+    const { categoryId } = req.params;
+    let responseData = null;
+
+    const category = await CategoriesServices.getCategoryById(categoryId);
+
+    responseData = {
+      status: HttpStatus.OK,
+      messages: [
+        CategoriesConstant.MESSAGES.GET_CATEGORY_DETAILS
+          .GET_CATEGORY_DETAILS_SUCCESSFULLY,
+      ],
+      data: {
+        category,
+      },
+    };
+
+    logger.info(
+      `${CategoriesConstant.LOGGER.CONTROLLER}::getCategoryDetails::success`
+    );
+    return res.status(HttpStatus.OK).json(responseData);
+  } catch (e) {
+    logger.error(
+      `${CategoriesConstant.LOGGER.CONTROLLER}::getCategoryDetails::error`,
+      e
+    );
+    return next(e);
+  }
+};
+
 module.exports = {
   addCategory,
+  getCategoryDetails,
 };

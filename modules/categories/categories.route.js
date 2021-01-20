@@ -11,6 +11,9 @@ const CheckRoleMiddleware = require('../../middleware/check-role.middleware');
 const {
   AddCategoryValidationSchema,
 } = require('./validations/add-category.schema');
+const {
+  GetCategoryDetailsValidationSchema,
+} = require('./validations/get-category-details.schema');
 
 router.post(
   '/',
@@ -19,5 +22,13 @@ router.post(
   CheckRoleMiddleware([UsersConstant.ROLE.ADMIN]),
   CategoriesController.addCategory
 );
-
+router.get(
+  '/:categoryId',
+  ValidateMiddleware(GetCategoryDetailsValidationSchema, [
+    ParametersConstant.PARAMS,
+  ]),
+  CheckAccessTokenMiddleware,
+  CheckRoleMiddleware([UsersConstant.ROLE.ADMIN]),
+  CategoriesController.getCategoryDetails
+);
 module.exports = router;
