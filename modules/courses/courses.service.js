@@ -10,7 +10,9 @@ const findCoursesHasCondition = async ({ lecturerId, courseId }) => {
     `${CoursesConstant.LOGGER.SERVICE}::findCoursesHasCondition::is called`
   );
   try {
-    let condition = {};
+    let condition = {
+      isDeleted: false,
+    };
 
     if (lecturerId) {
       condition['lecturerId'] = mongoose.Types.ObjectId(lecturerId);

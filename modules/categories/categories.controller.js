@@ -111,7 +111,84 @@ const getCategoryDetails = async (req, res, next) => {
   }
 };
 
+const updateCategory = async (req, res, next) => {
+  logger.info(
+    `${CategoriesConstant.LOGGER.CONTROLLER}::updateCategory::is called`
+  );
+  try {
+    const { categoryId } = req.params;
+    const { name, categoryClusterId } = req.body;
+    let responseData = null;
+
+    let category = await CategoriesServices.getCategoryById(categoryId);
+
+    if (!category) {
+      responseData = {
+        status: HttpStatus.NOT_FOUND,
+        messages: [
+          CategoriesConstant.MESSAGES.UPDATE_CATEGORY.CATEGORY_NOT_FOUND,
+        ],
+      };
+
+      logger.info(
+        `${CategoriesConstant.LOGGER.CONTROLLER}::updateCategory::category not found`
+      );
+      return res.status(HttpStatus.NOT_FOUND).json(responseData);
+    }
+
+    if (categoryClusterId) {
+      const categoryCluster = await CategoryClusterServices.findCategoryClusterById(
+        categoryClusterId
+      );
+
+      if (!categoryCluster) {
+        responseData = {
+          status: HttpStatus.NOT_FOUND,
+          messages: [
+            CategoriesConstant.MESSAGES.UPDATE_CATEGORY
+              .CATEGORY_CLUSTER_NOT_FOUND,
+          ],
+        };
+
+        logger.info(
+          `${CategoriesConstant.LOGGER.CONTROLLER}::updateCategory::category cluster not found`
+        );
+        return res.status(HttpStatus.NOT_FOUND).json(responseData);
+      }
+    }
+
+    category = await CategoriesServices.updateCategory({
+      name,
+      categoryClusterId,
+      category,
+    });
+
+    responseData = {
+      status: HttpStatus.OK,
+      messages: [
+        CategoriesConstant.MESSAGES.UPDATE_CATEGORY
+          .UPDATE_CATEGORY_SUCCESSFULLY,
+      ],
+      data: {
+        category,
+      },
+    };
+
+    logger.info(
+      `${CategoriesConstant.LOGGER.CONTROLLER}::updateCategory::success`
+    );
+    return res.status(HttpStatus.OK).json(responseData);
+  } catch (e) {
+    logger.error(
+      `${CategoriesConstant.LOGGER.CONTROLLER}::updateCategory::error`,
+      e
+    );
+    return next(e);
+  }
+};
+
 module.exports = {
   addCategory,
   getCategoryDetails,
+  updateCategory,
 };

@@ -16,6 +16,7 @@ const findLecturerByUserId = async (userId) => {
 
     return await LecturersModel.findOne({
       userId: mongoose.Types.ObjectId(userId),
+      isDeleted: false,
     });
   } catch (e) {
     logger.error(

@@ -15,6 +15,7 @@ const getCategoriesByCategoryClusterId = async (categoryClusterId) => {
     );
     return await CategoryModel.find({
       categoryClusterId: mongoose.Types.ObjectId(categoryClusterId),
+      isDeleted: false,
     });
   } catch (e) {
     logger.error(
@@ -79,6 +80,7 @@ const findCategoryByName = async (name) => {
         $regex: name,
         $options: 'i',
       },
+      isDeleted: false,
     });
   } catch (e) {
     logger.error(
@@ -95,10 +97,50 @@ const getCategoryById = async (categoryId) => {
     logger.info(`${CategoryConstant.LOGGER.SERVICE}::getCategoryById::success`);
     return await CategoryModel.findOne({
       _id: mongoose.Types.ObjectId(categoryId),
+      isDeleted: false,
     });
   } catch (e) {
     logger.error(
       `${CategoryConstant.LOGGER.SERVICE}::getCategoryById::error`,
+      e
+    );
+    throw new Error(e);
+  }
+};
+
+const updateCategory = async ({ name, categoryClusterId, category }) => {
+  logger.info(`${CategoryConstant.LOGGER.SERVICE}::updateCategory::is called`);
+  try {
+    let flag = false;
+
+    if (name) {
+      logger.info(
+        `${CategoryConstant.LOGGER.SERVICE}::updateCategory::update name`
+      );
+      category.name = name;
+      flag = true;
+    }
+
+    if (categoryClusterId) {
+      logger.info(
+        `${CategoryConstant.LOGGER.SERVICE}::updateCategory::update categoryClusterId`
+      );
+      category.categoryClusterId = categoryClusterId;
+      flag = true;
+    }
+
+    if (flag) {
+      logger.info(
+        `${CategoryConstant.LOGGER.SERVICE}::updateCategory::updating...`
+      );
+      await category.save();
+    }
+
+    logger.info(`${CategoryConstant.LOGGER.SERVICE}::updateCategory::success`);
+    return category;
+  } catch (e) {
+    logger.error(
+      `${CategoryConstant.LOGGER.SERVICE}::updateCategory::error`,
       e
     );
     throw new Error(e);
@@ -111,4 +153,5 @@ module.exports = {
   createCategory,
   findCategoryByName,
   getCategoryById,
+  updateCategory,
 };

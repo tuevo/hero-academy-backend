@@ -14,6 +14,9 @@ const {
 const {
   GetCategoryDetailsValidationSchema,
 } = require('./validations/get-category-details.schema');
+const {
+  UpdateCategoryValidationSchema,
+} = require('./validations/update-category.schema');
 
 router.post(
   '/',
@@ -31,4 +34,15 @@ router.get(
   CheckRoleMiddleware([UsersConstant.ROLE.ADMIN]),
   CategoriesController.getCategoryDetails
 );
+router.put(
+  '/:categoryId',
+  ValidateMiddleware(UpdateCategoryValidationSchema, [
+    ParametersConstant.PARAMS,
+    ParametersConstant.BODY,
+  ]),
+  CheckAccessTokenMiddleware,
+  CheckRoleMiddleware([UsersConstant.ROLE.ADMIN]),
+  CategoriesController.updateCategory
+);
+
 module.exports = router;
