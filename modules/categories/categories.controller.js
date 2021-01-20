@@ -25,8 +25,9 @@ const addCategory = async (req, res, next) => {
           CategoriesConstant.MESSAGES.ADD_CATEGORY.CATEGORY_CLUSTER_NOT_FOUND,
         ],
       };
+
       logger.info(
-        `${CategoriesConstant.LOGGER.CONTROLLER}::addCategory::is called`
+        `${CategoriesConstant.LOGGER.CONTROLLER}::addCategory::category cluster not found`
       );
       return res.status(HttpStatus.NOT_FOUND).json(responseData);
     }
@@ -187,8 +188,57 @@ const updateCategory = async (req, res, next) => {
   }
 };
 
+const deleteCategory = async (req, res, next) => {
+  logger.info(
+    `${CategoriesConstant.LOGGER.CONTROLLER}::deleteCategory::is called`
+  );
+  try {
+    const { categoryId } = req.params;
+    let responseData = null;
+
+    let category = await CategoriesServices.getCategoryById(categoryId);
+
+    if (!category) {
+      responseData = {
+        status: HttpStatus.NOT_FOUND,
+        messages: [
+          CategoriesConstant.MESSAGES.DELETE_CATEGORY.CATEGORY_NOT_FOUND,
+        ],
+      };
+
+      logger.info(
+        `${CategoriesConstant.LOGGER.CONTROLLER}::deleteCategory::category not found`
+      );
+      return res.status(HttpStatus.NOT_FOUND).json(responseData);
+    }
+
+    category['isDeleted'] = true;
+    await category.save();
+
+    responseData = {
+      status: HttpStatus.OK,
+      messages: [
+        CategoriesConstant.MESSAGES.DELETE_CATEGORY
+          .DELETE_CATEGORY_SUCCESSFULLY,
+      ],
+    };
+
+    logger.info(
+      `${CategoriesConstant.LOGGER.CONTROLLER}::deleteCategory::success`
+    );
+    return res.status(HttpStatus.OK).json(responseData);
+  } catch (e) {
+    logger.error(
+      `${CategoriesConstant.LOGGER.CONTROLLER}::deleteCategory::error`,
+      e
+    );
+    return next(e);
+  }
+};
+
 module.exports = {
   addCategory,
   getCategoryDetails,
   updateCategory,
+  deleteCategory,
 };

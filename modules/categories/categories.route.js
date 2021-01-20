@@ -17,6 +17,9 @@ const {
 const {
   UpdateCategoryValidationSchema,
 } = require('./validations/update-category.schema');
+const {
+  DeleteCategoryValidationSchema,
+} = require('./validations/delete-category.schema');
 
 router.post(
   '/',
@@ -43,6 +46,15 @@ router.put(
   CheckAccessTokenMiddleware,
   CheckRoleMiddleware([UsersConstant.ROLE.ADMIN]),
   CategoriesController.updateCategory
+);
+router.delete(
+  '/:categoryId',
+  ValidateMiddleware(DeleteCategoryValidationSchema, [
+    ParametersConstant.PARAMS,
+  ]),
+  CheckAccessTokenMiddleware,
+  CheckRoleMiddleware([UsersConstant.ROLE.ADMIN]),
+  CategoriesController.deleteCategory
 );
 
 module.exports = router;
