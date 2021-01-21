@@ -47,8 +47,8 @@ router.post(
   ValidateMiddleware(ConfirmOptCodeValidationSchema, [ParametersConstant.BODY]),
   AuthController.confirmOtpCode
 );
-router.post(
-  '/change-pass',
+router.put(
+  '/password',
   ValidateMiddleware(ChangePassValidationSchema, [ParametersConstant.BODY]),
   CheckAccessTokenMiddleware,
   AuthController.changePass
