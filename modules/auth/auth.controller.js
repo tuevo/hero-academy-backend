@@ -197,7 +197,7 @@ const confirmOtpCode = async (req, res, next) => {
 
     user.isConfirmed = true;
     await user.save();
-    await AdminsServices.updateNumberOfStudents();
+    await AdminsServices.updateNumberOfStudents(1);
 
     responseData = {
       status: HttpStatus.OK,

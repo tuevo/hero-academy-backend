@@ -8,6 +8,7 @@ const categorySchema = new Schema(
     categoryClusterId: { type: ObjectId, default: null },
     name: { type: String, default: null },
     numberOfCourses: { type: Number, default: 0 },
+    isDeleted: { type: Boolean, default: false },
   },
   { timestamps: true, paranoid: true }
 );

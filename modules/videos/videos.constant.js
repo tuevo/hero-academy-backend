@@ -7,5 +7,8 @@ module.exports = {
     ADD_VIDEO: {
       VIDEO_ADDED_SUCCESSFULLY: 'VIDEO_ADDED_SUCCESSFULLY',
     },
+    GET_VIDEOS_BY_CHAPTER: {
+      SUCCESS: 'GET_VIDEO_BY_CHAPTER_SUCCESSFULLY',
+    },
   },
 };

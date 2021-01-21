@@ -9,6 +9,7 @@ const lecturerSchema = new Schema(
     introduction: { type: String, default: null },
     averageRating: { type: Number, default: 0 },
     numberOfCoursesPosted: { type: Number, default: 0 },
+    isDeleted: { type: Boolean, default: false },
   },
   { timestamps: true, paranoid: true }
 );

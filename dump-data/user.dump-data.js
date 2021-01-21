@@ -70,6 +70,7 @@ const createUsers = () => {
               );
 
               await newLecturer.save();
+              await AdminsService.updateNumberOfLecturers(1);
             }
           }
         })
@@ -91,6 +92,6 @@ const createUsers = () => {
   dumpData();
 };
 
-module.exports = async () => {
-  await createUsers();
+module.exports = () => {
+  createUsers();
 };

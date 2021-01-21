@@ -37,17 +37,19 @@ const createdAdmin = async (userId) => {
   }
 };
 
-const updateNumberOfStudents = async () => {
+const updateNumberOfStudents = async (cumulativeValue) => {
   logger.info(
     `${AdminsConstant.LOGGER.SERVICE}::updateNumberOfStudents::is called`
   );
   try {
-    const condition = { $inc: { numberOfStudents: 1 } };
+    const condition = { $inc: { numberOfStudents: cumulativeValue } };
+
+    await AdminsModel.updateMany({}, condition);
 
     logger.info(
       `${AdminsConstant.LOGGER.SERVICE}::updateNumberOfStudents::success`
     );
-    await AdminsModel.updateMany({}, condition);
+    return;
   } catch (e) {
     logger.error(
       `${AdminsConstant.LOGGER.SERVICE}::updateNumberOfStudents::Error`,
@@ -57,17 +59,19 @@ const updateNumberOfStudents = async () => {
   }
 };
 
-const updateNumberOfLecturers = async () => {
+const updateNumberOfLecturers = async (cumulativeValue) => {
   logger.info(
     `${AdminsConstant.LOGGER.SERVICE}::updateNumberOfLecturers::is called`
   );
   try {
-    const condition = { $inc: { numberOfLecturers: 1 } };
+    const condition = { $inc: { numberOfLecturers: cumulativeValue } };
+
+    await AdminsModel.updateMany({}, condition);
 
     logger.info(
       `${AdminsConstant.LOGGER.SERVICE}::updateNumberOfLecturers::success`
     );
-    await AdminsModel.updateMany({}, condition);
+    return;
   } catch (e) {
     logger.error(
       `${AdminsConstant.LOGGER.SERVICE}::updateNumberOfLecturers::Error`,
@@ -77,17 +81,19 @@ const updateNumberOfLecturers = async () => {
   }
 };
 
-const updateNumberOfCourses = async () => {
+const updateNumberOfCourses = async (cumulativeValue) => {
   logger.info(
     `${AdminsConstant.LOGGER.SERVICE}::updateNumberOfCourses::is called`
   );
   try {
-    const condition = { $inc: { numberOfCourses: 1 } };
+    const condition = { $inc: { numberOfCourses: cumulativeValue } };
+
+    await AdminsModel.updateMany({}, condition);
 
     logger.info(
       `${AdminsConstant.LOGGER.SERVICE}::updateNumberOfCourses::success`
     );
-    await AdminsModel.updateMany({}, condition);
+    return;
   } catch (e) {
     logger.error(
       `${AdminsConstant.LOGGER.SERVICE}::updateNumberOfCourses::Error`,
