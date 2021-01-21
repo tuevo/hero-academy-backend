@@ -215,9 +215,71 @@ const confirmOtpCode = async (req, res, next) => {
   }
 };
 
+const changePass = async (req, res, next) => {
+  logger.info(`${AuthConstant.LOGGER.CONTROLLER}::changePass::is called`);
+  try {
+    const { oldPassword, password, confirmPassword } = req.body;
+    let responseData = null;
+
+    let user = await UserServices.findUserById(req.user._id);
+
+    //password not match
+    if (
+      !AuthServices.isValidPasswordHash({
+        passwordHash: user.passwordHash,
+        password: oldPassword,
+      })
+    ) {
+      responseData = {
+        status: HttpStatus.BAD_REQUEST,
+        messages: [
+          AuthConstant.MESSAGES.CHANGE_PASS.OLD_PASSWORD_INCORRECT,
+        ],
+      };
+
+      logger.info(
+        `${AuthConstant.LOGGER.SERVICE}::changePass::old password incorrect`
+      );
+
+      return res.status(HttpStatus.BAD_REQUEST).json(responseData);
+    }
+
+    if (password !== confirmPassword) {
+      responseData = {
+        status: HttpStatus.BAD_REQUEST,
+        messages: [
+          AuthConstant.MESSAGES.CHANGE_PASS
+            .PASSWORD_AND_CONFIRM_PASSWORD_NOT_MATCH,
+        ],
+      };
+
+      logger.info(
+        `${AuthConstant.LOGGER.CONTROLLER}::changePass::password and confirm password not match`
+      );
+      return res.status(HttpStatus.BAD_REQUEST).json(responseData);
+    }
+
+    await UserServices.updatePass({ user, password });
+
+    responseData = {
+      status: HttpStatus.OK,
+      messages: [AuthConstant.MESSAGES.CHANGE_PASS.CHANGE_PASSWORD_SUCCESSFULLY],
+    };
+
+    logger.info(
+      `${AuthConstant.LOGGER.CONTROLLER}::changePass::change password success`
+    );
+    return res.status(HttpStatus.OK).json(responseData);
+  } catch (e) {
+    logger.error(`${AuthConstant.LOGGER.CONTROLLER}::changePass::Error`, e);
+    return next(e);
+  }
+};
+
 module.exports = {
   login,
   refreshToken,
   register,
   confirmOtpCode,
+  changePass,
 };
