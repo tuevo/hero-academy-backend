@@ -72,6 +72,7 @@ const isValidRefreshToken = async (id, refreshToken) => {
     };
 
     const user = await UserModel.findOne(query);
+    //console.log(user)
 
     if (user) {
       logger.info(
@@ -110,7 +111,7 @@ const createUser = async ({ avatar, password, fullName, email, otpCode }) => {
     await newUser.save();
     await createRole(newUser);
 
-    logger.info(`${UserConstant.LOGGER.SERVICE}::createUser::success`);
+    logger.info(`${UserConstant.LOGGER.SERVICE}::createUser::Success`);
     return newUser;
   } catch (e) {
     logger.error(`${UserConstant.LOGGER.SERVICE}::createUser::Error`, e);
@@ -145,7 +146,7 @@ const createRole = async (newUser) => {
         break;
     }
 
-    logger.info(`${UserConstant.LOGGER.SERVICE}::createRole::success`);
+    logger.info(`${UserConstant.LOGGER.SERVICE}::createRole::Success`);
     return;
   } catch (e) {
     logger.error(`${UserConstant.LOGGER.SERVICE}::createRole::Error`, e);
@@ -156,7 +157,7 @@ const createRole = async (newUser) => {
 const findUserByOtpCode = async (otpCode) => {
   logger.info(`${UserConstant.LOGGER.SERVICE}::findUserByOtpCode::is called`);
   try {
-    logger.info(`${UserConstant.LOGGER.SERVICE}::findUserByOtpCode::success`);
+    logger.info(`${UserConstant.LOGGER.SERVICE}::findUserByOtpCode::Success`);
     return UserModel.findOne({ otpCode });
   } catch (e) {
     logger.error(`${UserConstant.LOGGER.SERVICE}::findUserByOtpCode::Error`, e);
@@ -167,10 +168,28 @@ const findUserByOtpCode = async (otpCode) => {
 const findUserById = async (_id) => {
   logger.info(`${UserConstant.LOGGER.SERVICE}::findUserById::is called`);
   try {
-    logger.info(`${UserConstant.LOGGER.SERVICE}::findUserById::success`);
+    logger.info(`${UserConstant.LOGGER.SERVICE}::findUserById::Success`);
     return UserModel.findOne({ _id: mongoose.Types.ObjectId(_id) });
   } catch (e) {
     logger.error(`${UserConstant.LOGGER.SERVICE}::findUserById::Error`, e);
+    throw new Error(e);
+  }
+};
+
+const updatePass = async ({ user, password }) => {
+  logger.info(`${UserConstant.LOGGER.SERVICE}::updatePass::is called`);
+  try {
+    const salt = bcrypt.genSaltSync(AuthConstant.SALT_LENGTH);
+
+    user.passwordSalt = salt;
+    user.passwordHash = bcrypt.hashSync(password, salt);
+
+    await user.save();
+
+    logger.info(`${UserConstant.LOGGER.SERVICE}::updatePass::Success`);
+    return;
+  } catch (e) {
+    logger.error(`${UserConstant.LOGGER.SERVICE}::updatePass::Error`, e);
     throw new Error(e);
   }
 };
@@ -182,4 +201,5 @@ module.exports = {
   createUser,
   findUserByOtpCode,
   findUserById,
+  updatePass,
 };

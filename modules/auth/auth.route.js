@@ -8,6 +8,7 @@ const ParametersConstant = require('../../constants/parameters.constant');
 const FileTypesConstant = require('../../constants/file-types.constant');
 const ValidateMiddleware = require('../../middleware/validate.middleware');
 const ValidateFileTypesMiddleware = require('../../middleware/validate-file-types.middleware');
+const CheckAccessTokenMiddleware = require('../../middleware/check-access-token.middleware');
 
 const { LoginValidationSchema } = require('./validations/login.schema');
 const {
@@ -17,6 +18,10 @@ const { RegisterValidationSchema } = require('./validations/register.schema');
 const {
   ConfirmOptCodeValidationSchema,
 } = require('./validations/confim-otp-code.schema');
+const {
+  ChangePassValidationSchema
+} = require('./validations/change-pass.schema');
+
 
 router.post(
   '/login',
@@ -41,6 +46,12 @@ router.post(
   '/confirm',
   ValidateMiddleware(ConfirmOptCodeValidationSchema, [ParametersConstant.BODY]),
   AuthController.confirmOtpCode
+);
+router.put(
+  '/password',
+  ValidateMiddleware(ChangePassValidationSchema, [ParametersConstant.BODY]),
+  CheckAccessTokenMiddleware,
+  AuthController.changePass
 );
 
 module.exports = router;

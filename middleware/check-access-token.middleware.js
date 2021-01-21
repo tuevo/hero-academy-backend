@@ -11,7 +11,7 @@ const AuthServices = require('../modules/auth/auth.service');
 const returnInvalidToken = (req, res) => {
   return res.status(HttpStatus.UNAUTHORIZED).json({
     status: HttpStatus.UNAUTHORIZED,
-    messages: ['Invalid token'],
+    messages: ['INVALID_TOKEN'],
     data: {},
   });
 };
