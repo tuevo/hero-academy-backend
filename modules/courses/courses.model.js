@@ -5,7 +5,7 @@ const Schema = mongoose.Schema;
 
 const courseSchema = new Schema(
   {
-    categoryClusterId: { type: ObjectId, default: null },
+    categoryId: { type: ObjectId, default: null },
     lecturerId: { type: ObjectId, default: null },
     thumbnailUrl: { type: String, default: null },
     title: { type: String, default: null },
@@ -20,6 +20,7 @@ const courseSchema = new Schema(
     tuition: { type: Number, default: 0 },
     discountPercent: { type: Number, default: 0 },
     isDeleted: { type: Boolean, default: false },
+    publicId: { type: String, default: null },
   },
   { timestamps: true, paranoid: true }
 );

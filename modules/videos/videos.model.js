@@ -12,6 +12,8 @@ const videoSchema = new Schema(
     url: { type: String, default: null },
     numberOfViews: { type: Number, default: 0 },
     duration: { type: Number, default: 0 },
+    publicIdOfVideo: { type: String, default: null },
+    publicIdOfThumbnail: { type: String, default: null },
   },
   { timestamps: true, paranoid: true }
 );

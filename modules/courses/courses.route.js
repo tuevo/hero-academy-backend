@@ -21,7 +21,22 @@ const {
 const {
   GetVideosByChapterValidationSchema,
 } = require('../videos/validations/get-videos-by-chapter.schema');
+const {
+  AddCourseValidationSchema,
+} = require('./validations/add-course.schema');
+const validateFileTypesMiddleware = require('../../middleware/validate-file-types.middleware');
 
+router.post(
+  '/',
+  upload.fields([{ name: 'thumbnail' }]),
+  ValidateMiddleware(AddCourseValidationSchema, [ParametersConstant.BODY]),
+  validateFileTypesMiddleware([
+    { name: 'thumbnail', fileTypes: [FileTypesConstant.IMAGE] },
+  ]),
+  CheckAccessTokenMiddleware,
+  CheckRoleMiddleware([RoleConstant.ROLE.LECTURER]),
+  CoursesController.addCourse
+);
 router.post(
   '/:courseId/chapters/:chapterId/videos',
   upload.fields([{ name: 'video' }, { name: 'thumbnail' }]),

@@ -16,6 +16,7 @@ const userSchema = new Schema(
     isBlocked: { type: Boolean, default: false },
     isConfirmed: { type: Boolean, default: false },
     refreshToken: { type: String, default: uuid.v4() },
+    publicId: { type: String, default: null },
   },
   { timestamps: true, paranoid: true }
 );

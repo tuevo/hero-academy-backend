@@ -36,6 +36,8 @@ const addVideo = async (req, res, next) => {
       thumbnailUrl: thumbnailInfo.url,
       url: videoInfo.url,
       duration,
+      publicIdOfVideo: videoInfo.public_id,
+      publicIdOfThumbnail: thumbnailInfo.public_id,
     };
 
     const newVideo = await VideosServices.createVideo(newVideoInfo);

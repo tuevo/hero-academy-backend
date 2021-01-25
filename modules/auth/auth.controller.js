@@ -153,6 +153,7 @@ const register = async (req, res, next) => {
     );
     user = await UserServices.createUser({
       avatar: uploadInfo.url,
+      publicId: uploadInfo.public_id,
       password,
       fullName,
       email,
@@ -232,9 +233,7 @@ const changePass = async (req, res, next) => {
     ) {
       responseData = {
         status: HttpStatus.BAD_REQUEST,
-        messages: [
-          AuthConstant.MESSAGES.CHANGE_PASS.OLD_PASSWORD_INCORRECT,
-        ],
+        messages: [AuthConstant.MESSAGES.CHANGE_PASS.OLD_PASSWORD_INCORRECT],
       };
 
       logger.info(
@@ -263,7 +262,9 @@ const changePass = async (req, res, next) => {
 
     responseData = {
       status: HttpStatus.OK,
-      messages: [AuthConstant.MESSAGES.CHANGE_PASS.CHANGE_PASSWORD_SUCCESSFULLY],
+      messages: [
+        AuthConstant.MESSAGES.CHANGE_PASS.CHANGE_PASSWORD_SUCCESSFULLY,
+      ],
     };
 
     logger.info(

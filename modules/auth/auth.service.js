@@ -9,6 +9,7 @@ const AuthConstant = require('./auth.constant');
 const AdminsServices = require('../admins/admins.service');
 const LecturersServices = require('../lecturers/lecturers.service');
 const StudentsServices = require('../students/students.service');
+const UsersConstant = require('../users/users.constant');
 
 const isValidPasswordHash = ({ passwordHash, password }) => {
   logger.info(`${AuthConstant.LOGGER.SERVICE}::isValidHashPassword::Is called`);
@@ -149,13 +150,13 @@ const checkAndGetRoleInfo = async ({ userId, role }) => {
     let roleInfo = null;
 
     switch (role) {
-      case 1:
+      case UsersConstant.ROLE.ADMIN:
         roleInfo = await AdminsServices.findAdminByUserId(userId);
         break;
-      case 2:
+      case UsersConstant.ROLE.LECTURER:
         roleInfo = await LecturersServices.findLecturerByUserId(userId);
         break;
-      case 3:
+      case UsersConstant.ROLE.STUDENT:
         roleInfo = await StudentsServices.findStudentByUserId(userId);
         break;
       default:

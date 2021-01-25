@@ -35,6 +35,20 @@ const findCoursesHasCondition = async ({ lecturerId, courseId }) => {
   }
 };
 
+const createCourse = async (courseInfo) => {
+  logger.info(`${CoursesConstant.LOGGER.SERVICE}::createCourse::is called`);
+  try {
+    const newCourse = new CoursesModel(courseInfo);
+
+    logger.info(`${CoursesConstant.LOGGER.SERVICE}::createCourse::success`);
+    return newCourse.save();
+  } catch (e) {
+    logger.error(`${CoursesConstant.LOGGER.SERVICE}::createCourse::error`, e);
+    throw new Error(e);
+  }
+};
+
 module.exports = {
   findCoursesHasCondition,
+  createCourse,
 };

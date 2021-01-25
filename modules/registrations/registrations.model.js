@@ -8,7 +8,6 @@ const registrationSchema = new Schema(
     studentId: { type: ObjectId, default: null },
     courseId: { type: ObjectId, default: null },
     price: { type: Number, default: 0 },
-    isPaid: { type: Boolean, default: false },
   },
   { timestamps: true, paranoid: true }
 );
