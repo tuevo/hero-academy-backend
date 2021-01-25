@@ -4,9 +4,10 @@ module.exports = {
     SERVICE: 'USER_SERVICES',
   },
   ROLE: {
-    ADMIN: 1,
-    LECTURER: 2,
-    STUDENT: 3,
+    ADMIN: 4,
+    LECTURER: 3,
+    STUDENT: 2,
+    GUEST: 1,
   },
   MESSAGES: {
     GET_USER_INFO: {
