@@ -61,7 +61,28 @@ const uploadByBuffer = (file, type) => {
   });
 };
 
+const deleteFile = (publicId) => {
+  return new Promise((response, reject) => {
+    logger.info(`Utils::deleteFile::is called`);
+    try {
+      cloudinary.uploader.destroy(publicId, (error) => {
+        if (error) {
+          logger.error(`Utils::deleteFile::error`, error);
+          return reject(error);
+        }
+
+        logger.info(`Utils::deleteFile::success`);
+        return response();
+      });
+    } catch (e) {
+      logger.error(`Utils::deleteFile::error`, e);
+      return reject(e);
+    }
+  });
+};
+
 module.exports = {
   uploadByBuffer,
   uploadByLink,
+  deleteFile,
 };

@@ -19,9 +19,8 @@ const {
   ConfirmOptCodeValidationSchema,
 } = require('./validations/confim-otp-code.schema');
 const {
-  ChangePassValidationSchema
+  ChangePassValidationSchema,
 } = require('./validations/change-pass.schema');
-
 
 router.post(
   '/login',
@@ -38,7 +37,7 @@ router.post(
   upload.fields([{ name: 'avatar' }]),
   ValidateMiddleware(RegisterValidationSchema, [ParametersConstant.BODY]),
   ValidateFileTypesMiddleware([
-    { name: 'avatar', fileTypes: [FileTypesConstant.IMAGE] },
+    { name: 'avatar', fileTypes: [FileTypesConstant.IMAGE], isRequired: true },
   ]),
   AuthController.register
 );

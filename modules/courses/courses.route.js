@@ -24,18 +24,67 @@ const {
 const {
   AddCourseValidationSchema,
 } = require('./validations/add-course.schema');
-const validateFileTypesMiddleware = require('../../middleware/validate-file-types.middleware');
+const {
+  GetCourseDetailValidationSchema,
+} = require('./validations/get-course-detail.schema');
+const {
+  DeleteCourseDetailValidationSchema,
+} = require('./validations/delete-course.schema');
+const {
+  UpdateCourseValidationSchema,
+} = require('./validations/update-course.schema');
 
 router.post(
   '/',
   upload.fields([{ name: 'thumbnail' }]),
   ValidateMiddleware(AddCourseValidationSchema, [ParametersConstant.BODY]),
-  validateFileTypesMiddleware([
-    { name: 'thumbnail', fileTypes: [FileTypesConstant.IMAGE] },
+  ValidateFileTypesMiddleware([
+    {
+      name: 'thumbnail',
+      fileTypes: [FileTypesConstant.IMAGE],
+      isRequired: true,
+    },
   ]),
   CheckAccessTokenMiddleware,
   CheckRoleMiddleware([RoleConstant.ROLE.LECTURER]),
   CoursesController.addCourse
+);
+router.get(
+  '/:courseId/',
+  ValidateMiddleware(GetCourseDetailValidationSchema, [
+    ParametersConstant.PARAMS,
+  ]),
+  CheckCourseIdMiddleware({ isLecturer: false }),
+  CoursesController.getCourseDetail
+);
+router.delete(
+  '/:courseId',
+  ValidateMiddleware(DeleteCourseDetailValidationSchema, [
+    ParametersConstant.PARAMS,
+  ]),
+  CheckAccessTokenMiddleware,
+  CheckRoleMiddleware([RoleConstant.ROLE.ADMIN]),
+  CheckCourseIdMiddleware({ isLecturer: false }),
+  CoursesController.deleteCourse
+);
+router.put(
+  '/:courseId/',
+  upload.fields([{ name: 'thumbnail' }]),
+  ValidateMiddleware(UpdateCourseValidationSchema, [
+    ParametersConstant.BODY,
+    ParametersConstant.PARAMS,
+  ]),
+  ValidateFileTypesMiddleware([
+    {
+      name: 'thumbnail',
+      fileTypes: [FileTypesConstant.IMAGE],
+      isRequired: false,
+    },
+  ]),
+  CheckAccessTokenMiddleware,
+  CheckRoleMiddleware([RoleConstant.ROLE.LECTURER]),
+  CheckCourseIdMiddleware({ isLecturer: true }),
+  CoursesController.updateCourse
 );
 router.post(
   '/:courseId/chapters/:chapterId/videos',
@@ -45,12 +94,16 @@ router.post(
     ParametersConstant.PARAMS,
   ]),
   ValidateFileTypesMiddleware([
-    { name: 'video', fileTypes: [FileTypesConstant.VIDEO] },
-    { name: 'thumbnail', fileTypes: [FileTypesConstant.IMAGE] },
+    { name: 'video', fileTypes: [FileTypesConstant.VIDEO], isRequired: true },
+    {
+      name: 'thumbnail',
+      fileTypes: [FileTypesConstant.IMAGE],
+      isRequired: true,
+    },
   ]),
   CheckAccessTokenMiddleware,
   CheckRoleMiddleware([RoleConstant.ROLE.LECTURER]),
-  CheckCourseIdMiddleware,
+  CheckCourseIdMiddleware({ isLecturer: true }),
   CheckChapterIdMiddleware,
   VideosController.addVideo
 );
@@ -61,6 +114,7 @@ router.get(
     ParametersConstant.PARAMS,
   ]),
   CheckChapterIdMiddleware,
+  CheckCourseIdMiddleware({ isLecturer: false }),
   VideosController.getVideosByChapter
 );
 

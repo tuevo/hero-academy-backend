@@ -5,17 +5,23 @@ const logger = log4js.getLogger('Middlewares');
 const LoggerConstant = require('../constants/logger.constant');
 const CoursesServices = require('../modules/courses/courses.service');
 
-module.exports = async (req, res, next) => {
+module.exports = ({ isLecturer }) => async (req, res, next) => {
   logger.info(`${LoggerConstant.MIDDLEWARE.CHECK_COURSE_ID}::is called`);
   try {
-    const { user } = req;
     const { courseId } = req.params;
-    const lecturerId = user.roleInfo._id;
 
-    const course = await CoursesServices.findCoursesHasCondition({
-      lecturerId,
+    let conditions = {
       courseId,
-    });
+    };
+
+    if (isLecturer) {
+      const { user } = req;
+      const lecturerId = user.roleInfo._id;
+
+      conditions['lecturerId'] = lecturerId;
+    }
+
+    const course = await CoursesServices.findCoursesHasCondition(conditions);
 
     if (!course) {
       logger.info(
@@ -26,6 +32,8 @@ module.exports = async (req, res, next) => {
         messages: ['COURSE_NOT_FOUND'],
       });
     }
+
+    req.course = course;
 
     logger.info(`${LoggerConstant.MIDDLEWARE.CHECK_COURSE_ID}::success`);
     return next();

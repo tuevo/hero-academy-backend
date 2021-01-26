@@ -13,6 +13,17 @@ module.exports = (filesInfo) => (req, res, next) => {
 
     filesInfo.forEach((info) => {
       if (
+        (!files && !info.isRequired) ||
+        (Object.keys(files).length == 0 && !info.isRequired)
+      ) {
+        logger.info(
+          `${LoggerConstant.MIDDLEWARE.VALIDATE_FILE_TYPES}::${info.name} is not required`
+        );
+
+        return;
+      }
+
+      if (
         !files ||
         !files[info.name] ||
         !files[info.name][0] ||

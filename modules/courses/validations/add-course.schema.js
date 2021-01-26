@@ -1,7 +1,8 @@
 const Joi = require('@hapi/joi');
+Joi.objectId = require('joi-objectid')(Joi);
 
 const AddCourseValidationSchema = Joi.object().keys({
-  categoryId: Joi.string().required(),
+  categoryId: Joi.objectId().required(),
   title: Joi.string().required(),
   description: Joi.string().required(),
   content: Joi.string().required(),
