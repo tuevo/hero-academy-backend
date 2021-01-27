@@ -9,6 +9,8 @@ const ParametersConstant = require('../../constants/parameters.constant');
 const CoursesController = require('./courses.controller');
 const VideosController = require('../videos/videos.controller');
 const ChaptersController = require('../chapters/chapters.controller');
+const RegistrationsController = require('../registrations/registrations.controller');
+
 const ValidateMiddleware = require('../../middleware/validate.middleware');
 const ValidateFileTypesMiddleware = require('../../middleware/validate-file-types.middleware');
 const CheckAccessTokenMiddleware = require('../../middleware/check-access-token.middleware');
@@ -40,6 +42,9 @@ const {
 const {
   AddChapterValidationSchema,
 } = require('../chapters/validations/add-chapter.schema');
+const {
+  RegisterTheCourseValidationSchema,
+} = require('../registrations/validations/register-the-course.schema');
 
 router.post(
   '/',
@@ -140,6 +145,16 @@ router.post(
   CheckRoleMiddleware([RoleConstant.ROLE.LECTURER]),
   CheckCourseIdMiddleware({ isLecturer: true }),
   ChaptersController.addChapter
+);
+router.post(
+  '/:courseId/registrations/',
+  ValidateMiddleware(RegisterTheCourseValidationSchema, [
+    ParametersConstant.PARAMS,
+  ]),
+  CheckAccessTokenMiddleware,
+  CheckRoleMiddleware([RoleConstant.ROLE.STUDENT]),
+  CheckCourseIdMiddleware({ isLecturer: false }),
+  RegistrationsController.registerTheCourse
 );
 
 module.exports = router;

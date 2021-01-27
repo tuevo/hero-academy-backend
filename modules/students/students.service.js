@@ -41,7 +41,65 @@ const createStudent = async (userId) => {
   }
 };
 
+const updateNumberOfCoursesRegistered = async ({
+  studentId,
+  cumulativeValue,
+}) => {
+  logger.info(
+    `${StudentsConstant.LOGGER.SERVICE}::updateNumberOfCoursesRegistered::is called`
+  );
+  try {
+    const condition = { $inc: { numberOfCoursesRegistered: cumulativeValue } };
+
+    await StudentsModel.updateOne(
+      { _id: mongoose.Types.ObjectId(studentId) },
+      condition
+    );
+
+    logger.info(
+      `${StudentsConstant.LOGGER.SERVICE}::updateNumberOfCoursesRegistered::success`
+    );
+    return;
+  } catch (e) {
+    logger.error(
+      `${StudentsConstant.LOGGER.SERVICE}::updateNumberOfCoursesRegistered::Error`,
+      e
+    );
+    throw new Error(e);
+  }
+};
+
+const updateNumberOfFavoriteCourses = async ({
+  studentId,
+  cumulativeValue,
+}) => {
+  logger.info(
+    `${StudentsConstant.LOGGER.SERVICE}::updateNumberOfFavoriteCourses::is called`
+  );
+  try {
+    const condition = { $inc: { numberOfFavoriteCourses: cumulativeValue } };
+
+    await StudentsModel.updateOne(
+      { _id: mongoose.Types.ObjectId(studentId) },
+      condition
+    );
+
+    logger.info(
+      `${StudentsConstant.LOGGER.SERVICE}::updateNumberOfFavoriteCourses::success`
+    );
+    return;
+  } catch (e) {
+    logger.error(
+      `${StudentsConstant.LOGGER.SERVICE}::updateNumberOfFavoriteCourses::Error`,
+      e
+    );
+    throw new Error(e);
+  }
+};
+
 module.exports = {
   findStudentByUserId,
   createStudent,
+  updateNumberOfCoursesRegistered,
+  updateNumberOfFavoriteCourses,
 };
