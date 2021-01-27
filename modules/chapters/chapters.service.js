@@ -58,7 +58,36 @@ const updateNumberOfVideos = async (chapterId, cumulativeValue) => {
   }
 };
 
+const getChapters = async (courseId) => {
+  logger.info(`${ChaptersConstant.LOGGER.SERVICE}::getChapters::is called`);
+  try {
+    logger.info(`${ChaptersConstant.LOGGER.SERVICE}::getChapters::success`);
+
+    return await ChaptersModel.find({
+      courseId: mongoose.Types.ObjectId(courseId),
+    }).sort({ createdAt: 1 });
+  } catch (e) {
+    logger.error(`${ChaptersConstant.LOGGER.SERVICE}::getChapters::error`, e);
+    throw new Error(e);
+  }
+};
+
+const createChapter = async (chapterInfo) => {
+  logger.info(`${ChaptersConstant.LOGGER.SERVICE}::createChapter::is called`);
+  try {
+    const newChapter = new ChaptersModel(chapterInfo);
+
+    logger.info(`${ChaptersConstant.LOGGER.SERVICE}::createChapter::success`);
+    return newChapter.save();
+  } catch (e) {
+    logger.error(`${ChaptersConstant.LOGGER.SERVICE}::createChapter::error`, e);
+    throw new Error(e);
+  }
+};
+
 module.exports = {
   findChapterHasCondition,
   updateNumberOfVideos,
+  getChapters,
+  createChapter,
 };

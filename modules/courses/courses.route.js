@@ -8,6 +8,7 @@ const FileTypesConstant = require('../../constants/file-types.constant');
 const ParametersConstant = require('../../constants/parameters.constant');
 const CoursesController = require('./courses.controller');
 const VideosController = require('../videos/videos.controller');
+const ChaptersController = require('../chapters/chapters.controller');
 const ValidateMiddleware = require('../../middleware/validate.middleware');
 const ValidateFileTypesMiddleware = require('../../middleware/validate-file-types.middleware');
 const CheckAccessTokenMiddleware = require('../../middleware/check-access-token.middleware');
@@ -33,6 +34,12 @@ const {
 const {
   UpdateCourseValidationSchema,
 } = require('./validations/update-course.schema');
+const {
+  GetChaptersValidationSchema,
+} = require('../chapters/validations/get-chapters.schema');
+const {
+  AddChapterValidationSchema,
+} = require('../chapters/validations/add-chapter.schema');
 
 router.post(
   '/',
@@ -116,6 +123,23 @@ router.get(
   CheckChapterIdMiddleware,
   CheckCourseIdMiddleware({ isLecturer: false }),
   VideosController.getVideosByChapter
+);
+router.get(
+  '/:courseId/chapters/',
+  ValidateMiddleware(GetChaptersValidationSchema, [ParametersConstant.PARAMS]),
+  CheckCourseIdMiddleware({ isLecturer: false }),
+  ChaptersController.getChapters
+);
+router.post(
+  '/:courseId/chapters/',
+  ValidateMiddleware(AddChapterValidationSchema, [
+    ParametersConstant.BODY,
+    ParametersConstant.PARAMS,
+  ]),
+  CheckAccessTokenMiddleware,
+  CheckRoleMiddleware([RoleConstant.ROLE.LECTURER]),
+  CheckCourseIdMiddleware({ isLecturer: true }),
+  ChaptersController.addChapter
 );
 
 module.exports = router;

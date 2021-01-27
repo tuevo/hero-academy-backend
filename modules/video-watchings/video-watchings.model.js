@@ -7,6 +7,7 @@ const videoWatchingSchema = new Schema(
   {
     studentId: { type: ObjectId, default: null },
     videoId: { type: ObjectId, default: null },
+    courseId: { type: ObjectId, default: null },
   },
   { timestamps: true, paranoid: true }
 );
