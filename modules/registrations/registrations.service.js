@@ -1,5 +1,6 @@
 const log4js = require('log4js');
 const logger = log4js.getLogger('Services');
+const mongoose = require('mongoose');
 
 const RegistrationsModel = require('./registrations.model');
 const RegistrationsConstant = require('./registrations.constant');
@@ -32,11 +33,11 @@ const findRegistrationsHasConditions = async ({ studentId, courseId }) => {
     const conditions = {};
 
     if (studentId) {
-      conditions['studentId'] = studentId;
+      conditions['studentId'] = mongoose.Types.ObjectId(studentId);
     }
 
     if (courseId) {
-      conditions['courseId'] = courseId;
+      conditions['courseId'] = mongoose.Types.ObjectId(courseId);
     }
 
     logger.info(

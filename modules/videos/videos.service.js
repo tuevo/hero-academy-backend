@@ -62,7 +62,30 @@ const getVideoByChapterHasPagination = async ({ page, limit, chapterId }) => {
   }
 };
 
+const findVideoByVideosId = async (videosId) => {
+  logger.info(
+    `${VideosConstant.LOGGER.SERVICE}::findVideoByVideosId::is called`
+  );
+  try {
+    const videosIdMapObjectId = videosId.map((video) =>
+      mongoose.Types.ObjectId(video)
+    );
+
+    logger.info(
+      `${VideosConstant.LOGGER.SERVICE}::findVideoByVideosId::success`
+    );
+    return await VideosModel.find({ _id: { $in: videosIdMapObjectId } });
+  } catch (e) {
+    logger.error(
+      `${VideosConstant.LOGGER.SERVICE}::findVideoByVideosId::error`,
+      e
+    );
+    throw new Error(e);
+  }
+};
+
 module.exports = {
   createVideo,
   getVideoByChapterHasPagination,
+  findVideoByVideosId,
 };
