@@ -17,6 +17,7 @@ const userSchema = new Schema(
     isConfirmed: { type: Boolean, default: false },
     refreshToken: { type: String, default: uuid.v4() },
     publicId: { type: String, default: null },
+    isDeleted: { type: Boolean, default: false },
   },
   { timestamps: true, paranoid: true }
 );

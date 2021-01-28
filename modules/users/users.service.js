@@ -16,12 +16,19 @@ const findUserByNameOrEmail = async (nameOrEmail) => {
   );
   try {
     const query = {
-      $or: [
+      $and: [
         {
-          email: nameOrEmail,
+          $or: [
+            {
+              email: nameOrEmail,
+            },
+            {
+              fullName: nameOrEmail,
+            },
+          ],
         },
         {
-          fullName: nameOrEmail,
+          isDeleted: false,
         },
       ],
     };
@@ -158,7 +165,7 @@ const findUserByOtpCode = async (otpCode) => {
   logger.info(`${UserConstant.LOGGER.SERVICE}::findUserByOtpCode::is called`);
   try {
     logger.info(`${UserConstant.LOGGER.SERVICE}::findUserByOtpCode::Success`);
-    return UserModel.findOne({ otpCode });
+    return UserModel.findOne({ otpCode, isDeleted: false });
   } catch (e) {
     logger.error(`${UserConstant.LOGGER.SERVICE}::findUserByOtpCode::Error`, e);
     throw new Error(e);
@@ -169,7 +176,10 @@ const findUserById = async (_id) => {
   logger.info(`${UserConstant.LOGGER.SERVICE}::findUserById::is called`);
   try {
     logger.info(`${UserConstant.LOGGER.SERVICE}::findUserById::Success`);
-    return UserModel.findOne({ _id: mongoose.Types.ObjectId(_id) });
+    return UserModel.findOne({
+      _id: mongoose.Types.ObjectId(_id),
+      isDeleted: false,
+    });
   } catch (e) {
     logger.error(`${UserConstant.LOGGER.SERVICE}::findUserById::Error`, e);
     throw new Error(e);
@@ -202,6 +212,7 @@ const findUsersByRoleHasPagination = async ({ role, page, limit }) => {
     const matchStage = {
       $match: {
         role,
+        isDeleted: false,
       },
     };
 
