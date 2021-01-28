@@ -114,7 +114,53 @@ const getStudentDetail = async (req, res, next) => {
   }
 };
 
+const deleteStudent = async (req, res, next) => {
+  logger.info(
+    `${StudentsConstant.LOGGER.CONTROLLER}::deleteStudent::is called`
+  );
+  try {
+    const { studentId } = req.params;
+    let responseData = null;
+
+    const user = await UsersServices.findUserById(studentId);
+
+    if (!user) {
+      responseData = {
+        status: HttpStatus.NOT_FOUND,
+        messages: [StudentsConstant.MESSAGES.DELETE_STUDENT.STUDENT_NOT_FOUND],
+      };
+
+      logger.info(
+        `${StudentsConstant.LOGGER.CONTROLLER}::deleteStudent::student not found`
+      );
+      return res.status(HttpStatus.NOT_FOUND).json(responseData);
+    }
+
+    user['isDeleted'] = true;
+    await user.save();
+
+    responseData = {
+      status: HttpStatus.OK,
+      messages: [
+        StudentsConstant.MESSAGES.DELETE_STUDENT.DELETE_STUDENT_SUCCESSFULLY,
+      ],
+    };
+
+    logger.info(
+      `${StudentsConstant.LOGGER.CONTROLLER}::deleteStudent::success`
+    );
+    return res.status(HttpStatus.OK).json(responseData);
+  } catch (e) {
+    logger.error(
+      `${StudentsConstant.LOGGER.CONTROLLER}::deleteStudent::error`,
+      e
+    );
+    return next(e);
+  }
+};
+
 module.exports = {
   getStudentsList,
   getStudentDetail,
+  deleteStudent,
 };
