@@ -116,7 +116,59 @@ const getLecturerDetail = async (req, res, next) => {
   }
 };
 
+const deleteLecturer = async (req, res, next) => {
+  logger.info(
+    `${LecturersConstant.LOGGER.CONTROLLER}::deleteLecturer::is called`
+  );
+  try {
+    const { lecturerId } = req.params;
+    let responseData = null;
+
+    const user = await UsersServices.findUserById(lecturerId);
+    const role = await LecturersServices.findLecturerByUserId(lecturerId);
+
+    if (!user || !role) {
+      responseData = {
+        status: HttpStatus.NOT_FOUND,
+        messages: [
+          LecturersConstant.MESSAGES.DELETE_LECTURER.LECTURER_NOT_FOUND,
+        ],
+      };
+
+      logger.info(
+        `${LecturersConstant.LOGGER.CONTROLLER}::deleteLecturer::student not found`
+      );
+      return res.status(HttpStatus.NOT_FOUND).json(responseData);
+    }
+
+    user['isDeleted'] = true;
+    role['isDeleted'] = true;
+    await user.save();
+    await role.save();
+
+    responseData = {
+      status: HttpStatus.OK,
+      messages: [
+        LecturersConstant.MESSAGES.DELETE_LECTURER
+          .DELETED_LECTURER_SUCCESSFULLY,
+      ],
+    };
+
+    logger.info(
+      `${LecturersConstant.LOGGER.CONTROLLER}::deleteLecturer::success`
+    );
+    return res.status(HttpStatus.OK).json(responseData);
+  } catch (e) {
+    logger.error(
+      `${LecturersConstant.LOGGER.CONTROLLER}::deleteLecturer::error`,
+      e
+    );
+    return next(e);
+  }
+};
+
 module.exports = {
   getLecturersList,
   getLecturerDetail,
+  deleteLecturer,
 };

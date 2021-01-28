@@ -37,5 +37,14 @@ router.get(
   CheckRoleMiddleware([RoleConstant.ROLE.ADMIN]),
   LecturersControllers.getLecturerDetail
 );
+router.delete(
+  '/:lecturerId/',
+  ValidateMiddleware(DeleteLecturerValidationSchema, [
+    ParametersConstant.PARAMS,
+  ]),
+  CheckAccessTokenMiddleware,
+  CheckRoleMiddleware([RoleConstant.ROLE.ADMIN]),
+  LecturersControllers.deleteLecturer
+);
 
 module.exports = router;
