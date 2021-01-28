@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 
 const LecturersModel = require('./lecturers.model');
 const LecturersConstant = require('./lecturers.constant');
+const Services = require('../../services/services');
 
 const findLecturerByUserId = async (userId) => {
   logger.info(
@@ -45,7 +46,53 @@ const createLecturer = async (userId) => {
   }
 };
 
+const getLecturersByUsersId = async (usersId) => {
+  logger.info(
+    `${LecturersConstant.LOGGER.SERVICE}::getLecturersByUsersId::is called`
+  );
+  try {
+    logger.info(
+      `${LecturersConstant.LOGGER.SERVICE}::getLecturersByUsersId::success`
+    );
+    return await LecturersModel.find({ userId: { $in: usersId } });
+  } catch (e) {
+    logger.error(
+      `${LecturersConstant.LOGGER.SERVICE}::getLecturersByUsersId::Error`,
+      e
+    );
+    throw new Error(e);
+  }
+};
+
+const mapLecturersIntoUsers = ({ users, lecturers }) => {
+  logger.info(
+    `${LecturersConstant.LOGGER.SERVICE}::mapLecturersIntoUsers::is called`
+  );
+  try {
+    const result = users.map((user) => {
+      const usersJsonParse = Services.deleteFieldsUser(user);
+      const lecturer = lecturers.find(
+        (lecturer) => user._id.toString() === lecturer.userId.toString()
+      );
+      return { ...usersJsonParse, roleInfo: lecturer };
+    });
+
+    logger.info(
+      `${LecturersConstant.LOGGER.SERVICE}::mapLecturersIntoUsers::success`
+    );
+    return result;
+  } catch (e) {
+    logger.error(
+      `${LecturersConstant.LOGGER.SERVICE}::mapLecturersIntoUsers::Error`,
+      e
+    );
+    throw new Error(e);
+  }
+};
+
 module.exports = {
   findLecturerByUserId,
   createLecturer,
+  getLecturersByUsersId,
+  mapLecturersIntoUsers,
 };
