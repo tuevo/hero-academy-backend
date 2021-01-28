@@ -16,7 +16,7 @@ const {
   GetStudentDetailValidationSchema,
 } = require('./validations/get-student-detail.schema');
 const {
-  DeleteStudentDetailValidationSchema,
+  DeleteStudentValidationSchema,
 } = require('./validations/delete-student.schema');
 
 router.get(
@@ -39,7 +39,7 @@ router.get(
 );
 router.delete(
   '/:studentId/',
-  ValidateMiddleware(DeleteStudentDetailValidationSchema, [
+  ValidateMiddleware(DeleteStudentValidationSchema, [
     ParametersConstant.PARAMS,
   ]),
   CheckAccessTokenMiddleware,

@@ -62,6 +62,61 @@ const getLecturersList = async (req, res, next) => {
   }
 };
 
+const getLecturerDetail = async (req, res, next) => {
+  logger.info(
+    `${LecturersConstant.LOGGER.CONTROLLER}::getLecturerDetail::is called`
+  );
+  try {
+    const { lecturerId } = req.params;
+    let responseData = null;
+
+    const user = await UsersServices.findUserById(lecturerId);
+    const role = await LecturersServices.findLecturerByUserId(lecturerId);
+
+    console.log(role);
+
+    if (!user || !role) {
+      responseData = {
+        status: HttpStatus.NOT_FOUND,
+        messages: [
+          LecturersConstant.MESSAGES.GET_LECTURER_DETAIL.LECTURER_NOT_FOUND,
+        ],
+      };
+
+      logger.info(
+        `${LecturersConstant.LOGGER.CONTROLLER}::getLecturerDetail::lecturer not found`
+      );
+      return res.status(HttpStatus.NOT_FOUND).json(responseData);
+    }
+
+    responseData = {
+      status: HttpStatus.OK,
+      messages: [
+        LecturersConstant.MESSAGES.GET_LECTURER_DETAIL
+          .GET_LECTURER_DETAIL_SUCCESSFULLY,
+      ],
+      data: {
+        student: {
+          ...Services.deleteFieldsUser(user),
+          roleInfo: role,
+        },
+      },
+    };
+
+    logger.info(
+      `${LecturersConstant.LOGGER.CONTROLLER}::getLecturerDetail::success`
+    );
+    return res.status(HttpStatus.OK).json(responseData);
+  } catch (e) {
+    logger.error(
+      `${LecturersConstant.LOGGER.CONTROLLER}::getLecturerDetail::error`,
+      e
+    );
+    return next(e);
+  }
+};
+
 module.exports = {
   getLecturersList,
+  getLecturerDetail,
 };

@@ -142,7 +142,7 @@ const deleteStudent = async (req, res, next) => {
     responseData = {
       status: HttpStatus.OK,
       messages: [
-        StudentsConstant.MESSAGES.DELETE_STUDENT.DELETE_STUDENT_SUCCESSFULLY,
+        StudentsConstant.MESSAGES.DELETE_STUDENT.DELETED_STUDENT_SUCCESSFULLY,
       ],
     };
 

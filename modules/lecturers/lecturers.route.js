@@ -12,6 +12,12 @@ const CheckRoleMiddleware = require('../../middleware/check-role.middleware');
 const {
   GetLecturersListValidationSchema,
 } = require('./validations/get-lecturers-list.schema');
+const {
+  GetLecturerDetailValidationSchema,
+} = require('./validations/get-lecturer-detail.schema');
+const {
+  DeleteLecturerValidationSchema,
+} = require('./validations/delete-lecturer.schema');
 
 router.get(
   '/',
@@ -21,6 +27,15 @@ router.get(
   CheckAccessTokenMiddleware,
   CheckRoleMiddleware([RoleConstant.ROLE.ADMIN]),
   LecturersControllers.getLecturersList
+);
+router.get(
+  '/:lecturerId/',
+  ValidateMiddleware(GetLecturerDetailValidationSchema, [
+    ParametersConstant.PARAMS,
+  ]),
+  CheckAccessTokenMiddleware,
+  CheckRoleMiddleware([RoleConstant.ROLE.ADMIN]),
+  LecturersControllers.getLecturerDetail
 );
 
 module.exports = router;
