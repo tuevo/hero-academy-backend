@@ -7,6 +7,7 @@ const StudentsServices = require('./students.service');
 const UsersConstant = require('../users/users.constant');
 const UsersServices = require('../users/users.service');
 const PaginationConstant = require('../../constants/pagination.constant');
+const Services = require('../../services/services');
 
 const getStudentsList = async (req, res, next) => {
   logger.info(
@@ -61,6 +62,59 @@ const getStudentsList = async (req, res, next) => {
   }
 };
 
+const getStudentDetail = async (req, res, next) => {
+  logger.info(
+    `${StudentsConstant.LOGGER.CONTROLLER}::getStudentDetail::is called`
+  );
+  try {
+    const { studentId } = req.params;
+    let responseData = null;
+
+    const user = await UsersServices.findUserById(studentId);
+    const role = await StudentsServices.findStudentByUserId(studentId);
+
+    if (!user || !role) {
+      responseData = {
+        status: HttpStatus.NOT_FOUND,
+        messages: [
+          StudentsConstant.MESSAGES.GET_STUDENT_DETAIL.STUDENT_NOT_FOUND,
+        ],
+      };
+
+      logger.info(
+        `${StudentsConstant.LOGGER.CONTROLLER}::getStudentDetail::student not found`
+      );
+      return res.status(HttpStatus.NOT_FOUND).json(responseData);
+    }
+
+    responseData = {
+      status: HttpStatus.OK,
+      messages: [
+        StudentsConstant.MESSAGES.GET_STUDENT_DETAIL
+          .GET_STUDENT_DETAIL_SUCCESSFULLY,
+      ],
+      data: {
+        student: {
+          ...Services.deleteFieldsUser(user),
+          roleInfo: role,
+        },
+      },
+    };
+
+    logger.info(
+      `${StudentsConstant.LOGGER.CONTROLLER}::getStudentDetail::success`
+    );
+    return res.status(HttpStatus.OK).json(responseData);
+  } catch (e) {
+    logger.error(
+      `${StudentsConstant.LOGGER.CONTROLLER}::getStudentDetail::error`,
+      e
+    );
+    return next(e);
+  }
+};
+
 module.exports = {
   getStudentsList,
+  getStudentDetail,
 };

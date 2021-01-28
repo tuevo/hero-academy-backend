@@ -12,6 +12,9 @@ const CheckRoleMiddleware = require('../../middleware/check-role.middleware');
 const {
   GetStudentsListValidationSchema,
 } = require('./validations/get-students-list.schema');
+const {
+  GetStudentDetailValidationSchema,
+} = require('./validations/get-student-detail.schema');
 
 router.get(
   '/',
@@ -21,6 +24,15 @@ router.get(
   CheckAccessTokenMiddleware,
   CheckRoleMiddleware([RoleConstant.ROLE.ADMIN]),
   StudentsControllers.getStudentsList
+);
+router.get(
+  '/:studentId/',
+  ValidateMiddleware(GetStudentDetailValidationSchema, [
+    ParametersConstant.PARAMS,
+  ]),
+  CheckAccessTokenMiddleware,
+  CheckRoleMiddleware([RoleConstant.ROLE.ADMIN]),
+  StudentsControllers.getStudentDetail
 );
 
 module.exports = router;
