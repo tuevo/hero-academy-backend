@@ -42,6 +42,7 @@ const addVideo = async (req, res, next) => {
 
     const newVideo = await VideosServices.createVideo(newVideoInfo);
     await ChaptersServices.updateNumberOfVideos(chapterId, 1);
+
     responseData = {
       status: HttpStatus.CREATED,
       messages: [VideosConstant.MESSAGES.ADD_VIDEO.VIDEO_ADDED_SUCCESSFULLY],

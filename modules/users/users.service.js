@@ -194,6 +194,51 @@ const updatePass = async ({ user, password }) => {
   }
 };
 
+const findUsersByRoleHasPagination = async ({ role, page, limit }) => {
+  logger.info(
+    `${UserConstant.LOGGER.SERVICE}::findUsersByRoleHasPagination::is called`
+  );
+  try {
+    const matchStage = {
+      $match: {
+        role,
+      },
+    };
+
+    const sortStage = {
+      $sort: {
+        createdAt: -1,
+      },
+    };
+
+    const facetStage = {
+      $facet: {
+        entries: [{ $skip: (page - 1) * limit }, { $limit: limit }],
+        meta: [{ $group: { _id: null, totalItems: { $sum: 1 } } }],
+      },
+    };
+
+    const query = [matchStage, sortStage, facetStage];
+
+    logger.info(
+      `${UserConstant.LOGGER.SERVICE}::findUsersByRoleHasPagination::query`,
+      JSON.stringify(query)
+    );
+    const result = await UserModel.aggregate(query);
+
+    logger.info(
+      `${UserConstant.LOGGER.SERVICE}::findUsersByRoleHasPagination::success`
+    );
+    return result;
+  } catch (e) {
+    logger.error(
+      `${UserConstant.LOGGER.SERVICE}::findUsersByRoleHasPagination::Error`,
+      e
+    );
+    throw new Error(e);
+  }
+};
+
 module.exports = {
   findUserByNameOrEmail,
   mapUserInfo,
@@ -202,4 +247,5 @@ module.exports = {
   findUserByOtpCode,
   findUserById,
   updatePass,
+  findUsersByRoleHasPagination,
 };

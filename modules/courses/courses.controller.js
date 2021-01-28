@@ -7,6 +7,7 @@ const CoursesServices = require('./courses.service');
 const CategoriesServices = require('../categories/categories.service');
 const Cloudinary = require('../../utils/cloudinary');
 const FileTypesCloudinaryConstant = require('../../constants/file-types-cloudinary.constant');
+const AdminServices = require('../admins/admins.service');
 
 const addCourse = async (req, res, next) => {
   logger.info(`${CoursesConstant.LOGGER.CONTROLLER}::addCourse::is called`);
@@ -67,6 +68,7 @@ const addCourse = async (req, res, next) => {
     };
 
     const course = await CoursesServices.createCourse(newCourse);
+    await AdminServices.updateNumberOfCourses(1);
 
     responseData = {
       status: HttpStatus.CREATED,

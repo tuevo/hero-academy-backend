@@ -2,8 +2,9 @@ const log4js = require('log4js');
 const logger = log4js.getLogger('Services');
 const mongoose = require('mongoose');
 
-const StudentsModel = require('./students.model');
 const StudentsConstant = require('./students.constant');
+const StudentsModel = require('./students.model');
+const Services = require('../../services/services');
 
 const findStudentByUserId = async (userId) => {
   logger.info(
@@ -97,9 +98,55 @@ const updateNumberOfFavoriteCourses = async ({
   }
 };
 
+const getStudentsByUsersId = async (usersId) => {
+  logger.info(
+    `${StudentsConstant.LOGGER.SERVICE}::getStudentsByUsersId::is called`
+  );
+  try {
+    logger.info(
+      `${StudentsConstant.LOGGER.SERVICE}::getStudentsByUsersId::success`
+    );
+    return await StudentsModel.find({ userId: { $in: usersId } });
+  } catch (e) {
+    logger.error(
+      `${StudentsConstant.LOGGER.SERVICE}::getStudentsByUsersId::Error`,
+      e
+    );
+    throw new Error(e);
+  }
+};
+
+const mapStudentsIntoUsers = ({ users, students }) => {
+  logger.info(
+    `${StudentsConstant.LOGGER.SERVICE}::mapStudentsIntoUsers::is called`
+  );
+  try {
+    const result = users.map((user) => {
+      const usersJsonParse = Services.deleteFieldsUser(user);
+      const student = students.find(
+        (student) => user._id.toString() === student.userId.toString()
+      );
+      return { ...usersJsonParse, roleInfo: student };
+    });
+
+    logger.info(
+      `${StudentsConstant.LOGGER.SERVICE}::mapStudentsIntoUsers::success`
+    );
+    return result;
+  } catch (e) {
+    logger.error(
+      `${StudentsConstant.LOGGER.SERVICE}::mapStudentsIntoUsers::Error`,
+      e
+    );
+    throw new Error(e);
+  }
+};
+
 module.exports = {
   findStudentByUserId,
   createStudent,
   updateNumberOfCoursesRegistered,
   updateNumberOfFavoriteCourses,
+  getStudentsByUsersId,
+  mapStudentsIntoUsers,
 };
