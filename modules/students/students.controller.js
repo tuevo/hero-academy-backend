@@ -8,6 +8,7 @@ const UsersConstant = require('../users/users.constant');
 const UsersServices = require('../users/users.service');
 const PaginationConstant = require('../../constants/pagination.constant');
 const Services = require('../../services/services');
+const AdminsService = require('../admins/admins.service');
 
 const getStudentsList = async (req, res, next) => {
   logger.info(
@@ -25,9 +26,15 @@ const getStudentsList = async (req, res, next) => {
     });
 
     let { entries } = users[0];
-    let { meta } = users[0];
+    let meta = [
+      {
+        _id: null,
+        totalItems: 0,
+      },
+    ];
 
     if (entries.length > 0) {
+      meta = users[0].meta;
       const usersId = entries.map((user) => user._id);
       const students = await StudentsServices.getStudentsByUsersId(usersId);
 
@@ -138,6 +145,7 @@ const deleteStudent = async (req, res, next) => {
 
     user['isDeleted'] = true;
     await user.save();
+    await AdminsService.updateNumberOfStudents(-1);
 
     responseData = {
       status: HttpStatus.OK,

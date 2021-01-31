@@ -90,9 +90,35 @@ const mapLecturersIntoUsers = ({ users, lecturers }) => {
   }
 };
 
+const updateNumberOfCoursesPosted = async ({ lecturerId, cumulativeValue }) => {
+  logger.info(
+    `${LecturersConstant.LOGGER.SERVICE}::updateNumberOfCoursesPosted::is called`
+  );
+  try {
+    const condition = { $inc: { numberOfCoursesPosted: cumulativeValue } };
+
+    await LecturersModel.updateOne(
+      { _id: mongoose.Types.ObjectId(lecturerId) },
+      condition
+    );
+
+    logger.info(
+      `${LecturersConstant.LOGGER.SERVICE}::updateNumberOfCoursesPosted::success`
+    );
+    return;
+  } catch (e) {
+    logger.error(
+      `${LecturersConstant.LOGGER.SERVICE}::updateNumberOfCoursesPosted::Error`,
+      e
+    );
+    throw new Error(e);
+  }
+};
+
 module.exports = {
   findLecturerByUserId,
   createLecturer,
   getLecturersByUsersId,
   mapLecturersIntoUsers,
+  updateNumberOfCoursesPosted,
 };

@@ -141,8 +141,25 @@ const updateCourse = async ({ course, updateInfo }) => {
   }
 };
 
+const findCoursesByIds = (coursesId) => {
+  logger.info(`${CoursesConstant.LOGGER.SERVICE}::findCoursesByIds::is called`);
+  try {
+    const courses = CoursesModel.find({ _id: { $in: coursesId } });
+
+    logger.info(`${CoursesConstant.LOGGER.SERVICE}::findCoursesByIds::success`);
+    return courses;
+  } catch (e) {
+    logger.error(
+      `${CoursesConstant.LOGGER.SERVICE}::findCoursesByIds::error`,
+      e
+    );
+    throw new Error(e);
+  }
+};
+
 module.exports = {
   findCoursesHasCondition,
   createCourse,
   updateCourse,
+  findCoursesByIds,
 };

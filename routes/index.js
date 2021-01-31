@@ -6,6 +6,7 @@ router.use('/auth', require('../modules/auth/auth.route'));
 router.use('/courses', require('../modules/courses/courses.route'));
 router.use('/categories', require('../modules/categories/categories.route'));
 router.use('/students', require('../modules/students/students.route')),
+  router.use('/favorites', require('../modules/favorites/favorites.route')),
   router.use('/lecturers', require('../modules/lecturers/lecturers.route')),
   router.use(
     '/category-clusters',

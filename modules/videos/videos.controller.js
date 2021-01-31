@@ -76,7 +76,15 @@ const getVideosByChapter = async (req, res, next) => {
     });
 
     let { entries } = videoData[0];
-    let { meta } = videoData[0];
+    let meta =
+      entries.length > 0
+        ? videoData[0].meta
+        : [
+            {
+              _id: null,
+              totalItems: 0,
+            },
+          ];
 
     responseData = {
       status: HttpStatus.OK,

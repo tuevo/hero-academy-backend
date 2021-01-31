@@ -8,6 +8,7 @@ const CategoriesServices = require('../categories/categories.service');
 const Cloudinary = require('../../utils/cloudinary');
 const FileTypesCloudinaryConstant = require('../../constants/file-types-cloudinary.constant');
 const AdminServices = require('../admins/admins.service');
+const LecturersServices = require('../lecturers/lecturers.service');
 
 const addCourse = async (req, res, next) => {
   logger.info(`${CoursesConstant.LOGGER.CONTROLLER}::addCourse::is called`);
@@ -69,6 +70,10 @@ const addCourse = async (req, res, next) => {
 
     const course = await CoursesServices.createCourse(newCourse);
     await AdminServices.updateNumberOfCourses(1);
+    await LecturersServices.updateNumberOfCoursesPosted({
+      lecturerId: course['lecturerId'],
+      cumulativeValue: 1,
+    });
 
     responseData = {
       status: HttpStatus.CREATED,
@@ -195,6 +200,11 @@ const deleteCourse = async (req, res, next) => {
 
     course['isDeleted'] = true;
     await course.save();
+    await AdminServices.updateNumberOfCourses(-1);
+    await LecturersServices.updateNumberOfCoursesPosted({
+      lecturerId: course['lecturerId'],
+      cumulativeValue: -1,
+    });
 
     responseData = {
       status: HttpStatus.OK,

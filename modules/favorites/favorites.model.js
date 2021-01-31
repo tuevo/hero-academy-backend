@@ -7,6 +7,7 @@ const favoriteSchema = new Schema(
   {
     studentId: { type: ObjectId, default: null },
     courseId: { type: ObjectId, default: null },
+    isDeleted: { type: Boolean, default: false },
   },
   { timestamps: true, paranoid: true }
 );

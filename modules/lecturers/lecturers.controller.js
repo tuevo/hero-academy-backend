@@ -10,6 +10,7 @@ const UsersServices = require('../users/users.service');
 const PaginationConstant = require('../../constants/pagination.constant');
 const Services = require('../../services/services');
 const SendGrid = require('../../utils/send-grid');
+const AdminsServices = require('../admins/admins.service');
 
 const getLecturersList = async (req, res, next) => {
   logger.info(
@@ -27,9 +28,15 @@ const getLecturersList = async (req, res, next) => {
     });
 
     let { entries } = users[0];
-    let { meta } = users[0];
+    let meta = [
+      {
+        _id: null,
+        totalItems: 0,
+      },
+    ];
 
     if (entries.length > 0) {
+      meta = users[0].meta;
       const usersId = entries.map((user) => user._id);
       const lecturers = await LecturersServices.getLecturersByUsersId(usersId);
 
@@ -74,8 +81,6 @@ const getLecturerDetail = async (req, res, next) => {
 
     const user = await UsersServices.findUserById(lecturerId);
     const role = await LecturersServices.findLecturerByUserId(lecturerId);
-
-    console.log(role);
 
     if (!user || !role) {
       responseData = {
@@ -147,6 +152,7 @@ const deleteLecturer = async (req, res, next) => {
     role['isDeleted'] = true;
     await user.save();
     await role.save();
+    await AdminsServices.updateNumberOfLecturers(-1);
 
     responseData = {
       status: HttpStatus.OK,
@@ -199,6 +205,7 @@ const createdLecturer = async (req, res, next) => {
     });
     user = await UsersServices.createUserHasLecturerRole({ email, password });
     await SendGrid.sendAuthorizationMail({ email, password });
+    await AdminsServices.updateNumberOfLecturers(1);
 
     responseData = {
       status: HttpStatus.CREATED,

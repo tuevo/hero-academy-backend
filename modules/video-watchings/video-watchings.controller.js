@@ -37,9 +37,15 @@ const getVideoWatchings = async (req, res, next) => {
     );
 
     let { entries } = videoWatchings[0];
-    let { meta } = videoWatchings[0];
+    let meta = [
+      {
+        _id: null,
+        totalItems: 0,
+      },
+    ];
 
     if (entries.length > 0) {
+      meta = videoWatchings[0].meta;
       const videosId = entries.map((info) => info.videoId);
       const videos = await VideosServices.findVideoByVideosId(videosId);
 
