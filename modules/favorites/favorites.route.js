@@ -15,6 +15,9 @@ const {
 const {
   CreateFavoritesCourseValidationSchema,
 } = require('./validations/create-favorites-course.schema');
+const {
+  RemoveTheCourseFromFavotitesValidationSchema,
+} = require('./validations/remove-the-course-from-favorites.schema');
 
 router.get(
   '/',
@@ -34,4 +37,14 @@ router.post(
   CheckRoleMiddleware([RoleConstant.ROLE.STUDENT]),
   FavoritesControllers.createFavoriteCourse
 );
+router.delete(
+  '/',
+  ValidateMiddleware(RemoveTheCourseFromFavotitesValidationSchema, [
+    ParametersConstant.BODY,
+  ]),
+  CheckAccessTokenMiddleware,
+  CheckRoleMiddleware([RoleConstant.ROLE.STUDENT]),
+  FavoritesControllers.removeTheCourseFromFavorites
+);
+
 module.exports = router;

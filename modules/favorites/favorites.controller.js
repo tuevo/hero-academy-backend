@@ -100,6 +100,25 @@ const createFavoriteCourse = async (req, res, next) => {
       return res.status(HttpStatus.NOT_FOUND).json(responseData);
     }
 
+    const course = await CoursesServices.findCoursesHasCondition({
+      lecturerId: null,
+      courseId,
+    });
+
+    if (!course) {
+      responseData = {
+        status: HttpStatus.NOT_FOUND,
+        messages: [
+          FavoritesConstant.MESSAGES.CREATE_FAVORITE_COURSE.COURSE_NOT_FOUND,
+        ],
+      };
+
+      logger.info(
+        `${FavoritesConstant.LOGGER.CONTROLLER}::getFavoritesList::course not found`
+      );
+      return res.status(HttpStatus.NOT_FOUND).json(responseData);
+    }
+
     let favorite = await FavoritesServices.findFavoriteHasConditions({
       studentId: roleInfo._id,
       courseId,
@@ -147,7 +166,82 @@ const createFavoriteCourse = async (req, res, next) => {
   }
 };
 
+const removeTheCourseFromFavorites = async (req, res, next) => {
+  logger.info(
+    `${FavoritesConstant.LOGGER.CONTROLLER}::removeTheCourseFromFavorites::is called`
+  );
+  try {
+    const { courseId } = req.body;
+    const roleInfo = req.user.roleInfo || null;
+    let responseData = null;
+
+    if (!roleInfo || !roleInfo._id) {
+      responseData = {
+        status: HttpStatus.NOT_FOUND,
+        messages: [
+          FavoritesConstant.MESSAGES.REMOVE_THE_COURSE_FROM_FAVORITES
+            .STUDENT_NOT_FOUND,
+        ],
+      };
+
+      logger.info(
+        `${FavoritesConstant.LOGGER.CONTROLLER}::removeTheCourseFromFavorites::student not found`
+      );
+      return res.status(HttpStatus.NOT_FOUND).json(responseData);
+    }
+
+    let favorite = await FavoritesServices.findFavoriteHasConditions({
+      studentId: roleInfo._id,
+      courseId,
+    });
+
+    if (!favorite) {
+      responseData = {
+        status: HttpStatus.NOT_FOUND,
+        messages: [
+          FavoritesConstant.MESSAGES.REMOVE_THE_COURSE_FROM_FAVORITES
+            .THE_COURSE_IS_NOT_EXISTS_IN_FAVORITES_LIST,
+        ],
+      };
+
+      logger.info(
+        `${FavoritesConstant.LOGGER.CONTROLLER}::removeTheCourseFromFavorites::the course is not exists in favorites list.`
+      );
+      return res.status(HttpStatus.NOT_FOUND).json(responseData);
+    }
+
+    if (!favorite['isDeleted']) {
+      favorite['isDeleted'] = true;
+      await favorite.save();
+      await StudentServices.updateNumberOfFavoriteCourses({
+        studentId: roleInfo._id,
+        cumulativeValue: -1,
+      });
+    }
+
+    responseData = {
+      status: HttpStatus.OK,
+      messages: [
+        FavoritesConstant.MESSAGES.REMOVE_THE_COURSE_FROM_FAVORITES
+          .REMOVE_THE_COURSE_FROM_FAVORITES_SUCCESSFULLY,
+      ],
+    };
+
+    logger.info(
+      `${FavoritesConstant.LOGGER.CONTROLLER}::removeTheCourseFromFavorites::success`
+    );
+    return res.status(HttpStatus.OK).json(responseData);
+  } catch (e) {
+    logger.error(
+      `${FavoritesConstant.LOGGER.CONTROLLER}::removeTheCourseFromFavorites::error`,
+      e
+    );
+    return next(e);
+  }
+};
+
 module.exports = {
   getFavoritesList,
   createFavoriteCourse,
+  removeTheCourseFromFavorites,
 };
