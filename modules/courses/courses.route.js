@@ -11,6 +11,7 @@ const VideosController = require('../videos/videos.controller');
 const ChaptersController = require('../chapters/chapters.controller');
 const RegistrationsController = require('../registrations/registrations.controller');
 const VideoWatchingsController = require('../video-watchings/video-watchings.controller');
+const LecturersController = require('../lecturers/lecturers.controller');
 
 const ValidateMiddleware = require('../../middleware/validate.middleware');
 const ValidateFileTypesMiddleware = require('../../middleware/validate-file-types.middleware');
@@ -170,6 +171,11 @@ router.get(
   CheckRoleMiddleware([RoleConstant.ROLE.STUDENT]),
   CheckCourseIdMiddleware({ isLecturer: false }),
   VideoWatchingsController.getVideoWatchings
+);
+router.get(
+  '/:courseId/lecturers',
+  CheckCourseIdMiddleware({ isLecturer: false }),
+  LecturersController.getLecturerInfoForCoursePage
 );
 
 module.exports = router;

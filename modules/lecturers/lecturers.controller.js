@@ -228,9 +228,81 @@ const createdLecturer = async (req, res, next) => {
   }
 };
 
+const getLecturerInfoForCoursePage = async (req, res, next) => {
+  logger.info(
+    `${LecturersConstant.LOGGER.CONTROLLER}::getLecturerInfoForCoursePage::is called`
+  );
+  try {
+    const { course } = req;
+    let responseData = null;
+
+    const lecturer = await LecturersServices.findLecturerById(
+      course.lecturerId
+    );
+
+    if (!lecturer) {
+      responseData = {
+        status: HttpStatus.NOT_FOUND,
+        messages: [
+          LecturersConstant.MESSAGES.GET_LECTURER_INFO_FOR_COURSE_PAGE
+            .LECTURER_NOT_FOUND,
+        ],
+      };
+
+      logger.info(
+        `${LecturersConstant.LOGGER.CONTROLLER}::getLecturerInfoForCoursePage::lecturer not found`
+      );
+      return res.status(HttpStatus.NOT_FOUND).json(responseData);
+    }
+
+    const user = await UsersServices.findUserById(lecturer.userId);
+
+    if (!user) {
+      responseData = {
+        status: HttpStatus.NOT_FOUND,
+        messages: [
+          LecturersConstant.MESSAGES.GET_LECTURER_INFO_FOR_COURSE_PAGE
+            .LECTURER_NOT_FOUND,
+        ],
+      };
+
+      logger.info(
+        `${LecturersConstant.LOGGER.CONTROLLER}::getLecturerInfoForCoursePage::user not found`
+      );
+      return res.status(HttpStatus.NOT_FOUND).json(responseData);
+    }
+
+    responseData = {
+      status: HttpStatus.OK,
+      messages: [
+        LecturersConstant.MESSAGES.GET_LECTURER_INFO_FOR_COURSE_PAGE
+          .GET_LECTURER_INFO_FOR_COURSE_PAGE_SUCCESSFULLY,
+      ],
+      data: {
+        lecturer: {
+          ...Services.deleteFieldsUser(user),
+          roleInfo: lecturer,
+        },
+      },
+    };
+
+    logger.info(
+      `${LecturersConstant.LOGGER.CONTROLLER}::getLecturerInfoForCoursePage::success`
+    );
+    return res.status(HttpStatus.OK).json(responseData);
+  } catch (e) {
+    logger.error(
+      `${LecturersConstant.LOGGER.CONTROLLER}::getLecturerInfoForCoursePage::error`,
+      e
+    );
+    return next(e);
+  }
+};
+
 module.exports = {
   getLecturersList,
   getLecturerDetail,
   deleteLecturer,
   createdLecturer,
+  getLecturerInfoForCoursePage,
 };
