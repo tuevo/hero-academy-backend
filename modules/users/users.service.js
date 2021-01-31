@@ -2,6 +2,7 @@ const log4js = require('log4js');
 const logger = log4js.getLogger('Services');
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
+const randomString = require('randomstring');
 
 const UserModel = require('./users.model');
 const UserConstant = require('./users.constant');
@@ -105,7 +106,7 @@ const createUser = async ({ avatar, password, fullName, email, otpCode }) => {
   logger.info(`${UserConstant.LOGGER.SERVICE}::createUser::is called`);
   try {
     const salt = bcrypt.genSaltSync(AuthConstant.SALT_LENGTH);
-    console.log(avatar);
+
     const newUser = new UserModel({
       avatarUrl: avatar || null,
       fullName: fullName || null,
@@ -250,6 +251,42 @@ const findUsersByRoleHasPagination = async ({ role, page, limit }) => {
   }
 };
 
+const createUserHasLecturerRole = async ({ email, password }) => {
+  logger.info(
+    `${UserConstant.LOGGER.SERVICE}::createUserHasLecturerRole::is called`
+  );
+  try {
+    const salt = bcrypt.genSaltSync(AuthConstant.SALT_LENGTH);
+    const fullName = randomString.generate({
+      length: 5,
+      charset: 'alphabetic',
+    });
+
+    const newUser = new UserModel({
+      fullName: fullName,
+      email,
+      passwordSalt: salt,
+      passwordHash: bcrypt.hashSync(password, salt),
+      isConfirmed: true,
+      role: UserConstant.ROLE.LECTURER,
+    });
+
+    await newUser.save();
+    await createRole(newUser);
+
+    logger.info(
+      `${UserConstant.LOGGER.SERVICE}::createUserHasLecturerRole::Success`
+    );
+    return newUser;
+  } catch (e) {
+    logger.error(
+      `${UserConstant.LOGGER.SERVICE}::createUserHasLecturerRole::Error`,
+      e
+    );
+    throw new Error(e);
+  }
+};
+
 module.exports = {
   findUserByNameOrEmail,
   mapUserInfo,
@@ -259,4 +296,5 @@ module.exports = {
   findUserById,
   updatePass,
   findUsersByRoleHasPagination,
+  createUserHasLecturerRole,
 };

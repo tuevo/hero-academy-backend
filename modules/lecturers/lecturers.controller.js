@@ -1,6 +1,7 @@
 const log4js = require('log4js');
 const logger = log4js.getLogger('Controllers');
 const HttpStatus = require('http-status-codes');
+const randomString = require('randomstring');
 
 const LecturersConstant = require('./lecturers.constant');
 const LecturersServices = require('./lecturers.service');
@@ -8,6 +9,7 @@ const UsersConstant = require('../users/users.constant');
 const UsersServices = require('../users/users.service');
 const PaginationConstant = require('../../constants/pagination.constant');
 const Services = require('../../services/services');
+const SendGrid = require('../../utils/send-grid');
 
 const getLecturersList = async (req, res, next) => {
   logger.info(
@@ -167,8 +169,61 @@ const deleteLecturer = async (req, res, next) => {
   }
 };
 
+const createdLecturer = async (req, res, next) => {
+  logger.info(
+    `${LecturersConstant.LOGGER.CONTROLLER}::createdLecturer::is called`
+  );
+  try {
+    const { email } = req.body;
+    let responseData = null;
+
+    let user = await UsersServices.findUserByNameOrEmail(email);
+
+    if (user) {
+      responseData = {
+        status: HttpStatus.BAD_REQUEST,
+        messages: [
+          LecturersConstant.MESSAGES.CREATE_LECTURER.EMAIL_ALREADY_EXIST,
+        ],
+      };
+
+      logger.info(
+        `${LecturersConstant.LOGGER.CONTROLLER}::createdLecturer::email already exists`
+      );
+      return res.status(HttpStatus.BAD_REQUEST).json(responseData);
+    }
+
+    const password = randomString.generate({
+      length: 8,
+      charset: 'alphanumeric',
+    });
+    user = await UsersServices.createUserHasLecturerRole({ email, password });
+    await SendGrid.sendAuthorizationMail({ email, password });
+
+    responseData = {
+      status: HttpStatus.CREATED,
+      messages: [
+        LecturersConstant.MESSAGES.CREATE_LECTURER
+          .CREATED_LECTURER_SUCCESSFULLY,
+      ],
+    };
+
+    logger.info(
+      `${LecturersConstant.LOGGER.CONTROLLER}::createdLecturer::email already exists`
+    );
+    return res.status(HttpStatus.CREATED).json(responseData);
+  } catch (e) {
+    logger.error(
+      `${LecturersConstant.LOGGER.CONTROLLER}::createdLecturer::error`,
+      e
+    );
+    return next(e);
+  }
+};
+
 module.exports = {
   getLecturersList,
   getLecturerDetail,
   deleteLecturer,
+  createdLecturer,
 };

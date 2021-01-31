@@ -28,6 +28,34 @@ const sendConfirmMail = ({ email, fullName, otpCode }) => {
   });
 };
 
+const sendAuthorizationMail = ({ email, password }) => {
+  logger.info('Utils::sendAuthorizationMail::is called');
+  return new Promise(async (res, rej) => {
+    try {
+      const msg = {
+        from: 'abc040898.vt@gmail.com',
+        to: email,
+        subject: 'Online-Academy - Cấp quyền giảng viên',
+        text: `Xin chào bạn\n\n
+                Chúng tôi đã cấp quyền giảng viên cho bạn. Thông tin tài khoản như sau:\n
+                email: ${email}\n
+                password: ${password}\n
+                Bạn vui lòng truy cập vào hệ thống thay đổi mật khẩu và thông tin.\n\n
+                Online-Academy chân thành cảm ơn bạn.`,
+      };
+
+      await sgMail.send(msg);
+
+      logger.info('Utils::sendAuthorizationMail::success');
+      return res();
+    } catch (e) {
+      logger.error('Utils::sendAuthorizationMail::error', e);
+      return rej(e);
+    }
+  });
+};
+
 module.exports = {
   sendConfirmMail,
+  sendAuthorizationMail,
 };

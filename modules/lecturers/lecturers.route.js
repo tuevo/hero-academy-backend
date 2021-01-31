@@ -18,6 +18,9 @@ const {
 const {
   DeleteLecturerValidationSchema,
 } = require('./validations/delete-lecturer.schema');
+const {
+  CreateLecturerValidationSchema,
+} = require('./validations/create-lecturer.schema');
 
 router.get(
   '/',
@@ -45,6 +48,13 @@ router.delete(
   CheckAccessTokenMiddleware,
   CheckRoleMiddleware([RoleConstant.ROLE.ADMIN]),
   LecturersControllers.deleteLecturer
+);
+router.post(
+  '/',
+  ValidateMiddleware(CreateLecturerValidationSchema, [ParametersConstant.BODY]),
+  CheckAccessTokenMiddleware,
+  CheckRoleMiddleware([RoleConstant.ROLE.ADMIN]),
+  LecturersControllers.createdLecturer
 );
 
 module.exports = router;
