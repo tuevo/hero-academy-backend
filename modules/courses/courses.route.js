@@ -50,7 +50,17 @@ const {
 const {
   GetVideosWatchingsValidationSchema,
 } = require('../video-watchings/validations/get-video-watching.schema');
+const {
+  GetCoursesListByCriteriaValidationSchema,
+} = require('./validations/get-courses-list-by-criteria.schema');
 
+router.get(
+  '/',
+  ValidateMiddleware(GetCoursesListByCriteriaValidationSchema, [
+    ParametersConstant.QUERY,
+  ]),
+  CoursesController.getCoursesListByCriteria
+);
 router.post(
   '/',
   upload.fields([{ name: 'thumbnail' }]),

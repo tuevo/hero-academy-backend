@@ -160,10 +160,10 @@ const findCoursesByIds = (coursesId) => {
 const getCoursesByConditionsHasPagination = async ({
   limit,
   page,
-  keyWord,
+  keyword,
   categoryId,
   isSortUpAscending,
-  sortType,
+  sortBy,
   lecturerId,
 }) => {
   logger.info(
@@ -184,23 +184,23 @@ const getCoursesByConditionsHasPagination = async ({
       matchStage.$match['categoryId'] = mongoose.Types.ObjectId(categoryId);
     }
 
-    if (keyWord) {
+    if (keyword) {
       matchStage.$match['$or'] = [
         {
           title: {
-            $regex: keyWord,
+            $regex: keyword,
             $options: 'i',
           },
         },
         {
           description: {
-            $regex: keyWord,
+            $regex: keyword,
             $options: 'i',
           },
         },
         {
           content: {
-            $regex: keyWord,
+            $regex: keyword,
             $options: 'i',
           },
         },
@@ -211,8 +211,8 @@ const getCoursesByConditionsHasPagination = async ({
       $sort: {},
     };
 
-    if (sortType) {
-      sortStage.$sort[sortType] = isSortUpAscending ? 1 : -1;
+    if (sortBy) {
+      sortStage.$sort[sortBy] = isSortUpAscending ? 1 : -1;
     } else {
       sortStage.$sort['createdAt'] = isSortUpAscending ? 1 : -1;
     }

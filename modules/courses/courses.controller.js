@@ -251,9 +251,9 @@ const getCoursesListByLecturer = async (req, res, next) => {
     const courses = await CoursesServices.getCoursesByConditionsHasPagination({
       limit,
       page,
-      keyWord: null,
+      keyword: null,
       isSortUpAscending: null,
-      sortType: null,
+      sortBy: null,
       lecturerId: roleInfo._id,
       categoryId: null,
     });
@@ -300,6 +300,7 @@ const getCoursesListByCategory = async (req, res, next) => {
     const { categoryId } = req.params;
     const page = Number(req.query.page) || PaginationConstant.PAGE;
     const limit = Number(req.query.limit) || PaginationConstant.LIMIT;
+    let responseData = null;
 
     const category = await CategoriesServices.getCategoryById(categoryId);
 
@@ -321,9 +322,9 @@ const getCoursesListByCategory = async (req, res, next) => {
     const courses = await CoursesServices.getCoursesByConditionsHasPagination({
       limit,
       page,
-      keyWord: null,
+      keyword: null,
       isSortUpAscending: null,
-      sortType: null,
+      sortBy: null,
       lecturerId: null,
       categoryId,
     });
@@ -362,6 +363,60 @@ const getCoursesListByCategory = async (req, res, next) => {
   }
 };
 
+const getCoursesListByCriteria = async (req, res, next) => {
+  logger.info(
+    `${CoursesConstant.LOGGER.CONTROLLER}::getCoursesListByCriteria::is called`
+  );
+  try {
+    const { keyword, isSortUpAscending, sortBy } = req.query;
+    const page = Number(req.query.page) || PaginationConstant.PAGE;
+    const limit = Number(req.query.limit) || PaginationConstant.LIMIT;
+    let responseData = null;
+
+    const courses = await CoursesServices.getCoursesByConditionsHasPagination({
+      limit,
+      page,
+      keyword,
+      categoryId: null,
+      isSortUpAscending,
+      sortBy,
+      lecturerId: null,
+    });
+
+    const { entries } = courses[0];
+    const meta =
+      entries.length > 0
+        ? courses[0].meta[0]
+        : {
+            _id: null,
+            totalItems: 0,
+          };
+
+    responseData = {
+      status: HttpStatus.OK,
+      messages: [
+        CoursesConstant.MESSAGES.GET_COURSES_LIST_BY_CRITERIA
+          .GET_COURSES_LIST_BY_CRITERIA_SUCCESSFULLY,
+      ],
+      data: {
+        entries,
+        meta,
+      },
+    };
+
+    logger.info(
+      `${CoursesConstant.LOGGER.CONTROLLER}::getCoursesListByCriteria::success`
+    );
+    return res.status(HttpStatus.OK).json(responseData);
+  } catch (e) {
+    logger.error(
+      `${CoursesConstant.LOGGER.CONTROLLER}::getCoursesListByCriteria::error`,
+      e
+    );
+    return next(e);
+  }
+};
+
 module.exports = {
   addCourse,
   getCourseDetail,
@@ -369,4 +424,5 @@ module.exports = {
   deleteCourse,
   getCoursesListByLecturer,
   getCoursesListByCategory,
+  getCoursesListByCriteria,
 };
