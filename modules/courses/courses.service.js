@@ -157,9 +157,98 @@ const findCoursesByIds = (coursesId) => {
   }
 };
 
+const getCoursesByConditionsHasPagination = async ({
+  limit,
+  page,
+  keyWord,
+  categoryId,
+  isSortUpAscending,
+  sortType,
+  lecturerId,
+}) => {
+  logger.info(
+    `${CoursesConstant.LOGGER.SERVICE}::getCoursesByConditionsHasPagination::is called`
+  );
+  try {
+    let matchStage = {
+      $match: {
+        isDeleted: false,
+      },
+    };
+
+    if (lecturerId) {
+      matchStage.$match['lecturerId'] = mongoose.Types.ObjectId(lecturerId);
+    }
+
+    if (categoryId) {
+      matchStage.$match['categoryId'] = mongoose.Types.ObjectId(categoryId);
+    }
+
+    if (keyWord) {
+      matchStage.$match['$or'] = [
+        {
+          title: {
+            $regex: keyWord,
+            $options: 'i',
+          },
+        },
+        {
+          description: {
+            $regex: keyWord,
+            $options: 'i',
+          },
+        },
+        {
+          content: {
+            $regex: keyWord,
+            $options: 'i',
+          },
+        },
+      ];
+    }
+
+    let sortStage = {
+      $sort: {},
+    };
+
+    if (sortType) {
+      sortStage.$sort[sortType] = isSortUpAscending ? 1 : -1;
+    } else {
+      sortStage.$sort['createdAt'] = isSortUpAscending ? 1 : -1;
+    }
+
+    const facetStage = {
+      $facet: {
+        entries: [{ $skip: (page - 1) * limit }, { $limit: limit }],
+        meta: [{ $group: { _id: null, totalItems: { $sum: 1 } } }],
+      },
+    };
+
+    const query = [matchStage, sortStage, facetStage];
+
+    logger.info(
+      `${CoursesConstant.LOGGER.SERVICE}::getRegistrationsHasPagination::query`,
+      JSON.stringify(query)
+    );
+    const result = await CoursesModel.aggregate(query);
+
+    logger.info(
+      `${CoursesConstant.LOGGER.SERVICE}::getRegistrationsHasPagination::success`
+    );
+    return result;
+  } catch (e) {
+    logger.error(
+      `${CoursesConstant.LOGGER.SERVICE}::getCoursesByConditionsHasPagination::error`,
+      e
+    );
+    throw new Error(e);
+  }
+};
+
 module.exports = {
   findCoursesHasCondition,
   createCourse,
   updateCourse,
   findCoursesByIds,
+  getCoursesByConditionsHasPagination,
 };

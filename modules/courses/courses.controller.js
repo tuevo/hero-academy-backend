@@ -9,6 +9,7 @@ const Cloudinary = require('../../utils/cloudinary');
 const FileTypesCloudinaryConstant = require('../../constants/file-types-cloudinary.constant');
 const AdminServices = require('../admins/admins.service');
 const LecturersServices = require('../lecturers/lecturers.service');
+const PaginationConstant = require('../../constants/pagination.constant');
 
 const addCourse = async (req, res, next) => {
   logger.info(`${CoursesConstant.LOGGER.CONTROLLER}::addCourse::is called`);
@@ -222,9 +223,79 @@ const deleteCourse = async (req, res, next) => {
   }
 };
 
+const getCoursesListByLecturer = async (req, res, next) => {
+  logger.info(
+    `${CoursesConstant.LOGGER.CONTROLLER}::getCoursesListByLecturer::is called`
+  );
+  try {
+    const page = Number(req.query.page) || PaginationConstant.PAGE;
+    const limit = Number(req.query.limit) || PaginationConstant.LIMIT;
+    const roleInfo = req.user.roleInfo || null;
+    let responseData = null;
+
+    if (!roleInfo || !roleInfo._id) {
+      responseData = {
+        status: HttpStatus.NOT_FOUND,
+        messages: [
+          CoursesConstant.MESSAGES.GET_COURSES_LIST_BY_LECTURER
+            .LECTURER_NOT_FOUND,
+        ],
+      };
+
+      logger.info(
+        `${CoursesConstant.LOGGER.CONTROLLER}::getCoursesListByLecturer::lecturer not found`
+      );
+      return res.status(HttpStatus.NOT_FOUND).json(responseData);
+    }
+
+    const courses = await CoursesServices.getCoursesByConditionsHasPagination({
+      limit,
+      page,
+      keyWord: null,
+      isSortUpAscending: null,
+      sortType: null,
+      lecturerId: roleInfo._id,
+      categoryId: null,
+    });
+
+    const { entries } = courses[0];
+    const meta =
+      entries.length > 0
+        ? courses[0].meta[0]
+        : {
+            _id: null,
+            totalItems: 0,
+          };
+
+    responseData = {
+      status: HttpStatus.OK,
+      messages: [
+        CoursesConstant.MESSAGES.GET_COURSES_LIST_BY_LECTURER
+          .GET_COURSES_LIST_BY_LECTURER_SUCCESSFULLY,
+      ],
+      data: {
+        entries,
+        meta,
+      },
+    };
+
+    logger.info(
+      `${CoursesConstant.LOGGER.CONTROLLER}::getCoursesListByLecturer::success`
+    );
+    return res.status(HttpStatus.OK).json(responseData);
+  } catch (e) {
+    logger.error(
+      `${CoursesConstant.LOGGER.CONTROLLER}::getCoursesListByLecturer::error`,
+      e
+    );
+    return next(e);
+  }
+};
+
 module.exports = {
   addCourse,
   getCourseDetail,
   updateCourse,
   deleteCourse,
+  getCoursesListByLecturer,
 };
