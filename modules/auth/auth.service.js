@@ -49,7 +49,7 @@ const generateToken = (data) => {
 
     return jwt.sign({ user: userData }, JwtConfig.secret, {
       //expiresIn: 60 * 60 * AuthConstant.TOKEN_EXPIRED_IN_HOUR,
-      expiresIn: 60 * 60,
+      expiresIn: 60,
     });
   } catch (e) {
     logger.error(`${AuthConstant.LOGGER.SERVICE}::generateToken::Error`, e);
