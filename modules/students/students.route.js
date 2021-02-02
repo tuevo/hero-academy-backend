@@ -4,6 +4,7 @@ const router = express.Router({});
 const RoleConstant = require('../users/users.constant');
 const ParametersConstant = require('../../constants/parameters.constant');
 const StudentsControllers = require('./students.controller');
+const RegistrationsController = require('../registrations/registrations.controller');
 
 const ValidateMiddleware = require('../../middleware/validate.middleware');
 const CheckAccessTokenMiddleware = require('../../middleware/check-access-token.middleware');
@@ -18,6 +19,9 @@ const {
 const {
   DeleteStudentValidationSchema,
 } = require('./validations/delete-student.schema');
+const {
+  GetCoursesListRegisteredValidationSchema,
+} = require('../registrations/validations/get-courses-list-registered.schema');
 
 router.get(
   '/',
@@ -45,6 +49,15 @@ router.delete(
   CheckAccessTokenMiddleware,
   CheckRoleMiddleware([RoleConstant.ROLE.ADMIN]),
   StudentsControllers.deleteStudent
+);
+router.get(
+  '/courses/registrations/',
+  ValidateMiddleware(GetCoursesListRegisteredValidationSchema, [
+    ParametersConstant.QUERY,
+  ]),
+  CheckAccessTokenMiddleware,
+  CheckRoleMiddleware([RoleConstant.ROLE.STUDENT]),
+  RegistrationsController.getCoursesListRegistered
 );
 
 module.exports = router;

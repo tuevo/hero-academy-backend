@@ -5,6 +5,8 @@ const HttpStatus = require('http-status-codes');
 const RegistrationsServices = require('./registrations.service');
 const RegistrationsConstant = require('./registrations.constant');
 const StudentsServices = require('../students/students.service');
+const CoursesServices = require('../courses/courses.service');
+const PaginationConstant = require('../../constants/pagination.constant');
 
 const registerTheCourse = async (req, res, next) => {
   logger.info(
@@ -81,6 +83,79 @@ const registerTheCourse = async (req, res, next) => {
   }
 };
 
+const getCoursesListRegistered = async (req, res, next) => {
+  logger.info(
+    `${RegistrationsConstant.LOGGER.CONTROLLER}::getCoursesListRegistered::is called`
+  );
+  try {
+    const page = Number(req.query.page) || PaginationConstant.PAGE;
+    const limit = Number(req.query.limit) || PaginationConstant.LIMIT;
+    const roleInfo = req.user.roleInfo || null;
+    let responseData = null;
+
+    if (!roleInfo || !roleInfo._id) {
+      responseData = {
+        status: HttpStatus.NOT_FOUND,
+        messages: [
+          RegistrationsConstant.MESSAGES.GET_COURSES_LIST_REGISTERED
+            .STUDENT_NOT_FOUND,
+        ],
+      };
+
+      logger.info(
+        `${RegistrationsConstant.LOGGER.CONTROLLER}::getCoursesListRegistered::student not found`
+      );
+      return res.status(HttpStatus.NOT_FOUND).json(responseData);
+    }
+
+    const registrations = await RegistrationsServices.getRegistrationsHasPagination(
+      { studentId: roleInfo._id, limit, page }
+    );
+
+    let { entries } = registrations[0];
+    let meta = {
+      _id: null,
+      totalItems: 0,
+    };
+
+    if (entries.length > 0) {
+      meta = registrations[0].meta[0];
+      const coursesId = entries.map((registration) => registration.courseId);
+
+      const courses = await CoursesServices.findCoursesByIds(coursesId);
+
+      entries = RegistrationsServices.mapCoursesIntoRegistrations({
+        registrations: entries,
+        courses,
+      });
+    }
+
+    responseData = {
+      status: HttpStatus.OK,
+      messages: [
+        RegistrationsConstant.MESSAGES.GET_COURSES_LIST_REGISTERED
+          .GET_COURSES_LIST_REGISTERED_SUCCESSFULLY,
+      ],
+      data: {
+        entries,
+        meta,
+      },
+    };
+
+    logger.info(
+      `${RegistrationsConstant.LOGGER.CONTROLLER}::getCoursesListRegistered::success`
+    );
+    return res.status(HttpStatus.OK).json(responseData);
+  } catch (e) {
+    logger.error(
+      `${RegistrationsConstant.LOGGER.CONTROLLER}::getCoursesListRegistered::error`,
+      e
+    );
+    return next(e);
+  }
+};
+
 module.exports = {
   registerTheCourse,
+  getCoursesListRegistered,
 };

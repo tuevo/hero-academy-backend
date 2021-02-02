@@ -11,13 +11,15 @@ const db = require('./database/db');
 
 const UsersDumpData = require('./dump-data/user.dump-data');
 
-// create logs folder
-if (!fs.existsSync('./logs')) {
-  fs.mkdirSync('./logs');
-}
-// config log4js
+//// create logs folder
+// if (!fs.existsSync('./logs')) {
+//   fs.mkdirSync('./logs');
+// }
+
+//// config log4js
 const log4js = require('log4js');
-log4js.configure('./config/log4js.json');
+//// created file logger
+//log4js.configure('./config/log4js.json');
 const loggerApp = log4js.getLogger('app');
 
 const app = express();
