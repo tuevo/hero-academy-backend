@@ -37,15 +37,13 @@ const getFavoritesList = async (req, res, next) => {
     );
 
     let { entries } = favorites[0];
-    let meta = [
-      {
-        _id: null,
-        totalItems: 0,
-      },
-    ];
+    let meta = {
+      _id: null,
+      totalItems: 0,
+    };
 
     if (entries.length > 0) {
-      meta = favorites[0].meta;
+      meta = favorites[0].meta[0];
       const coursesId = entries.map((favorite) => favorite.courseId);
 
       const courses = await CoursesServices.findCoursesByIds(coursesId);

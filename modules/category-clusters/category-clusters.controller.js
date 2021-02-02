@@ -20,15 +20,13 @@ const getCategoryClustersInfo = async (req, res, next) => {
     );
 
     let { entries } = categoryData[0];
-    let meta = [
-      {
-        _id: null,
-        totalItems: 0,
-      },
-    ];
+    let meta = {
+      _id: null,
+      totalItems: 0,
+    };
 
     if (entries.length !== 0) {
-      meta = categoryData[0].meta;
+      meta = categoryData[0].meta[0];
       entries = await CategoryClustersServices.mapCategoryClusterDataWithCategoriesData(
         entries
       );

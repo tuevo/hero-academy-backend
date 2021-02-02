@@ -28,15 +28,13 @@ const getLecturersList = async (req, res, next) => {
     });
 
     let { entries } = users[0];
-    let meta = [
-      {
-        _id: null,
-        totalItems: 0,
-      },
-    ];
+    let meta = {
+      _id: null,
+      totalItems: 0,
+    };
 
     if (entries.length > 0) {
-      meta = users[0].meta;
+      meta = users[0].meta[0];
       const usersId = entries.map((user) => user._id);
       const lecturers = await LecturersServices.getLecturersByUsersId(usersId);
 
