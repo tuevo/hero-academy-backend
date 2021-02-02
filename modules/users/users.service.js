@@ -57,7 +57,6 @@ const mapUserInfo = (userInfo) => {
     delete userJsonParse.passwordSalt;
     delete userJsonParse.createdAt;
     delete userJsonParse.updatedAt;
-    delete userJsonParse.refreshToken;
     delete userJsonParse.__v;
     delete userJsonParse.isConfirmed;
     delete userJsonParse.otpCode;

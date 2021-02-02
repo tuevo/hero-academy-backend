@@ -49,7 +49,6 @@ const login = async (req, res, next) => {
         user: { roleInfo, ...UserServices.mapUserInfo(user) },
         meta: {
           accessToken: AuthServices.generateToken(user),
-          refreshToken,
         },
       },
     };
