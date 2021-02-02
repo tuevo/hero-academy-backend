@@ -12,7 +12,6 @@ const returnInvalidToken = (req, res) => {
   return res.status(HttpStatus.UNAUTHORIZED).json({
     status: HttpStatus.UNAUTHORIZED,
     messages: ['INVALID_TOKEN'],
-    data: {},
   });
 };
 
@@ -64,6 +63,14 @@ module.exports = async (req, res, next) => {
     return next();
   } catch (e) {
     logger.error(`${LoggerConstant.MIDDLEWARE.CHECK_ACCESS_TOKEN}::error.`, e);
-    returnInvalidToken(req, res, next);
+
+    if (e.message && e.message === 'jwt expired') {
+      return res.status(HttpStatus.BAD_REQUEST).json({
+        status: HttpStatus.BAD_REQUEST,
+        messages: ['ACCESS_TOKEN_EXPIRED'],
+      });
+    }
+
+    return returnInvalidToken(req, res, next);
   }
 };
