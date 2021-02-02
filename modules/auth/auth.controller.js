@@ -84,9 +84,7 @@ const refreshToken = async (req, res, next) => {
       return res.status(HttpStatus.UNAUTHORIZED).json(responseData);
     }
 
-    const newAccessToken = jwt.sign({ user }, jwtConstant.secret, {
-      expiresIn: 60 * 60 * AuthConstant.TOKEN_EXPIRED_IN_HOUR,
-    });
+    const newAccessToken = AuthServices.generateToken(user);
 
     responseData = {
       status: HttpStatus.OK,
