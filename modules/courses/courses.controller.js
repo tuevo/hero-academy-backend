@@ -292,10 +292,81 @@ const getCoursesListByLecturer = async (req, res, next) => {
   }
 };
 
+const getCoursesListByCategory = async (req, res, next) => {
+  logger.info(
+    `${CoursesConstant.LOGGER.CONTROLLER}::getCoursesListByCategory::is called`
+  );
+  try {
+    const { categoryId } = req.params;
+    const page = Number(req.query.page) || PaginationConstant.PAGE;
+    const limit = Number(req.query.limit) || PaginationConstant.LIMIT;
+
+    const category = await CategoriesServices.getCategoryById(categoryId);
+
+    if (!category) {
+      responseData = {
+        status: HttpStatus.NOT_FOUND,
+        messages: [
+          CoursesConstant.MESSAGES.GET_COURSES_LIST_BY_CATEGORY
+            .CATEGORY_NOT_FOUND,
+        ],
+      };
+
+      logger.info(
+        `${CoursesConstant.LOGGER.CONTROLLER}::getCoursesListByCategory::category not found`
+      );
+      return res.status(HttpStatus.NOT_FOUND).json(responseData);
+    }
+
+    const courses = await CoursesServices.getCoursesByConditionsHasPagination({
+      limit,
+      page,
+      keyWord: null,
+      isSortUpAscending: null,
+      sortType: null,
+      lecturerId: null,
+      categoryId,
+    });
+
+    const { entries } = courses[0];
+    const meta =
+      entries.length > 0
+        ? courses[0].meta[0]
+        : {
+            _id: null,
+            totalItems: 0,
+          };
+
+    responseData = {
+      status: HttpStatus.OK,
+      messages: [
+        CoursesConstant.MESSAGES.GET_COURSES_LIST_BY_LECTURER
+          .GET_COURSES_LIST_BY_LECTURER_SUCCESSFULLY,
+      ],
+      data: {
+        entries,
+        meta,
+      },
+    };
+
+    logger.info(
+      `${CoursesConstant.LOGGER.CONTROLLER}::getCoursesListByCategory::success`
+    );
+    return res.status(HttpStatus.OK).json(responseData);
+  } catch (e) {
+    logger.error(
+      `${CoursesConstant.LOGGER.CONTROLLER}::getCoursesListByCategory::error`,
+      e
+    );
+    return next(e);
+  }
+};
+
 module.exports = {
   addCourse,
   getCourseDetail,
   updateCourse,
   deleteCourse,
   getCoursesListByLecturer,
+  getCoursesListByCategory,
 };
