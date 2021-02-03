@@ -60,6 +60,10 @@ const registerTheCourse = async (req, res, next) => {
       studentId: roleInfo._id,
       cumulativeValue: 1,
     });
+    await CoursesServices.updateNumberOfRegistrations({
+      courseId: course._id,
+      cumulativeValue: 1,
+    });
 
     responseData = {
       status: HttpStatus.CREATED,

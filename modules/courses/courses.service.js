@@ -245,10 +245,175 @@ const getCoursesByConditionsHasPagination = async ({
   }
 };
 
+const updateNumberOfRegistrations = async ({ courseId, cumulativeValue }) => {
+  logger.info(
+    `${CoursesConstant.LOGGER.SERVICE}::updateNumberOfRegistrations::is called`
+  );
+  try {
+    const condition = { $inc: { numberOfRegistrations: cumulativeValue } };
+
+    await CoursesModel.updateOne(
+      { _id: mongoose.Types.ObjectId(courseId) },
+      condition
+    );
+
+    logger.info(
+      `${CoursesConstant.LOGGER.SERVICE}::updateNumberOfRegistrations::success`
+    );
+    return;
+  } catch (e) {
+    logger.error(
+      `${CoursesConstant.LOGGER.SERVICE}::updateNumberOfRegistrations::error`,
+      e
+    );
+    throw new Error(e);
+  }
+};
+
+const updateNumberOfViews = async ({ courseId, cumulativeValue }) => {
+  logger.info(
+    `${CoursesConstant.LOGGER.SERVICE}::updateNumberOfViews::is called`
+  );
+  try {
+    const condition = { $inc: { numberOfViews: cumulativeValue } };
+
+    await CoursesModel.updateOne(
+      { _id: mongoose.Types.ObjectId(courseId) },
+      condition
+    );
+
+    logger.info(
+      `${CoursesConstant.LOGGER.SERVICE}::updateNumberOfViews::success`
+    );
+    return;
+  } catch (e) {
+    logger.error(
+      `${CoursesConstant.LOGGER.SERVICE}::updateNumberOfViews::error`,
+      e
+    );
+    throw new Error(e);
+  }
+};
+
+const getCoursesListForHomePage = async ({
+  startDate,
+  endDate,
+  limit,
+  findBy,
+  isSortUpAscending,
+  isSortCreatedAt,
+  isCreatedAtSortUpAscending,
+}) => {
+  logger.info(
+    `${CoursesConstant.LOGGER.SERVICE}::getCoursesListForHomePage::is called`
+  );
+  try {
+    let sortStage = {};
+    let conditions = {};
+
+    if (findBy) {
+      sortStage[findBy] = isSortUpAscending ? 1 : -1;
+    }
+
+    if (isSortCreatedAt) {
+      sortStage['createdAt'] = isCreatedAtSortUpAscending ? 1 : -1;
+    }
+
+    if (startDate && endDate) {
+      conditions['createdAt'] = {
+        $gte: new Date(startDate),
+        $lte: new Date(endDate),
+      };
+    }
+
+    logger.info(
+      `${CoursesConstant.LOGGER.SERVICE}::getCoursesListForHomePage::query`,
+      JSON.stringify(conditions),
+      JSON.stringify(sortStage)
+    );
+
+    const courses = await CoursesModel.find(conditions)
+      .sort(sortStage)
+      .limit(limit);
+
+    logger.info(
+      `${CoursesConstant.LOGGER.SERVICE}::getCoursesListForHomePage::success`
+    );
+    return courses;
+  } catch (e) {
+    logger.error(
+      `${CoursesConstant.LOGGER.SERVICE}::getCoursesListForHomePage::error`,
+      e
+    );
+    throw new Error(e);
+  }
+};
+
+const getCategoryWithTheMostEnrollmentCourses = async (limit) => {
+  logger.info(
+    `${CoursesConstant.LOGGER.SERVICE}::getCategoryWithTheMostEnrollmentCourses::is called`
+  );
+  try {
+    const projectStage = {
+      $project: {
+        categoryId: 1,
+        numberOfRegistrations: 1,
+      },
+    };
+
+    const sortStage = {
+      $sort: {
+        categoryId: -1,
+      },
+    };
+
+    const groupStage = {
+      $group: {
+        _id: '$categoryId',
+        totalRegistration: {
+          $sum: '$numberOfRegistrations',
+        },
+      },
+    };
+
+    const sortStage1 = {
+      $sort: {
+        totalRegistration: -1,
+      },
+    };
+
+    const limitStage = {
+      $limit: limit,
+    };
+
+    const query = [projectStage, sortStage, groupStage, sortStage1, limitStage];
+    logger.info(
+      `${CoursesConstant.LOGGER.SERVICE}::getCategoryWithTheMostEnrollmentCourses::query`,
+      JSON.stringify(query)
+    );
+    const result = await CoursesModel.aggregate(query);
+
+    logger.info(
+      `${CoursesConstant.LOGGER.SERVICE}::getCategoryWithTheMostEnrollmentCourses::success`
+    );
+    return result;
+  } catch (e) {
+    logger.error(
+      `${CoursesConstant.LOGGER.SERVICE}::getCategoryWithTheMostEnrollmentCourses::error`,
+      e
+    );
+    throw new Error(e);
+  }
+};
+
 module.exports = {
   findCoursesHasCondition,
   createCourse,
   updateCourse,
   findCoursesByIds,
   getCoursesByConditionsHasPagination,
+  updateNumberOfRegistrations,
+  getCoursesListForHomePage,
+  updateNumberOfViews,
+  getCategoryWithTheMostEnrollmentCourses,
 };

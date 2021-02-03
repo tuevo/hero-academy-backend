@@ -147,6 +147,27 @@ const updateCategory = async ({ name, categoryClusterId, category }) => {
   }
 };
 
+const getCategoriesByIds = async (categoriesId) => {
+  logger.info(
+    `${CategoryConstant.LOGGER.SERVICE}::getCategoriesByIds::is called`
+  );
+  try {
+    logger.info(
+      `${CategoryConstant.LOGGER.SERVICE}::getCategoriesByIds::success`
+    );
+    return await CategoryModel.find({
+      _id: { $in: categoriesId },
+      isDeleted: false,
+    });
+  } catch (e) {
+    logger.error(
+      `${CategoryConstant.LOGGER.SERVICE}::getCategoriesByIds::error`,
+      e
+    );
+    throw new Error(e);
+  }
+};
+
 module.exports = {
   getCategoriesByCategoryClusterId,
   updateNumberOfCourses,
@@ -154,4 +175,5 @@ module.exports = {
   findCategoryByName,
   getCategoryById,
   updateCategory,
+  getCategoriesByIds,
 };
