@@ -137,6 +137,46 @@ const findLecturerById = async (lecturerId) => {
   }
 };
 
+const updateLecturerInfo = async ({ lecturer, introduction }) => {
+  logger.info(
+    `${LecturersConstant.LOGGER.SERVICE}::updateLecturerInfo::is called`
+  );
+  try {
+    let isChange = false;
+    let query = { $set: {} };
+
+    if (introduction) {
+      logger.info(
+        `${LecturersConstant.LOGGER.SERVICE}::updateLecturerInfo::update introduction`
+      );
+      query.$set['introduction'] = introduction;
+      lecturer['introduction'] = introduction;
+      isChange = true;
+    }
+
+    if (isChange) {
+      logger.info(
+        `${LecturersConstant.LOGGER.SERVICE}::updateLecturerInfo::updating...`
+      );
+      await LecturersModel.updateOne(
+        { _id: mongoose.Types.ObjectId(lecturer._id) },
+        query
+      );
+    }
+
+    logger.info(
+      `${LecturersConstant.LOGGER.SERVICE}::updateLecturerInfo::success`
+    );
+    return lecturer;
+  } catch (e) {
+    logger.error(
+      `${LecturersConstant.LOGGER.SERVICE}::updateLecturerInfo::Error`,
+      e
+    );
+    throw new Error(e);
+  }
+};
+
 module.exports = {
   findLecturerByUserId,
   createLecturer,
@@ -144,4 +184,5 @@ module.exports = {
   mapLecturersIntoUsers,
   updateNumberOfCoursesPosted,
   findLecturerById,
+  updateLecturerInfo,
 };

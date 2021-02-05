@@ -10,6 +10,8 @@ const AuthConstant = require('../auth/auth.constant');
 const AdminsServices = require('../admins/admins.service');
 const LecturersServices = require('../lecturers/lecturers.service');
 const StudentsServices = require('../students/students.service');
+const cloudinary = require('../../utils/cloudinary');
+const FileTypesCloudDinaryConstant = require('../../constants/file-types-cloudinary.constant');
 
 const findUserByNameOrEmail = async (nameOrEmail) => {
   logger.info(
@@ -286,6 +288,54 @@ const createUserHasLecturerRole = async ({ email, password }) => {
   }
 };
 
+const updateUserInfo = async ({ fullName, avatar, user }) => {
+  logger.info(`${UserConstant.LOGGER.SERVICE}::updateUserInfo::is called`);
+  try {
+    let isChange = false;
+
+    if (fullName) {
+      logger.info(
+        `${UserConstant.LOGGER.SERVICE}::updateUserInfo::update full name`
+      );
+      user['fullName'] = fullName;
+      isChange = true;
+    }
+
+    if (avatar) {
+      if (user['publicId']) {
+        logger.info(
+          `${UserConstant.LOGGER.SERVICE}::updateUserInfo::remove image`
+        );
+        await cloudinary.deleteFile(course['publicId']);
+      }
+
+      logger.info(
+        `${UserConstant.LOGGER.SERVICE}::updateUserInfo::update image`
+      );
+      const avatarInfo = await cloudinary.uploadByBuffer(
+        avatar,
+        FileTypesCloudDinaryConstant.image
+      );
+      user['avatarUrl'] = avatarInfo.url;
+      user['publicId'] = avatarInfo.public_id;
+      isChange = true;
+    }
+
+    if (isChange) {
+      logger.info(
+        `${UserConstant.LOGGER.SERVICE}::updateUserInfo::updating...`
+      );
+      await user.save();
+    }
+
+    logger.info(`${UserConstant.LOGGER.SERVICE}::updateUserInfo::success`);
+    return user;
+  } catch (e) {
+    logger.error(`${UserConstant.LOGGER.SERVICE}::updateUserInfo::Error`, e);
+    throw new Error(e);
+  }
+};
+
 module.exports = {
   findUserByNameOrEmail,
   mapUserInfo,
@@ -296,4 +346,5 @@ module.exports = {
   updatePass,
   findUsersByRoleHasPagination,
   createUserHasLecturerRole,
+  updateUserInfo,
 };

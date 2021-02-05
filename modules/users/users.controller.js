@@ -5,6 +5,7 @@ const HttpStatus = require('http-status-codes');
 const UserConstant = require('./users.constant');
 const UserServices = require('./users.service');
 const AuthServices = require('../auth/auth.service');
+const LecturersService = require('../lecturers/lecturers.service');
 
 const getUserInfo = async (req, res, next) => {
   logger.info(`${UserConstant.LOGGER.CONTROLLER}::getUserInfo::is called`);
@@ -20,7 +21,9 @@ const getUserInfo = async (req, res, next) => {
         messages: [UserConstant.MESSAGES.GET_USER_INFO.USER_NOT_FOUND],
       };
 
-      logger.info(`${UserConstant.LOGGER.CONTROLLER}::getUserInfo::not found`);
+      logger.info(
+        `${UserConstant.LOGGER.CONTROLLER}::getUserInfo::user not found`
+      );
       return res.status(HttpStatus.NOT_FOUND).json(responseData);
     }
 
@@ -47,6 +50,62 @@ const getUserInfo = async (req, res, next) => {
   }
 };
 
+const updateUserInfo = async (req, res, next) => {
+  logger.info(`${UserConstant.LOGGER.CONTROLLER}::updateUserInfo::is called`);
+  try {
+    const { fullName, introduction } = req.body;
+    const { files } = req;
+    const { _id } = req.user;
+    let { roleInfo } = req.user;
+    let avatar = null;
+    let responseData = null;
+
+    if (files && Object.keys(files).length !== 0) {
+      avatar = files['avatar'][0];
+    }
+
+    let user = await UserServices.findUserById(_id);
+
+    if (!user) {
+      responseData = {
+        status: HttpStatus.NOT_FOUND,
+        messages: [UserConstant.MESSAGES.UPDATE_USER_INFO.USER_NOT_FOUND],
+      };
+
+      logger.info(
+        `${UserConstant.LOGGER.CONTROLLER}::updateUserInfo::user not found`
+      );
+      return res.status(HttpStatus.NOT_FOUND).json(responseData);
+    }
+
+    if (user.role === UserConstant.ROLE.LECTURER) {
+      roleInfo = await LecturersService.updateLecturerInfo({
+        lecturer: roleInfo,
+        introduction,
+      });
+    }
+
+    user = await UserServices.updateUserInfo({ fullName, avatar, user });
+
+    responseData = {
+      status: HttpStatus.OK,
+      messages: [
+        UserConstant.MESSAGES.UPDATE_USER_INFO.UPDATE_USER_INFO_SUCCESSFULLY,
+      ],
+      data: {
+        user: { roleInfo, ...UserServices.mapUserInfo(user) },
+      },
+    };
+
+    logger.info(`${UserConstant.LOGGER.CONTROLLER}::updateUserInfo::success`);
+    return res.status(HttpStatus.OK).json(responseData);
+  } catch (e) {
+    logger.error(`${UserConstant.LOGGER.CONTROLLER}::updateUserInfo::error`, e);
+    return next(e);
+  }
+};
+
 module.exports = {
   getUserInfo,
+  updateUserInfo,
 };

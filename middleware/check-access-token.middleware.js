@@ -59,6 +59,7 @@ module.exports = async (req, res, next) => {
       ...user,
       roleInfo,
     };
+
     logger.info(`${LoggerConstant.MIDDLEWARE.CHECK_ACCESS_TOKEN}::success.`);
     return next();
   } catch (e) {
