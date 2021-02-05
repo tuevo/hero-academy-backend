@@ -31,10 +31,10 @@ const login = async (req, res, next) => {
       return res.status(responseData.status).json(responseData);
     }
 
-    const refreshToken = uuid.v4();
-    user.refreshToken = refreshToken;
+    // const refreshToken = uuid.v4();
+    // user.refreshToken = refreshToken;
 
-    await user.save();
+    // await user.save();
 
     const roleInfo = await AuthServices.checkAndGetRoleInfo({
       userId: user._id,
