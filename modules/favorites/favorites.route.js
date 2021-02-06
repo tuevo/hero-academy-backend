@@ -24,7 +24,7 @@ router.get(
   ValidateMiddleware(GetFavoritesListValidationSchema, [
     ParametersConstant.QUERY,
   ]),
-  CheckAccessTokenMiddleware,
+  CheckAccessTokenMiddleware({ isRequired: true }),
   CheckRoleMiddleware([RoleConstant.ROLE.STUDENT]),
   FavoritesControllers.getFavoritesList
 );
@@ -33,7 +33,7 @@ router.post(
   ValidateMiddleware(CreateFavoritesCourseValidationSchema, [
     ParametersConstant.BODY,
   ]),
-  CheckAccessTokenMiddleware,
+  CheckAccessTokenMiddleware({ isRequired: true }),
   CheckRoleMiddleware([RoleConstant.ROLE.STUDENT]),
   FavoritesControllers.createFavoriteCourse
 );
@@ -42,7 +42,7 @@ router.delete(
   ValidateMiddleware(RemoveTheCourseFromFavotitesValidationSchema, [
     ParametersConstant.BODY,
   ]),
-  CheckAccessTokenMiddleware,
+  CheckAccessTokenMiddleware({ isRequired: true }),
   CheckRoleMiddleware([RoleConstant.ROLE.STUDENT]),
   FavoritesControllers.removeTheCourseFromFavorites
 );

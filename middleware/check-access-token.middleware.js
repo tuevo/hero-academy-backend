@@ -15,7 +15,7 @@ const returnInvalidToken = (req, res) => {
   });
 };
 
-module.exports = async (req, res, next) => {
+module.exports = ({ isRequired }) => async (req, res, next) => {
   logger.info(`${LoggerConstant.MIDDLEWARE.CHECK_ACCESS_TOKEN}::is called`);
   try {
     const token =
@@ -27,6 +27,9 @@ module.exports = async (req, res, next) => {
       logger.info(
         `${LoggerConstant.MIDDLEWARE.CHECK_ACCESS_TOKEN}::access token not found.`
       );
+
+      if (!isRequired) return next();
+
       returnInvalidToken(req, res, next);
       return;
     }
@@ -37,6 +40,9 @@ module.exports = async (req, res, next) => {
       logger.info(
         `${LoggerConstant.MIDDLEWARE.CHECK_ACCESS_TOKEN}::data not found.`
       );
+
+      if (!isRequired) return next();
+
       returnInvalidToken(req, res, next);
       return;
     }
@@ -47,10 +53,13 @@ module.exports = async (req, res, next) => {
       role: user.role,
     });
 
-    if (user === null || user === undefined || user === '') {
+    if (user === null || user === undefined || user === '' || !roleInfo) {
       logger.info(
         `${LoggerConstant.MIDDLEWARE.CHECK_ACCESS_TOKEN}::user not found.`
       );
+
+      if (!isRequired) return next(e);
+
       returnInvalidToken(req, res, next);
       return;
     }
@@ -64,6 +73,8 @@ module.exports = async (req, res, next) => {
     return next();
   } catch (e) {
     logger.error(`${LoggerConstant.MIDDLEWARE.CHECK_ACCESS_TOKEN}::error.`, e);
+
+    if (!isRequired) return next();
 
     if (e.message && e.message === 'jwt expired') {
       return res.status(HttpStatus.BAD_REQUEST).json({

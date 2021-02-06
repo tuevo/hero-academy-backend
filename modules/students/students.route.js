@@ -28,7 +28,7 @@ router.get(
   ValidateMiddleware(GetStudentsListValidationSchema, [
     ParametersConstant.QUERY,
   ]),
-  CheckAccessTokenMiddleware,
+  CheckAccessTokenMiddleware({ isRequired: true }),
   CheckRoleMiddleware([RoleConstant.ROLE.ADMIN]),
   StudentsControllers.getStudentsList
 );
@@ -37,7 +37,7 @@ router.get(
   ValidateMiddleware(GetStudentDetailValidationSchema, [
     ParametersConstant.PARAMS,
   ]),
-  CheckAccessTokenMiddleware,
+  CheckAccessTokenMiddleware({ isRequired: true }),
   CheckRoleMiddleware([RoleConstant.ROLE.ADMIN]),
   StudentsControllers.getStudentDetail
 );
@@ -46,7 +46,7 @@ router.delete(
   ValidateMiddleware(DeleteStudentValidationSchema, [
     ParametersConstant.PARAMS,
   ]),
-  CheckAccessTokenMiddleware,
+  CheckAccessTokenMiddleware({ isRequired: true }),
   CheckRoleMiddleware([RoleConstant.ROLE.ADMIN]),
   StudentsControllers.deleteStudent
 );
@@ -55,7 +55,7 @@ router.get(
   ValidateMiddleware(GetCoursesListRegisteredValidationSchema, [
     ParametersConstant.QUERY,
   ]),
-  CheckAccessTokenMiddleware,
+  CheckAccessTokenMiddleware({ isRequired: true }),
   CheckRoleMiddleware([RoleConstant.ROLE.STUDENT]),
   RegistrationsController.getCoursesListRegistered
 );

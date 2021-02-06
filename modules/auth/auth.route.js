@@ -49,7 +49,7 @@ router.post(
 router.put(
   '/password',
   ValidateMiddleware(ChangePassValidationSchema, [ParametersConstant.BODY]),
-  CheckAccessTokenMiddleware,
+  CheckAccessTokenMiddleware({ isRequired: true }),
   AuthController.changePass
 );
 

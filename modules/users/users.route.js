@@ -15,7 +15,11 @@ const {
   UpdateUserInfoValidationSchema,
 } = require('./validations/update-user-info.schema');
 
-router.get('/', CheckAccessTokenMiddleware, UserController.getUserInfo);
+router.get(
+  '/',
+  CheckAccessTokenMiddleware({ isRequired: true }),
+  UserController.getUserInfo
+);
 router.put(
   '/',
   upload.fields([{ name: 'avatar' }]),
@@ -27,7 +31,7 @@ router.put(
       isRequired: false,
     },
   ]),
-  CheckAccessTokenMiddleware,
+  CheckAccessTokenMiddleware({ isRequired: true }),
   UserController.updateUserInfo
 );
 

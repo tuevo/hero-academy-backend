@@ -20,7 +20,7 @@ router.get(
   ValidateMiddleware(GetCategoryClustersValidationSchema, [
     ParametersConstant.QUERY,
   ]),
-  CheckAccessTokenMiddleware,
+  CheckAccessTokenMiddleware({ isRequired: true }),
   CategoryClustersController.getCategoryClustersInfo
 );
 router.post(
@@ -28,7 +28,7 @@ router.post(
   ValidateMiddleware(AddCategoryClustersValidationSchema, [
     ParametersConstant.BODY,
   ]),
-  CheckAccessTokenMiddleware,
+  CheckAccessTokenMiddleware({ isRequired: true }),
   CheckRoleMiddleware([UsersConstant.ROLE.ADMIN]),
   CategoryClustersController.addCategoryCLuster
 );

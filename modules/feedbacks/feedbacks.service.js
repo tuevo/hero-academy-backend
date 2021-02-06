@@ -104,8 +104,6 @@ const calculateAvgRatingWhenExistsInRatingsTable = ({
         course['averageRating'] * 2 - ratingInfo['rating'];
       oldRatingOfCourse = Services.rounding(oldRatingOfCourse);
 
-      console.log(oldRatingOfCourse);
-
       agvRatingOfCourse = (oldRatingOfCourse + rating) / 2;
       agvRatingOfCourse = Services.rounding(agvRatingOfCourse);
     } else {

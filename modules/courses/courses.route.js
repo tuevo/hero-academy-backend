@@ -76,7 +76,7 @@ router.post(
       isRequired: true,
     },
   ]),
-  CheckAccessTokenMiddleware,
+  CheckAccessTokenMiddleware({ isRequired: true }),
   CheckRoleMiddleware([RoleConstant.ROLE.LECTURER]),
   CoursesController.addCourse
 );
@@ -93,7 +93,7 @@ router.delete(
   ValidateMiddleware(DeleteCourseDetailValidationSchema, [
     ParametersConstant.PARAMS,
   ]),
-  CheckAccessTokenMiddleware,
+  CheckAccessTokenMiddleware({ isRequired: true }),
   CheckRoleMiddleware([RoleConstant.ROLE.ADMIN]),
   CheckCourseIdMiddleware({ isLecturer: false }),
   CoursesController.deleteCourse
@@ -112,7 +112,7 @@ router.put(
       isRequired: false,
     },
   ]),
-  CheckAccessTokenMiddleware,
+  CheckAccessTokenMiddleware({ isRequired: true }),
   CheckRoleMiddleware([RoleConstant.ROLE.LECTURER]),
   CheckCourseIdMiddleware({ isLecturer: true }),
   CoursesController.updateCourse
@@ -123,7 +123,7 @@ router.post(
     ParametersConstant.PARAMS,
     ParametersConstant.BODY,
   ]),
-  CheckAccessTokenMiddleware,
+  CheckAccessTokenMiddleware({ isRequired: true }),
   CheckRoleMiddleware([RoleConstant.ROLE.STUDENT]),
   CheckCourseIdMiddleware({ isLecturer: false }),
   FeedbacksController.addFeedback
@@ -143,7 +143,7 @@ router.post(
       isRequired: true,
     },
   ]),
-  CheckAccessTokenMiddleware,
+  CheckAccessTokenMiddleware({ isRequired: true }),
   CheckRoleMiddleware([RoleConstant.ROLE.LECTURER]),
   CheckCourseIdMiddleware({ isLecturer: true }),
   CheckChapterIdMiddleware,
@@ -171,7 +171,7 @@ router.post(
     ParametersConstant.BODY,
     ParametersConstant.PARAMS,
   ]),
-  CheckAccessTokenMiddleware,
+  CheckAccessTokenMiddleware({ isRequired: true }),
   CheckRoleMiddleware([RoleConstant.ROLE.LECTURER]),
   CheckCourseIdMiddleware({ isLecturer: true }),
   ChaptersController.addChapter
@@ -181,7 +181,7 @@ router.post(
   ValidateMiddleware(RegisterTheCourseValidationSchema, [
     ParametersConstant.PARAMS,
   ]),
-  CheckAccessTokenMiddleware,
+  CheckAccessTokenMiddleware({ isRequired: true }),
   CheckRoleMiddleware([RoleConstant.ROLE.STUDENT]),
   CheckCourseIdMiddleware({ isLecturer: false }),
   RegistrationsController.registerTheCourse
@@ -192,7 +192,7 @@ router.get(
     ParametersConstant.PARAMS,
     ParametersConstant.QUERY,
   ]),
-  CheckAccessTokenMiddleware,
+  CheckAccessTokenMiddleware({ isRequired: true }),
   CheckRoleMiddleware([RoleConstant.ROLE.STUDENT]),
   CheckCourseIdMiddleware({ isLecturer: false }),
   VideoWatchingsController.getVideoWatchings

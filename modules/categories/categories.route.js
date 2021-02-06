@@ -29,7 +29,7 @@ const {
 router.post(
   '/',
   ValidateMiddleware(AddCategoryValidationSchema, [ParametersConstant.BODY]),
-  CheckAccessTokenMiddleware,
+  CheckAccessTokenMiddleware({ isRequired: true }),
   CheckRoleMiddleware([UsersConstant.ROLE.ADMIN]),
   CategoriesController.addCategory
 );
@@ -38,7 +38,7 @@ router.get(
   ValidateMiddleware(GetCategoryDetailsValidationSchema, [
     ParametersConstant.PARAMS,
   ]),
-  CheckAccessTokenMiddleware,
+  CheckAccessTokenMiddleware({ isRequired: true }),
   CheckRoleMiddleware([UsersConstant.ROLE.ADMIN]),
   CategoriesController.getCategoryDetails
 );
@@ -48,7 +48,7 @@ router.put(
     ParametersConstant.PARAMS,
     ParametersConstant.BODY,
   ]),
-  CheckAccessTokenMiddleware,
+  CheckAccessTokenMiddleware({ isRequired: true }),
   CheckRoleMiddleware([UsersConstant.ROLE.ADMIN]),
   CategoriesController.updateCategory
 );
@@ -57,7 +57,7 @@ router.delete(
   ValidateMiddleware(DeleteCategoryValidationSchema, [
     ParametersConstant.PARAMS,
   ]),
-  CheckAccessTokenMiddleware,
+  CheckAccessTokenMiddleware({ isRequired: true }),
   CheckRoleMiddleware([UsersConstant.ROLE.ADMIN]),
   CategoriesController.deleteCategory
 );
