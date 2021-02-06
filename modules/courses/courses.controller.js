@@ -11,6 +11,8 @@ const AdminServices = require('../admins/admins.service');
 const LecturersServices = require('../lecturers/lecturers.service');
 const PaginationConstant = require('../../constants/pagination.constant');
 const RegistrationServices = require('../registrations/registrations.service');
+const UsersServices = require('../users/users.service');
+const Services = require('../../services/services');
 
 const addCourse = async (req, res, next) => {
   logger.info(`${CoursesConstant.LOGGER.CONTROLLER}::addCourse::is called`);
@@ -98,7 +100,7 @@ const getCourseDetail = async (req, res, next) => {
     `${CoursesConstant.LOGGER.CONTROLLER}::getCourseDetail::is called`
   );
   try {
-    const course = req.course;
+    let course = req.course;
     const { user } = req;
     const roleInfo = !user ? null : user.roleInfo;
     let isUpdate = true;
@@ -112,8 +114,42 @@ const getCourseDetail = async (req, res, next) => {
       if (registration) isUpdate = false;
     }
 
+    const role = await LecturersServices.findLecturerById(course.lecturerId);
+
+    if (!role) {
+      responseData = {
+        status: HttpStatus.NOT_FOUND,
+        messages: [
+          CoursesConstant.MESSAGES.GET_COURSE_DETAIL.LECTURER_NOT_FOUND,
+        ],
+      };
+
+      logger.info(
+        `${CoursesConstant.LOGGER.CONTROLLER}::getCourseDetail::lecturer not found`
+      );
+      return res.status(HttpStatus.NOT_FOUND).json(responseData);
+    }
+
+    const userInfo = await UsersServices.findUserById(role.userId);
+
+    if (!userInfo) {
+      responseData = {
+        status: HttpStatus.NOT_FOUND,
+        messages: [
+          CoursesConstant.MESSAGES.GET_COURSE_DETAIL.LECTURER_NOT_FOUND,
+        ],
+      };
+
+      logger.info(
+        `${CoursesConstant.LOGGER.CONTROLLER}::getCourseDetail::user not found`
+      );
+      return res.status(HttpStatus.NOT_FOUND).json(responseData);
+    }
+
     course['numberOfViews'] = course['numberOfViews'] + 1;
     isUpdate && (await course.save());
+    course = JSON.parse(JSON.stringify(course));
+    course['isRegistered'] = !isUpdate;
 
     responseData = {
       status: HttpStatus.OK,
@@ -123,6 +159,10 @@ const getCourseDetail = async (req, res, next) => {
       ],
       data: {
         course,
+        lecturer: {
+          ...Services.deleteFieldsUser(userInfo),
+          roleInfo: role,
+        },
       },
     };
 
