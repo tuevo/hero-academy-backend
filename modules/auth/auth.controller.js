@@ -197,12 +197,23 @@ const confirmOtpCode = async (req, res, next) => {
     await user.save();
     await AdminsServices.updateNumberOfStudents(1);
 
+    const roleInfo = await AuthServices.checkAndGetRoleInfo({
+      userId: user._id,
+      role: user.role,
+    });
+
     responseData = {
       status: HttpStatus.OK,
       messages: [
         AuthConstant.MESSAGES.CONFIRM_OTP_CODE
           .SUCCESSFUL_AUTHENTICATION_OF_THE_OTP_CODE,
       ],
+      data: {
+        user: { roleInfo, ...UserServices.mapUserInfo(user) },
+        meta: {
+          accessToken: AuthServices.generateToken(user),
+        },
+      },
     };
 
     logger.info(`${AuthConstant.LOGGER.CONTROLLER}::confirmOtpCode::success`);
