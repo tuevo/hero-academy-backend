@@ -98,6 +98,10 @@ const getCourseDetail = async (req, res, next) => {
   );
   try {
     const course = req.course;
+
+    course['numberOfViews'] = course['numberOfViews'] + 1;
+    await course.save();
+
     let responseData = null;
 
     responseData = {
