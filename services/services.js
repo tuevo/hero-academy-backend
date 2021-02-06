@@ -22,6 +22,19 @@ const deleteFieldsUser = (user) => {
   }
 };
 
+const rounding = (number) => {
+  logger.info(`SERVICE::rounding::is called`);
+  try {
+    logger.info(`SERVICE::rounding::Success`);
+
+    return Math.round(number * 100) / 100;
+  } catch (e) {
+    logger.error(`SERVICE::rounding::Error`, e);
+    throw new Error(e);
+  }
+};
+
 module.exports = {
   deleteFieldsUser,
+  rounding,
 };

@@ -7,7 +7,8 @@ const ratingSchema = new Schema(
   {
     studentId: { type: ObjectId, default: null },
     courseId: { type: ObjectId, default: null },
-    rating: { type: Number, default: 0 },
+    rating: { type: Number, default: 1 },
+    isDeleted: { type: Boolean, default: false },
   },
   { timestamps: true, paranoid: true }
 );

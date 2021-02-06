@@ -12,6 +12,7 @@ const ChaptersController = require('../chapters/chapters.controller');
 const RegistrationsController = require('../registrations/registrations.controller');
 const VideoWatchingsController = require('../video-watchings/video-watchings.controller');
 const LecturersController = require('../lecturers/lecturers.controller');
+const FeedbacksController = require('../feedbacks/feedbacks.controller');
 
 const ValidateMiddleware = require('../../middleware/validate.middleware');
 const ValidateFileTypesMiddleware = require('../../middleware/validate-file-types.middleware');
@@ -53,6 +54,9 @@ const {
 const {
   GetCoursesListByCriteriaValidationSchema,
 } = require('./validations/get-courses-list-by-criteria.schema');
+const {
+  AddFeedbackValidationSchema,
+} = require('../feedbacks/validations/add-feedback.schema');
 
 router.get(
   '/',
@@ -112,6 +116,17 @@ router.put(
   CheckRoleMiddleware([RoleConstant.ROLE.LECTURER]),
   CheckCourseIdMiddleware({ isLecturer: true }),
   CoursesController.updateCourse
+);
+router.post(
+  '/:courseId/feedbacks/',
+  ValidateMiddleware(AddFeedbackValidationSchema, [
+    ParametersConstant.PARAMS,
+    ParametersConstant.BODY,
+  ]),
+  CheckAccessTokenMiddleware,
+  CheckRoleMiddleware([RoleConstant.ROLE.STUDENT]),
+  CheckCourseIdMiddleware({ isLecturer: false }),
+  FeedbacksController.addFeedback
 );
 router.post(
   '/:courseId/chapters/:chapterId/videos',
