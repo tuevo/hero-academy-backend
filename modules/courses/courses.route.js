@@ -85,6 +85,7 @@ router.get(
   ValidateMiddleware(GetCourseDetailValidationSchema, [
     ParametersConstant.PARAMS,
   ]),
+  CheckAccessTokenMiddleware({ isRequired: false }),
   CheckCourseIdMiddleware({ isLecturer: false }),
   CoursesController.getCourseDetail
 );

@@ -10,6 +10,7 @@ const FileTypesCloudinaryConstant = require('../../constants/file-types-cloudina
 const AdminServices = require('../admins/admins.service');
 const LecturersServices = require('../lecturers/lecturers.service');
 const PaginationConstant = require('../../constants/pagination.constant');
+const RegistrationServices = require('../registrations/registrations.service');
 
 const addCourse = async (req, res, next) => {
   logger.info(`${CoursesConstant.LOGGER.CONTROLLER}::addCourse::is called`);
@@ -98,11 +99,21 @@ const getCourseDetail = async (req, res, next) => {
   );
   try {
     const course = req.course;
+    const { user } = req;
+    const roleInfo = !user ? null : user.roleInfo;
+    let isUpdate = true;
+    let responseData = null;
+
+    if (roleInfo && roleInfo._id) {
+      const registration = await RegistrationServices.findRegistrationsHasConditions(
+        { studentId: roleInfo._id, courseId: course._id }
+      );
+
+      if (registration) isUpdate = false;
+    }
 
     course['numberOfViews'] = course['numberOfViews'] + 1;
-    await course.save();
-
-    let responseData = null;
+    isUpdate && (await course.save());
 
     responseData = {
       status: HttpStatus.OK,
