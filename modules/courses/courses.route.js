@@ -66,6 +66,7 @@ router.get(
   ValidateMiddleware(GetCoursesListByCriteriaValidationSchema, [
     ParametersConstant.QUERY,
   ]),
+  CheckAccessTokenMiddleware({ isRequired: false }),
   CoursesController.getCoursesListByCriteria
 );
 router.post(

@@ -6,6 +6,7 @@ const CoursesModel = require('./courses.model');
 const CoursesConstant = require('./courses.constant');
 const cloudinary = require('../../utils/cloudinary');
 const FileTypesCloudDinaryConstant = require('../../constants/file-types-cloudinary.constant');
+const RegistrationsServices = require('../registrations/registrations.service');
 
 const findCourseHasConditions = async ({ lecturerId, courseId }) => {
   logger.info(
@@ -473,6 +474,49 @@ const findCoursesHasConditions = async ({
   }
 };
 
+const mapIsRegisteredFieldIntoCourses = async ({ roleId, courses }) => {
+  logger.info(
+    `${CoursesConstant.LOGGER.SERVICE}::mapIsRegisteredFieldIntoCourses::is called`
+  );
+  try {
+    let result = [];
+
+    await Promise.all(
+      courses.map(async (course) => {
+        const courseJsonParse = JSON.parse(JSON.stringify(course));
+        if (roleId) {
+          const registration = await RegistrationsServices.findRegistrationsHasConditions(
+            { studentId: roleId, courseId: course._id }
+          );
+
+          if (registration) {
+            result.push({ ...courseJsonParse, isRegistered: true });
+          } else {
+            result.push({ ...courseJsonParse, isRegistered: false });
+          }
+        } else {
+          result.push({ ...courseJsonParse, isRegistered: false });
+        }
+      })
+    );
+
+    result.sort((courseA, courseB) => {
+      return new Date(courseB.createdAt) - new Date(courseA.createdAt);
+    });
+
+    logger.info(
+      `${CoursesConstant.LOGGER.SERVICE}::mapIsRegisteredFieldIntoCourses::success`
+    );
+    return result;
+  } catch (e) {
+    logger.error(
+      `${CoursesConstant.LOGGER.SERVICE}::mapIsRegisteredFieldIntoCourses::error`,
+      e
+    );
+    throw new Error(e);
+  }
+};
+
 module.exports = {
   findCourseHasConditions,
   createCourse,
@@ -484,4 +528,5 @@ module.exports = {
   updateNumberOfViews,
   getCategoryWithTheMostEnrollmentCourses,
   findCoursesHasConditions,
+  mapIsRegisteredFieldIntoCourses,
 };

@@ -12,7 +12,11 @@ const userSchema = new Schema(
     otpCode: { type: String, default: null },
     fullName: { type: String, default: null },
     role: { type: Number, default: UserConstant.ROLE.STUDENT },
-    avatarUrl: { type: String, default: null },
+    avatarUrl: {
+      type: String,
+      default:
+        'https://res.cloudinary.com/dye8sx2yk/image/upload/v1612718007/avatar-default_uscokq.png',
+    },
     isBlocked: { type: Boolean, default: false },
     isConfirmed: { type: Boolean, default: false },
     refreshToken: { type: String, default: uuid.v4() },

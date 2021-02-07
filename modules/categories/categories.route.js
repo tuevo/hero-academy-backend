@@ -67,6 +67,7 @@ router.get(
     ParametersConstant.PARAMS,
     ParametersConstant.QUERY,
   ]),
+  CheckAccessTokenMiddleware({ isRequired: false }),
   CoursesController.getCoursesListByCategory
 );
 module.exports = router;
