@@ -193,18 +193,18 @@ const getCoursesByConditionsHasPagination = async ({
             $options: 'i',
           },
         },
-        {
-          description: {
-            $regex: keyword,
-            $options: 'i',
-          },
-        },
-        {
-          content: {
-            $regex: keyword,
-            $options: 'i',
-          },
-        },
+        // {
+        //   description: {
+        //     $regex: keyword,
+        //     $options: 'i',
+        //   },
+        // },
+        // {
+        //   content: {
+        //     $regex: keyword,
+        //     $options: 'i',
+        //   },
+        // },
       ];
     }
 

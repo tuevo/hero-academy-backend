@@ -446,28 +446,39 @@ const getCoursesListByCriteria = async (req, res, next) => {
   );
   try {
     const { keyword, isSortUpAscending, sortBy } = req.query;
+    const { user } = req;
     const page = Number(req.query.page) || PaginationConstant.PAGE;
     const limit = Number(req.query.limit) || PaginationConstant.LIMIT;
+    const roleInfo = !user ? null : user.roleInfo;
+    let roleId = null;
     let responseData = null;
+
+    if (roleInfo && roleInfo._id) {
+      roleId = roleInfo._id;
+    }
 
     const courses = await CoursesServices.getCoursesByConditionsHasPagination({
       limit,
       page,
       keyword,
-      categoryId: null,
       isSortUpAscending,
       sortBy,
-      lecturerId: null,
     });
 
-    const { entries } = courses[0];
-    const meta =
-      entries.length > 0
-        ? courses[0].meta[0]
-        : {
-            _id: null,
-            totalItems: 0,
-          };
+    let { entries } = courses[0];
+    let meta = {
+      _id: null,
+      totalItems: 0,
+    };
+
+    if (entries.length > 0) {
+      meta = courses[0].meta[0];
+
+      entries = await CoursesServices.mapIsRegisteredFieldIntoCourses({
+        roleId,
+        courses: entries,
+      });
+    }
 
     responseData = {
       status: HttpStatus.OK,
