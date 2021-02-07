@@ -150,6 +150,14 @@ const getCourseDetail = async (req, res, next) => {
     isUpdate && (await course.save());
     course = JSON.parse(JSON.stringify(course));
     course['isRegistered'] = !isUpdate;
+    const mostRegisteredCourses = await CoursesServices.findCoursesHasConditions(
+      {
+        categoryId: course.categoryId,
+        sortBy: 'numberOfRegistrations',
+        isSortUpAscending: false,
+        limit: 10,
+      }
+    );
 
     responseData = {
       status: HttpStatus.OK,
@@ -163,6 +171,7 @@ const getCourseDetail = async (req, res, next) => {
           ...Services.deleteFieldsUser(userInfo),
           roleInfo: role,
         },
+        mostRegisteredCourses,
       },
     };
 

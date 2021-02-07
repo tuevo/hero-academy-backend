@@ -21,7 +21,7 @@ module.exports = ({ isLecturer }) => async (req, res, next) => {
       conditions['lecturerId'] = lecturerId;
     }
 
-    const course = await CoursesServices.findCoursesHasCondition(conditions);
+    const course = await CoursesServices.findCourseHasConditions(conditions);
 
     if (!course) {
       logger.info(

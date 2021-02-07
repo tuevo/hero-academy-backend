@@ -98,7 +98,7 @@ const createFavoriteCourse = async (req, res, next) => {
       return res.status(HttpStatus.NOT_FOUND).json(responseData);
     }
 
-    const course = await CoursesServices.findCoursesHasCondition({
+    const course = await CoursesServices.findCourseHasConditions({
       lecturerId: null,
       courseId,
     });

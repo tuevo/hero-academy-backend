@@ -7,30 +7,30 @@ const CoursesConstant = require('./courses.constant');
 const cloudinary = require('../../utils/cloudinary');
 const FileTypesCloudDinaryConstant = require('../../constants/file-types-cloudinary.constant');
 
-const findCoursesHasCondition = async ({ lecturerId, courseId }) => {
+const findCourseHasConditions = async ({ lecturerId, courseId }) => {
   logger.info(
-    `${CoursesConstant.LOGGER.SERVICE}::findCoursesHasCondition::is called`
+    `${CoursesConstant.LOGGER.SERVICE}::findCourseHasConditions::is called`
   );
   try {
-    let condition = {
+    let conditions = {
       isDeleted: false,
     };
 
     if (lecturerId) {
-      condition['lecturerId'] = mongoose.Types.ObjectId(lecturerId);
+      conditions['lecturerId'] = mongoose.Types.ObjectId(lecturerId);
     }
 
     if (courseId) {
-      condition['_id'] = mongoose.Types.ObjectId(courseId);
+      conditions['_id'] = mongoose.Types.ObjectId(courseId);
     }
 
     logger.info(
-      `${CoursesConstant.LOGGER.SERVICE}::findCoursesHasCondition::success`
+      `${CoursesConstant.LOGGER.SERVICE}::findCourseHasConditions::success`
     );
-    return await CoursesModel.findOne(condition);
+    return await CoursesModel.findOne(conditions);
   } catch (e) {
     logger.error(
-      `${CoursesConstant.LOGGER.SERVICE}::findCoursesHasCondition::error`,
+      `${CoursesConstant.LOGGER.SERVICE}::findCourseHasConditions::error`,
       e
     );
     throw new Error(e);
@@ -214,7 +214,7 @@ const getCoursesByConditionsHasPagination = async ({
     if (sortBy) {
       sortStage.$sort[sortBy] = isSortUpAscending ? 1 : -1;
     } else {
-      sortStage.$sort['createdAt'] = isSortUpAscending ? 1 : -1;
+      sortStage.$sort['averageRating'] = isSortUpAscending ? 1 : -1;
     }
 
     const facetStage = {
@@ -406,8 +406,75 @@ const getCategoryWithTheMostEnrollmentCourses = async (limit) => {
   }
 };
 
+const findCoursesHasConditions = async ({
+  lecturerId,
+  courseId,
+  categoryId,
+  sortBy,
+  isSortUpAscending,
+  limit,
+}) => {
+  logger.info(
+    `${CoursesConstant.LOGGER.SERVICE}::findCoursesHasConditions::is called`
+  );
+  try {
+    let conditions = {
+      isDeleted: false,
+    };
+    let sortStage = {};
+
+    if (lecturerId) {
+      conditions['lecturerId'] = mongoose.Types.ObjectId(lecturerId);
+    }
+
+    if (courseId) {
+      conditions['_id'] = mongoose.Types.ObjectId(courseId);
+    }
+
+    if (categoryId) {
+      conditions['categoryId'] = mongoose.Types.ObjectId(categoryId);
+    }
+
+    if (sortBy) {
+      sortStage[sortBy] = isSortUpAscending ? 1 : -1;
+    }
+
+    if (sortBy && limit) {
+      logger.info(
+        `${CoursesConstant.LOGGER.SERVICE}::findCoursesHasConditions::find by sort and limit success`
+      );
+      return await CoursesModel.find(conditions).sort(sortStage).limit(limit);
+    }
+
+    if (sortBy) {
+      logger.info(
+        `${CoursesConstant.LOGGER.SERVICE}::findCoursesHasConditions::find by sort success`
+      );
+      return await CoursesModel.find(conditions).sort(sortStage);
+    }
+
+    if (limit) {
+      logger.info(
+        `${CoursesConstant.LOGGER.SERVICE}::findCoursesHasConditions::find by limit success`
+      );
+      return await CoursesModel.find(conditions).limit(limit);
+    }
+
+    logger.info(
+      `${CoursesConstant.LOGGER.SERVICE}::findCoursesHasConditions::success`
+    );
+    return await CoursesModel.find(conditions);
+  } catch (e) {
+    logger.error(
+      `${CoursesConstant.LOGGER.SERVICE}::findCoursesHasConditions::error`,
+      e
+    );
+    throw new Error(e);
+  }
+};
+
 module.exports = {
-  findCoursesHasCondition,
+  findCourseHasConditions,
   createCourse,
   updateCourse,
   findCoursesByIds,
@@ -416,4 +483,5 @@ module.exports = {
   getCoursesListForHomePage,
   updateNumberOfViews,
   getCategoryWithTheMostEnrollmentCourses,
+  findCoursesHasConditions,
 };

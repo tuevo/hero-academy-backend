@@ -84,8 +84,60 @@ const findVideoByVideosId = async (videosId) => {
   }
 };
 
+const getVideosByChapterHasConditions = async ({
+  limit,
+  sortBy,
+  isSortUpAscending,
+  chapterId,
+}) => {
+  logger.info(
+    `${VideosConstant.LOGGER.SERVICE}::getVideosByChapterHasConditions::is called`
+  );
+  try {
+    let conditions = {};
+    let sortStage = {};
+
+    if (chapterId) {
+      logger.info(
+        `${VideosConstant.LOGGER.SERVICE}::getVideosByChapterHasConditions::find by chapter`
+      );
+      conditions['chapterId'] = mongoose.Types.ObjectId(chapterId);
+    }
+
+    if (sortBy) {
+      logger.info(
+        `${VideosConstant.LOGGER.SERVICE}::getVideosByChapterHasConditions::sort`
+      );
+      sortStage[sortBy] = isSortUpAscending ? 1 : -1;
+    }
+
+    if (limit) {
+      logger.info(
+        `${VideosConstant.LOGGER.SERVICE}::getVideosByChapterHasConditions::find by limit`,
+        JSON.stringify(conditions),
+        JSON.stringify(sortStage)
+      );
+      return await VideosModel.find(conditions).sort(sortStage).limit(limit);
+    }
+
+    logger.info(
+      `${VideosConstant.LOGGER.SERVICE}::getVideosByChapterHasConditions::find by not limit`,
+      JSON.stringify(conditions),
+      JSON.stringify(sortStage)
+    );
+    return await VideosModel.find(conditions).sort(sortStage);
+  } catch (e) {
+    logger.error(
+      `${VideosConstant.LOGGER.SERVICE}::getVideosByChapterHasConditions::error`,
+      e
+    );
+    throw new Error(e);
+  }
+};
+
 module.exports = {
   createVideo,
   getVideoByChapterHasPagination,
   findVideoByVideosId,
+  getVideosByChapterHasConditions,
 };

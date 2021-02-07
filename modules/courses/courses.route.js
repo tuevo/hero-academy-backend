@@ -156,6 +156,7 @@ router.get(
     ParametersConstant.BODY,
     ParametersConstant.PARAMS,
   ]),
+  CheckAccessTokenMiddleware({ isRequired: false }),
   CheckChapterIdMiddleware,
   CheckCourseIdMiddleware({ isLecturer: false }),
   VideosController.getVideosByChapter
