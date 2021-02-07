@@ -7,6 +7,7 @@ const RegistrationsConstant = require('./registrations.constant');
 const StudentsServices = require('../students/students.service');
 const CoursesServices = require('../courses/courses.service');
 const PaginationConstant = require('../../constants/pagination.constant');
+const LecturersServices = require('../lecturers/lecturers.service');
 
 const registerTheCourse = async (req, res, next) => {
   logger.info(
@@ -62,6 +63,10 @@ const registerTheCourse = async (req, res, next) => {
     });
     await CoursesServices.updateNumberOfRegistrations({
       courseId: course._id,
+      cumulativeValue: 1,
+    });
+    await LecturersServices.updateNumberOfStudents({
+      lecturerId: course.lecturerId,
       cumulativeValue: 1,
     });
 

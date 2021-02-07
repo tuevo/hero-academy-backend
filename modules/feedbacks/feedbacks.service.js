@@ -180,11 +180,11 @@ const getFeedbacksByConditionsHasPagination = async ({
     };
 
     if (courseId) {
-      matchStage.$match['courseId'] = courseId;
+      matchStage.$match['courseId'] = mongoose.Types.ObjectId(courseId);
     }
 
     if (studentId) {
-      matchStage.$match['studentId'] = studentId;
+      matchStage.$match['studentId'] = mongoose.Types.ObjectId(studentId);
     }
 
     if (sortBy) {

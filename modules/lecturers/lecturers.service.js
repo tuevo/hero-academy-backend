@@ -115,6 +115,31 @@ const updateNumberOfCoursesPosted = async ({ lecturerId, cumulativeValue }) => {
   }
 };
 
+const updateNumberOfStudents = async ({ lecturerId, cumulativeValue }) => {
+  logger.info(
+    `${LecturersConstant.LOGGER.SERVICE}::updateNumberOfStudents::is called`
+  );
+  try {
+    const condition = { $inc: { numberOfStudents: cumulativeValue } };
+
+    await LecturersModel.updateOne(
+      { _id: mongoose.Types.ObjectId(lecturerId) },
+      condition
+    );
+
+    logger.info(
+      `${LecturersConstant.LOGGER.SERVICE}::updateNumberOfStudents::success`
+    );
+    return;
+  } catch (e) {
+    logger.error(
+      `${LecturersConstant.LOGGER.SERVICE}::updateNumberOfStudents::Error`,
+      e
+    );
+    throw new Error(e);
+  }
+};
+
 const findLecturerById = async (lecturerId) => {
   logger.info(
     `${LecturersConstant.LOGGER.SERVICE}::findLecturerById::is called`
@@ -185,4 +210,5 @@ module.exports = {
   updateNumberOfCoursesPosted,
   findLecturerById,
   updateLecturerInfo,
+  updateNumberOfStudents,
 };
