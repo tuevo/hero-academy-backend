@@ -160,7 +160,97 @@ const calculateAvgRatingWhenNotExistsInRatingsTable = ({
   }
 };
 
+const getFeedbacksByConditionsHasPagination = async ({
+  courseId,
+  studentId,
+  sortBy,
+  isSortUpAscending,
+  limit,
+  page,
+}) => {
+  logger.info(
+    `${FeedbacksConstant.LOGGER.SERVICE}::getFeedbacksByConditionsHasPagination::is called`
+  );
+  try {
+    let matchStage = {
+      $match: {},
+    };
+    let sortStage = {
+      $sort: {},
+    };
+
+    if (courseId) {
+      matchStage.$match['courseId'] = courseId;
+    }
+
+    if (studentId) {
+      matchStage.$match['studentId'] = studentId;
+    }
+
+    if (sortBy) {
+      sortStage.$sort[sortBy] = isSortUpAscending ? 1 : -1;
+    } else {
+      sortStage.$sort['createdAt'] = isSortUpAscending ? 1 : -1;
+    }
+
+    const facetStage = {
+      $facet: {
+        entries: [{ $skip: (page - 1) * limit }, { $limit: limit }],
+        meta: [{ $group: { _id: null, totalItems: { $sum: 1 } } }],
+      },
+    };
+
+    const query = [matchStage, sortStage, facetStage];
+
+    logger.info(
+      `${FeedbacksConstant.LOGGER.SERVICE}::getFeedbacksByConditionsHasPagination::query`,
+      JSON.stringify(query)
+    );
+    const result = await FeedbacksModel.aggregate(query);
+
+    logger.info(
+      `${FeedbacksConstant.LOGGER.SERVICE}::getFeedbacksByConditionsHasPagination::success`
+    );
+    return result;
+  } catch (e) {
+    logger.error(
+      `${FeedbacksConstant.LOGGER.SERVICE}::getFeedbacksByConditionsHasPagination::error`,
+      e
+    );
+    throw new Error(e);
+  }
+};
+
+const mapRatingsIntoFeedbacks = ({ ratings, feedbacks }) => {
+  logger.info(
+    `${FeedbacksConstant.LOGGER.SERVICE}::mapRatingsIntoFeedbacks::is called`
+  );
+  try {
+    const result = feedbacks.map((feedback) => {
+      const rating = ratings.find(
+        (rating) =>
+          rating.studentId.toString() === feedback.studentId.toString()
+      );
+
+      return { ...feedback, rating: rating || null };
+    });
+
+    logger.info(
+      `${FeedbacksConstant.LOGGER.SERVICE}::mapRatingsIntoFeedbacks::success`
+    );
+    return result;
+  } catch (e) {
+    logger.error(
+      `${FeedbacksConstant.LOGGER.SERVICE}::mapRatingsIntoFeedbacks::error`,
+      e
+    );
+    throw new Error(e);
+  }
+};
+
 module.exports = {
   createFeedback,
   createRating,
+  getFeedbacksByConditionsHasPagination,
+  mapRatingsIntoFeedbacks,
 };

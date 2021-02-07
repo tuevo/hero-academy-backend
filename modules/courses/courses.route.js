@@ -57,6 +57,9 @@ const {
 const {
   AddFeedbackValidationSchema,
 } = require('../feedbacks/validations/add-feedback.schema');
+const {
+  GetFeedbacksValidationSchema,
+} = require('../feedbacks/validations/get-feedbacks.schema');
 
 router.get(
   '/',
@@ -128,6 +131,15 @@ router.post(
   CheckRoleMiddleware([RoleConstant.ROLE.STUDENT]),
   CheckCourseIdMiddleware({ isLecturer: false }),
   FeedbacksController.addFeedback
+);
+router.get(
+  '/:courseId/feedbacks/',
+  ValidateMiddleware(GetFeedbacksValidationSchema, [
+    ParametersConstant.PARAMS,
+    ParametersConstant.QUERY,
+  ]),
+  CheckCourseIdMiddleware({ isLecturer: false }),
+  FeedbacksController.getFeedbacks
 );
 router.post(
   '/:courseId/chapters/:chapterId/videos',

@@ -1,11 +1,15 @@
 const log4js = require('log4js');
 const logger = log4js.getLogger('Controllers');
 const HttpStatus = require('http-status-codes');
+const mongoose = require('mongoose');
 
 const FeedbacksConstant = require('./feedbacks.constant');
 const FeedbacksServices = require('./feedbacks.service');
 const LecturersServices = require('../lecturers/lecturers.service');
+const RatingsServices = require('../ratings/ratings.services');
 const RegistrationsServices = require('../registrations/registrations.service');
+const PaginationConstant = require('../../constants/pagination.constant');
+const Services = require('../../services/services');
 
 const addFeedback = async (req, res, next) => {
   logger.info(`${FeedbacksConstant.LOGGER.CONTROLLER}::addFeedback::is called`);
@@ -92,6 +96,60 @@ const addFeedback = async (req, res, next) => {
   }
 };
 
+const getFeedbacks = async (req, res, next) => {
+  logger.info(`${FeedbacksConstant.LOGGER.CONTROLLER}::addFeedback::is called`);
+  try {
+    const page = Number(req.query.page) || PaginationConstant.PAGE;
+    const limit = Number(req.query.limit) || PaginationConstant.LIMIT;
+    const { course } = req;
+    let responseData = null;
+
+    const feedbacks = await FeedbacksServices.getFeedbacksByConditionsHasPagination(
+      { courseId: course._id, limit, page }
+    );
+
+    let { entries } = feedbacks[0];
+    let meta = {
+      _id: null,
+      totalItems: 0,
+    };
+
+    if (entries.length !== 0) {
+      meta = feedbacks[0].meta[0];
+      let coursesId = entries.map((feedback) => feedback.courseId.toString());
+      coursesId = coursesId
+        .filter(Services.onlyUnique)
+        .map((feedback) => mongoose.Types.ObjectId(feedback));
+
+      const ratings = await RatingsServices.getRatingsByCoursesId(coursesId);
+      entries = FeedbacksServices.mapRatingsIntoFeedbacks({
+        ratings,
+        feedbacks: entries,
+      });
+    }
+
+    responseData = {
+      status: HttpStatus.OK,
+      messages: [
+        FeedbacksConstant.MESSAGES.GET_FEEDBACKS.GET_FEEDBACKS_SUCCESSFULLY,
+      ],
+      data: {
+        entries,
+        meta,
+      },
+    };
+
+    logger.info(`${FeedbacksConstant.LOGGER.CONTROLLER}::addFeedback::success`);
+    return res.status(HttpStatus.OK).json(responseData);
+  } catch (e) {
+    logger.error(
+      `${FeedbacksConstant.LOGGER.CONTROLLER}::getFeedbacks::error`,
+      e
+    );
+    return next(e);
+  }
+};
 module.exports = {
   addFeedback,
+  getFeedbacks,
 };

@@ -57,7 +57,31 @@ const getRatingHasConditions = async ({ courseId, studentId }) => {
   }
 };
 
+const getRatingsByCoursesId = async (coursesId) => {
+  logger.info(
+    `${RatingsConstant.LOGGER.SERVICE}::getRatingsByCoursesId::is called`
+  );
+  try {
+    const ratings = await RatingsModel.find({
+      courseId: { $in: coursesId },
+      isDeleted: false,
+    });
+
+    logger.info(
+      `${RatingsConstant.LOGGER.SERVICE}::getRatingsByCoursesId::success`
+    );
+    return ratings;
+  } catch (e) {
+    logger.error(
+      `${RatingsConstant.LOGGER.SERVICE}::getRatingsByCoursesId::error`,
+      e
+    );
+    throw new Error(e);
+  }
+};
+
 module.exports = {
   createRating,
   getRatingHasConditions,
+  getRatingsByCoursesId,
 };

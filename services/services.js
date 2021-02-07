@@ -34,7 +34,19 @@ const rounding = (number) => {
   }
 };
 
+const onlyUnique = (value, index, self) => {
+  logger.info(`SERVICE::onlyUnique::is called`);
+  try {
+    logger.info(`SERVICE::onlyUnique::success`);
+    return self.indexOf(value) === index;
+  } catch (e) {
+    logger.error(`SERVICE::onlyUnique::Error`, e);
+    throw new Error(e);
+  }
+};
+
 module.exports = {
   deleteFieldsUser,
   rounding,
+  onlyUnique,
 };
