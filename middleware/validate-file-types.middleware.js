@@ -70,9 +70,11 @@ module.exports = (filesInfo) => (req, res, next) => {
     return next();
   } catch (e) {
     logger.error(`${LoggerConstant.MIDDLEWARE.VALIDATE_FILE_TYPES}::error`, e);
+    const msg = e.message ? e.message : JSON.stringify(e);
+
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
       status: HttpStatus.INTERNAL_SERVER_ERROR,
-      messages: [e],
+      messages: [msg],
       data: {},
     });
   }

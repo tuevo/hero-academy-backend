@@ -32,9 +32,11 @@ module.exports = (roles) => async (req, res, next) => {
       `${LoggerConstant.MIDDLEWARE.CHECK_ROLE}::checkAdminRole::error`,
       e
     );
+    const msg = e.message ? e.message : JSON.stringify(e);
+
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
       status: HttpStatus.INTERNAL_SERVER_ERROR,
-      messages: [e],
+      messages: [msg],
       data: {},
     });
   }

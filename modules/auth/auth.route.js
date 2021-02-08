@@ -34,11 +34,7 @@ router.post(
 );
 router.post(
   '/register',
-  upload.fields([{ name: 'avatar' }]),
   ValidateMiddleware(RegisterValidationSchema, [ParametersConstant.BODY]),
-  ValidateFileTypesMiddleware([
-    { name: 'avatar', fileTypes: [FileTypesConstant.IMAGE], isRequired: true },
-  ]),
   AuthController.register
 );
 router.post(

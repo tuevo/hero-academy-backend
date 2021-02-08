@@ -29,9 +29,11 @@ module.exports = async (req, res, next) => {
     return next();
   } catch (e) {
     logger.error(`${LoggerConstant.MIDDLEWARE.CHECK_CHAPTER_ID}::error`, e);
+    const msg = e.message ? e.message : JSON.stringify(e);
+
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
       status: HttpStatus.INTERNAL_SERVER_ERROR,
-      messages: [e],
+      messages: [msg],
       data: {},
     });
   }

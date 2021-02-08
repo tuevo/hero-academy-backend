@@ -108,7 +108,6 @@ const register = async (req, res, next) => {
   logger.info(`${AuthConstant.LOGGER.CONTROLLER}::register::is called`);
   try {
     const { password, confirmPassword, fullName, email } = req.body;
-    const avatar = req.files.avatar[0];
     let responseData = null;
 
     let user = await UserServices.findUserByNameOrEmail(email);
@@ -144,13 +143,7 @@ const register = async (req, res, next) => {
       length: 8,
       charset: 'alphanumeric',
     });
-    const uploadInfo = await cloudinary.uploadByBuffer(
-      avatar,
-      FileTypesCloudinaryConstant.image
-    );
     user = await UserServices.createUser({
-      avatar: uploadInfo.url,
-      publicId: uploadInfo.public_id,
       password,
       fullName,
       email,
