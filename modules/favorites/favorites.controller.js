@@ -7,6 +7,9 @@ const FavoritesServices = require('./favorites.service');
 const PaginationConstant = require('../../constants/pagination.constant');
 const StudentServices = require('../students/students.service');
 const CoursesServices = require('../courses/courses.service');
+const CategoriesServices = require('../categories/categories.service');
+const CategoryClusterServices = require('../category-clusters/category-clusters.service');
+const Services = require('../../services/services');
 
 const getFavoritesList = async (req, res, next) => {
   logger.info(
@@ -33,7 +36,7 @@ const getFavoritesList = async (req, res, next) => {
     }
 
     const favorites = await FavoritesServices.getFavoritesByConditionsHasPagination(
-      { courseId: null, studentId: roleInfo._id, limit, page }
+      { studentId: roleInfo._id, limit, page }
     );
 
     let { entries } = favorites[0];
@@ -43,10 +46,30 @@ const getFavoritesList = async (req, res, next) => {
     };
 
     if (entries.length > 0) {
+      console.log('hihi');
       meta = favorites[0].meta[0];
       const coursesId = entries.map((favorite) => favorite.courseId);
 
-      const courses = await CoursesServices.findCoursesByIds(coursesId);
+      let courses = await CoursesServices.findCoursesByIds(coursesId);
+
+      const categoriesId = courses.map((course) => course.categoryId);
+      const categories = await CategoriesServices.getCategoriesByIds(
+        categoriesId
+      );
+
+      const categoryClustersId = categories.map(
+        (category) => category.categoryClusterId
+      );
+      const categoryClusters = await CategoryClusterServices.findCategoryClustersByIds(
+        categoryClustersId
+      );
+
+      courses = Services.mapDataIntoCourse({
+        courses,
+        categories,
+        categoryClusters,
+      });
+
       entries = FavoritesServices.mapCourseIntoFavoritesCourse({
         courses,
         favoritesCourse: entries,

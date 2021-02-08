@@ -45,28 +45,37 @@ const onlyUnique = (value, index, self) => {
   }
 };
 
-const mapLecturersAndUsersIntoCourse = ({ lecturers, users, courses }) => {
-  logger.info(`SERVICE::mapLecturersIntoUsers::is called`);
+const mapDataIntoCourse = ({ courses, categories, categoryClusters }) => {
+  logger.info(`SERVICE::mapDataIntoCourse::is called`);
   try {
     const result = courses.map((course) => {
-      const lecturer = lecturers.find(
-        (lecturer) => lecturer._id.toString() === course.lecturerId.toString()
+      const courseJsonParse = JSON.parse(JSON.stringify(course));
+
+      const category = categories.find(
+        (category) =>
+          category._id.toString() === courseJsonParse.categoryId.toString()
       );
 
-      let user = lecturer
-        ? users.find(
-            (user) => user._id.toString() === lecturer.userId.toString()
+      let categoryCluster = category
+        ? categoryClusters.find(
+            (categoryCluster) =>
+              categoryCluster._id.toString() ===
+              category.categoryClusterId.toString()
           )
         : null;
+      categoryCluster = JSON.parse(JSON.stringify(categoryCluster));
 
-      user = user && deleteFieldsUser(user);
-
-      return { ...course, lecturer: user ? { ...user, lecturer } : user };
+      return {
+        ...courseJsonParse,
+        categoryCluster: categoryCluster
+          ? { ...categoryCluster, category }
+          : categoryCluster,
+      };
     });
-    logger.info(`SERVICE::mapLecturersIntoUsers::success`);
+    logger.info(`SERVICE::mapDataIntoCourse::success`);
     return result;
   } catch (e) {
-    logger.error(`SERVICE::mapLecturersIntoUsers::Error`, e);
+    logger.error(`SERVICE::mapDataIntoCourse::Error`, e);
     throw new Error(e);
   }
 };
@@ -75,5 +84,5 @@ module.exports = {
   deleteFieldsUser,
   rounding,
   onlyUnique,
-  mapLecturersAndUsersIntoCourse,
+  mapDataIntoCourse,
 };

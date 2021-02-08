@@ -8,6 +8,9 @@ const StudentsServices = require('../students/students.service');
 const CoursesServices = require('../courses/courses.service');
 const PaginationConstant = require('../../constants/pagination.constant');
 const LecturersServices = require('../lecturers/lecturers.service');
+const CategoriesServices = require('../categories/categories.service');
+const CategoryClusterServices = require('../category-clusters/category-clusters.service');
+const Services = require('../../services/services');
 
 const registerTheCourse = async (req, res, next) => {
   logger.info(
@@ -131,10 +134,25 @@ const getCoursesListRegistered = async (req, res, next) => {
       meta = registrations[0].meta[0];
       const coursesId = entries.map((registration) => registration.courseId);
 
-      const courses = await CoursesServices.findCoursesByIds(coursesId);
+      let courses = await CoursesServices.findCoursesByIds(coursesId);
 
-      const categoryId = courses.map((course) => course.categoryId);
-      const lecturerId = courses.map((course) => course.lecturerId);
+      const categoriesId = courses.map((course) => course.categoryId);
+      const categories = await CategoriesServices.getCategoriesByIds(
+        categoriesId
+      );
+
+      const categoryClustersId = categories.map(
+        (category) => category.categoryClusterId
+      );
+      const categoryClusters = await CategoryClusterServices.findCategoryClustersByIds(
+        categoryClustersId
+      );
+
+      courses = Services.mapDataIntoCourse({
+        courses,
+        categories,
+        categoryClusters,
+      });
 
       entries = RegistrationsServices.mapCoursesIntoRegistrations({
         registrations: entries,

@@ -13,6 +13,7 @@ const PaginationConstant = require('../../constants/pagination.constant');
 const RegistrationServices = require('../registrations/registrations.service');
 const UsersServices = require('../users/users.service');
 const Services = require('../../services/services');
+const CategoryClusterServices = require('../category-clusters/category-clusters.service');
 
 const addCourse = async (req, res, next) => {
   logger.info(`${CoursesConstant.LOGGER.CONTROLLER}::addCourse::is called`);
@@ -158,6 +159,22 @@ const getCourseDetail = async (req, res, next) => {
         limit: 10,
       }
     );
+    const categories = await CategoriesServices.getCategoriesByIds([
+      course.categoryId,
+    ]);
+
+    const categoryClustersId = categories.map(
+      (category) => category.categoryClusterId
+    );
+    const categoryClusters = await CategoryClusterServices.findCategoryClustersByIds(
+      categoryClustersId
+    );
+
+    course = Services.mapDataIntoCourse({
+      courses: [course],
+      categories,
+      categoryClusters,
+    });
 
     responseData = {
       status: HttpStatus.OK,
@@ -166,7 +183,7 @@ const getCourseDetail = async (req, res, next) => {
           .GET_COURSE_DETAIL_SUCCESSFULLY,
       ],
       data: {
-        course,
+        course: course[0],
         lecturer: {
           ...Services.deleteFieldsUser(userInfo),
           roleInfo: role,
@@ -322,14 +339,33 @@ const getCoursesListByLecturer = async (req, res, next) => {
       categoryId: null,
     });
 
-    const { entries } = courses[0];
-    const meta =
-      entries.length > 0
-        ? courses[0].meta[0]
-        : {
-            _id: null,
-            totalItems: 0,
-          };
+    let { entries } = courses[0];
+    let meta = {
+      _id: null,
+      totalItems: 0,
+    };
+
+    if (entries.length > 0) {
+      meta = courses[0].meta[0];
+
+      const categoriesId = entries.map((course) => course.categoryId);
+      const categories = await CategoriesServices.getCategoriesByIds(
+        categoriesId
+      );
+
+      const categoryClustersId = categories.map(
+        (category) => category.categoryClusterId
+      );
+      const categoryClusters = await CategoryClusterServices.findCategoryClustersByIds(
+        categoryClustersId
+      );
+
+      entries = Services.mapDataIntoCourse({
+        courses: entries,
+        categories,
+        categoryClusters,
+      });
+    }
 
     responseData = {
       status: HttpStatus.OK,
@@ -409,25 +445,18 @@ const getCoursesListByCategory = async (req, res, next) => {
     if (entries.length > 0) {
       meta = courses[0].meta[0];
 
-      let lecturersId = entries.map((course) => course.lecturerId);
-      const lecturers = await LecturersServices.getLecturersByIds(lecturersId);
+      const categoryClusters = await CategoryClusterServices.findCategoryClustersByIds(
+        [category.categoryClusterId]
+      );
 
-      const usersId = lecturers.map((lecturer) => lecturer.userId);
-      const users = await UsersServices.getUsersByIds(usersId);
-
-      entries = Services.mapLecturersAndUsersIntoCourse({
-        lecturers,
-        users,
+      entries = Services.mapDataIntoCourse({
         courses: entries,
+        categories: [category],
+        categoryClusters,
       });
 
       entries = await CoursesServices.mapIsRegisteredFieldIntoCourses({
         roleId,
-        courses: entries,
-      });
-
-      entries = CoursesServices.mapCategoriesIntoCourses({
-        categories: [category],
         courses: entries,
       });
     }
@@ -490,6 +519,24 @@ const getCoursesListByCriteria = async (req, res, next) => {
 
     if (entries.length > 0) {
       meta = courses[0].meta[0];
+
+      const categoriesId = entries.map((course) => course.categoryId);
+      const categories = await CategoriesServices.getCategoriesByIds(
+        categoriesId
+      );
+
+      const categoryClustersId = categories.map(
+        (category) => category.categoryClusterId
+      );
+      const categoryClusters = await CategoryClusterServices.findCategoryClustersByIds(
+        categoryClustersId
+      );
+
+      entries = Services.mapDataIntoCourse({
+        courses: entries,
+        categories,
+        categoryClusters,
+      });
 
       entries = await CoursesServices.mapIsRegisteredFieldIntoCourses({
         roleId,

@@ -141,10 +141,33 @@ const findCategoryClusterById = async (categoryClusterId) => {
   }
 };
 
+const findCategoryClustersByIds = async (categoryClustersId) => {
+  logger.info(
+    `${CategoryClusterConstant.LOGGER.SERVICE}::findCategoryClustersByIds::is called`
+  );
+  try {
+    const categoryClusters = await CategoryClusterModel.find({
+      _id: { $in: categoryClustersId },
+    });
+
+    logger.info(
+      `${CategoryClusterConstant.LOGGER.SERVICE}::findCategoryClustersByIds::success`
+    );
+    return categoryClusters;
+  } catch (e) {
+    logger.error(
+      `${CategoryClusterConstant.LOGGER.SERVICE}::findCategoryClustersByIds::error`,
+      e
+    );
+    throw new Error(e);
+  }
+};
+
 module.exports = {
   getCategoryClustersInfoHasPagination,
   mapCategoryClusterDataWithCategoriesData,
   findCategoryClusterByName,
   createCategoryCluster,
   findCategoryClusterById,
+  findCategoryClustersByIds,
 };
