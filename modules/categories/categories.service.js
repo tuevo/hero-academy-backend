@@ -16,7 +16,7 @@ const getCategoriesByCategoryClusterId = async (categoryClusterId) => {
     return await CategoryModel.find({
       categoryClusterId: mongoose.Types.ObjectId(categoryClusterId),
       isDeleted: false,
-    });
+    }).sort({ createdAt: -1 });
   } catch (e) {
     logger.error(
       `${CategoryConstant.LOGGER.SERVICE}::getCategoriesByCategoryClusterId::error`,

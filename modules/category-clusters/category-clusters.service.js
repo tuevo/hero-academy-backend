@@ -63,6 +63,13 @@ const mapCategoryClusterDataWithCategoriesData = async (entries) => {
       })
     );
 
+    mapData.sort((categoryClusterA, categoryClusterB) => {
+      return (
+        new Date(categoryClusterB.createdAt) -
+        new Date(categoryClusterA.createdAt)
+      );
+    });
+
     logger.info(
       `${CategoryClusterConstant.LOGGER.SERVICE}::mapCategoryClusterDataWithCategoriesData::success`
     );
