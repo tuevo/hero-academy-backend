@@ -336,6 +336,19 @@ const updateUserInfo = async ({ fullName, avatar, user }) => {
   }
 };
 
+const getUsersByIds = async (usersId) => {
+  logger.info(`${UserConstant.LOGGER.SERVICE}::getUsersByIds::is called`);
+  try {
+    const users = await UserModel.find({ _id: { $in: usersId } });
+
+    logger.info(`${UserConstant.LOGGER.SERVICE}::getUsersByIds::success`);
+    return users;
+  } catch (e) {
+    logger.error(`${UserConstant.LOGGER.SERVICE}::getUsersByIds::Error`, e);
+    throw new Error(e);
+  }
+};
+
 module.exports = {
   findUserByNameOrEmail,
   mapUserInfo,
@@ -347,4 +360,5 @@ module.exports = {
   findUsersByRoleHasPagination,
   createUserHasLecturerRole,
   updateUserInfo,
+  getUsersByIds,
 };

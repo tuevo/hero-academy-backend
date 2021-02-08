@@ -45,8 +45,35 @@ const onlyUnique = (value, index, self) => {
   }
 };
 
+const mapLecturersAndUsersIntoCourse = ({ lecturers, users, courses }) => {
+  logger.info(`SERVICE::mapLecturersIntoUsers::is called`);
+  try {
+    const result = courses.map((course) => {
+      const lecturer = lecturers.find(
+        (lecturer) => lecturer._id.toString() === course.lecturerId.toString()
+      );
+
+      let user = lecturer
+        ? users.find(
+            (user) => user._id.toString() === lecturer.userId.toString()
+          )
+        : null;
+
+      user = user && deleteFieldsUser(user);
+
+      return { ...course, lecturer: user ? { ...user, lecturer } : user };
+    });
+    logger.info(`SERVICE::mapLecturersIntoUsers::success`);
+    return result;
+  } catch (e) {
+    logger.error(`SERVICE::mapLecturersIntoUsers::Error`, e);
+    throw new Error(e);
+  }
+};
+
 module.exports = {
   deleteFieldsUser,
   rounding,
   onlyUnique,
+  mapLecturersAndUsersIntoCourse,
 };

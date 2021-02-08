@@ -409,8 +409,25 @@ const getCoursesListByCategory = async (req, res, next) => {
     if (entries.length > 0) {
       meta = courses[0].meta[0];
 
+      let lecturersId = entries.map((course) => course.lecturerId);
+      const lecturers = await LecturersServices.getLecturersByIds(lecturersId);
+
+      const usersId = lecturers.map((lecturer) => lecturer.userId);
+      const users = await UsersServices.getUsersByIds(usersId);
+
+      entries = Services.mapLecturersAndUsersIntoCourse({
+        lecturers,
+        users,
+        courses: entries,
+      });
+
       entries = await CoursesServices.mapIsRegisteredFieldIntoCourses({
         roleId,
+        courses: entries,
+      });
+
+      entries = CoursesServices.mapCategoriesIntoCourses({
+        categories: [category],
         courses: entries,
       });
     }
@@ -418,8 +435,8 @@ const getCoursesListByCategory = async (req, res, next) => {
     responseData = {
       status: HttpStatus.OK,
       messages: [
-        CoursesConstant.MESSAGES.GET_COURSES_LIST_BY_LECTURER
-          .GET_COURSES_LIST_BY_LECTURER_SUCCESSFULLY,
+        CoursesConstant.MESSAGES.GET_COURSES_LIST_BY_CATEGORY
+          .GET_COURSES_LIST_BY_CATEGORY_SUCCESSFULLY,
       ],
       data: {
         entries,

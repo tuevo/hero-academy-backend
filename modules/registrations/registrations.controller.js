@@ -133,6 +133,9 @@ const getCoursesListRegistered = async (req, res, next) => {
 
       const courses = await CoursesServices.findCoursesByIds(coursesId);
 
+      const categoryId = courses.map((course) => course.categoryId);
+      const lecturerId = courses.map((course) => course.lecturerId);
+
       entries = RegistrationsServices.mapCoursesIntoRegistrations({
         registrations: entries,
         courses,

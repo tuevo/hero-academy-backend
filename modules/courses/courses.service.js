@@ -517,6 +517,32 @@ const mapIsRegisteredFieldIntoCourses = async ({ roleId, courses }) => {
   }
 };
 
+const mapCategoriesIntoCourses = ({ categories, courses }) => {
+  logger.info(
+    `${CoursesConstant.LOGGER.SERVICE}::mapCategoriesIntoCourses::is called`
+  );
+  try {
+    let result = courses.map((course) => {
+      const category = categories.find(
+        (category) => category._id.toString() === course.categoryId.toString()
+      );
+
+      return { ...course, category };
+    });
+
+    logger.info(
+      `${CoursesConstant.LOGGER.SERVICE}::mapCategoriesIntoCourses::success`
+    );
+    return result;
+  } catch (e) {
+    logger.error(
+      `${CoursesConstant.LOGGER.SERVICE}::mapCategoriesIntoCourses::error`,
+      e
+    );
+    throw new Error(e);
+  }
+};
+
 module.exports = {
   findCourseHasConditions,
   createCourse,
@@ -529,4 +555,5 @@ module.exports = {
   getCategoryWithTheMostEnrollmentCourses,
   findCoursesHasConditions,
   mapIsRegisteredFieldIntoCourses,
+  mapCategoriesIntoCourses,
 };

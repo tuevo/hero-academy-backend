@@ -202,6 +202,26 @@ const updateLecturerInfo = async ({ lecturer, introduction }) => {
   }
 };
 
+const getLecturersByIds = async (lecturersId) => {
+  logger.info(
+    `${LecturersConstant.LOGGER.SERVICE}::getLecturersByIds::is called`
+  );
+  try {
+    const lecturers = await LecturersModel.find({ _id: { $in: lecturersId } });
+
+    logger.info(
+      `${LecturersConstant.LOGGER.SERVICE}::getLecturersByIds::success`
+    );
+    return lecturers;
+  } catch (e) {
+    logger.error(
+      `${LecturersConstant.LOGGER.SERVICE}::getLecturersByIds::Error`,
+      e
+    );
+    throw new Error(e);
+  }
+};
+
 module.exports = {
   findLecturerByUserId,
   createLecturer,
@@ -211,4 +231,5 @@ module.exports = {
   findLecturerById,
   updateLecturerInfo,
   updateNumberOfStudents,
+  getLecturersByIds,
 };
