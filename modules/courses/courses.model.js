@@ -21,6 +21,7 @@ const courseSchema = new Schema(
     discountPercent: { type: Number, default: 0 },
     isDeleted: { type: Boolean, default: false },
     publicId: { type: String, default: null },
+    slug: { type: String, default: '' },
   },
   { timestamps: true, paranoid: true }
 );

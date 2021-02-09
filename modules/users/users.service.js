@@ -109,7 +109,6 @@ const createUser = async ({ avatar, password, fullName, email, otpCode }) => {
     const salt = bcrypt.genSaltSync(AuthConstant.SALT_LENGTH);
 
     const newUser = new UserModel({
-      avatarUrl: avatar || null,
       fullName: fullName || null,
       email,
       otpCode: otpCode || null,
