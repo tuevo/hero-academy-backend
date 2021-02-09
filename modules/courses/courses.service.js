@@ -310,7 +310,9 @@ const getCoursesListForHomePage = async ({
   );
   try {
     let sortStage = {};
-    let conditions = {};
+    let conditions = {
+      isDeleted: false,
+    };
 
     if (findBy) {
       sortStage[findBy] = isSortUpAscending ? 1 : -1;
@@ -355,6 +357,12 @@ const getCategoryWithTheMostEnrollmentCourses = async (limit) => {
     `${CoursesConstant.LOGGER.SERVICE}::getCategoryWithTheMostEnrollmentCourses::is called`
   );
   try {
+    const matchStage = {
+      $match: {
+        isDeleted: false,
+      },
+    };
+
     const projectStage = {
       $project: {
         categoryId: 1,
@@ -387,7 +395,14 @@ const getCategoryWithTheMostEnrollmentCourses = async (limit) => {
       $limit: limit,
     };
 
-    const query = [projectStage, sortStage, groupStage, sortStage1, limitStage];
+    const query = [
+      matchStage,
+      projectStage,
+      sortStage,
+      groupStage,
+      sortStage1,
+      limitStage,
+    ];
     logger.info(
       `${CoursesConstant.LOGGER.SERVICE}::getCategoryWithTheMostEnrollmentCourses::query`,
       JSON.stringify(query)
@@ -517,6 +532,51 @@ const mapIsRegisteredFieldIntoCourses = async ({ roleId, courses }) => {
   }
 };
 
+const findRegisteredCoursesByCategoryId = async (categoryId) => {
+  logger.info(
+    `${CoursesConstant.LOGGER.SERVICE}::findRegisteredCoursesByCategoryId::is called`
+  );
+  try {
+    const course = await CoursesModel.findOne({
+      categoryId: mongoose.Types.ObjectId(categoryId),
+      numberOfRegistrations: { $gt: 0 },
+      isDeleted: false,
+    });
+
+    logger.info(
+      `${CoursesConstant.LOGGER.SERVICE}::findRegisteredCoursesByCategoryId::is called`
+    );
+    return course;
+  } catch (e) {
+    logger.error(
+      `${CoursesConstant.LOGGER.SERVICE}::findRegisteredCoursesByCategoryId::error`,
+      e
+    );
+    throw new Error(e);
+  }
+};
+
+const removeCoursesByCategoryId = async ({ categoryId }) => {
+  logger.info(
+    `${CoursesConstant.LOGGER.SERVICE}::removeCoursesByCategoryId::is called`
+  );
+  try {
+    logger.info(
+      `${CoursesConstant.LOGGER.SERVICE}::removeCoursesByCategoryId::success`
+    );
+    return await CoursesModel.updateMany(
+      { categoryId: mongoose.Types.ObjectId(categoryId) },
+      { $set: { isDeleted: true } }
+    );
+  } catch (e) {
+    logger.error(
+      `${CoursesConstant.LOGGER.SERVICE}::removeCoursesByCategoryId::error`,
+      e
+    );
+    throw new Error(e);
+  }
+};
+
 module.exports = {
   findCourseHasConditions,
   createCourse,
@@ -529,4 +589,6 @@ module.exports = {
   getCategoryWithTheMostEnrollmentCourses,
   findCoursesHasConditions,
   mapIsRegisteredFieldIntoCourses,
+  findRegisteredCoursesByCategoryId,
+  removeCoursesByCategoryId,
 };

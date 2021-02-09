@@ -5,6 +5,7 @@ const HttpStatus = require('http-status-codes');
 const CategoriesConstant = require('./categories.constant');
 const CategoriesServices = require('./categories.service');
 const CategoryClusterServices = require('../category-clusters/category-clusters.service');
+const CoursesServices = require('../courses/courses.service');
 
 const addCategory = async (req, res, next) => {
   logger.info(
@@ -212,8 +213,28 @@ const deleteCategory = async (req, res, next) => {
       return res.status(HttpStatus.NOT_FOUND).json(responseData);
     }
 
+    const course = await CoursesServices.findRegisteredCoursesByCategoryId(
+      categoryId
+    );
+
+    if (course) {
+      responseData = {
+        status: HttpStatus.BAD_REQUEST,
+        messages: [
+          CategoriesConstant.MESSAGES.DELETE_CATEGORY
+            .CATEGORY_ALREADY_EXISTS_REGISTERED_COURSE,
+        ],
+      };
+
+      logger.info(
+        `${CategoriesConstant.LOGGER.CONTROLLER}::deleteCategory::category already exists registered course`
+      );
+      return res.status(HttpStatus.BAD_REQUEST).json(responseData);
+    }
+
     category['isDeleted'] = true;
     await category.save();
+    await CoursesServices.removeCoursesByCategoryId({ categoryId });
 
     responseData = {
       status: HttpStatus.OK,
