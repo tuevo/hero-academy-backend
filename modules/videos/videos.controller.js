@@ -87,7 +87,7 @@ const getVideosByChapter = async (req, res, next) => {
     const videos = await VideosServices.getVideosByChapterHasConditions({
       chapterId,
       sortBy: 'createdAt',
-      isSortUpAscending: false,
+      isSortUpAscending: true,
       limit,
     });
 

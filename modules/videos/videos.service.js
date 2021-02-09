@@ -135,9 +135,51 @@ const getVideosByChapterHasConditions = async ({
   }
 };
 
+const getVideoById = async (id) => {
+  logger.info(`${VideosConstant.LOGGER.SERVICE}::getVideoById::is called`);
+  try {
+    const video = await VideosModel.findOne({
+      _id: mongoose.Types.ObjectId(id),
+    });
+
+    logger.info(`${VideosConstant.LOGGER.SERVICE}::getVideoById::success`);
+    return video;
+  } catch (e) {
+    logger.error(`${VideosConstant.LOGGER.SERVICE}::getVideoById::error`, e);
+    throw new Error(e);
+  }
+};
+
+const updateNumberOfViews = async ({ videoId, cumulativeValue }) => {
+  logger.info(
+    `${VideosConstant.LOGGER.SERVICE}::updateNumberOfViews::is called`
+  );
+  try {
+    const condition = { $inc: { numberOfViews: cumulativeValue } };
+
+    await VideosModel.updateOne(
+      { _id: mongoose.Types.ObjectId(videoId) },
+      condition
+    );
+
+    logger.info(
+      `${VideosConstant.LOGGER.SERVICE}::updateNumberOfViews::success`
+    );
+    return;
+  } catch (e) {
+    logger.error(
+      `${VideosConstant.LOGGER.SERVICE}::updateNumberOfViews::error`,
+      e
+    );
+    throw new Error(e);
+  }
+};
+
 module.exports = {
   createVideo,
   getVideoByChapterHasPagination,
   findVideoByVideosId,
   getVideosByChapterHasConditions,
+  getVideoById,
+  updateNumberOfViews,
 };

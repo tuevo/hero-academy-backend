@@ -60,6 +60,9 @@ const {
 const {
   GetFeedbacksValidationSchema,
 } = require('../feedbacks/validations/get-feedbacks.schema');
+const {
+  AddVideosWatchingValidationSchema,
+} = require('../video-watchings/validations/add-video-watching.schema');
 
 router.get(
   '/',
@@ -211,6 +214,17 @@ router.get(
   CheckRoleMiddleware([RoleConstant.ROLE.STUDENT]),
   CheckCourseIdMiddleware({ isLecturer: false }),
   VideoWatchingsController.getVideoWatchings
+);
+router.post(
+  '/:courseId/video-watchings',
+  ValidateMiddleware(AddVideosWatchingValidationSchema, [
+    ParametersConstant.PARAMS,
+    ParametersConstant.BODY,
+  ]),
+  CheckAccessTokenMiddleware({ isRequired: true }),
+  CheckRoleMiddleware([RoleConstant.ROLE.STUDENT]),
+  CheckCourseIdMiddleware({ isLecturer: false }),
+  VideoWatchingsController.addVideoWatching
 );
 router.get(
   '/:courseId/lecturers',

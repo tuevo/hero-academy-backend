@@ -71,6 +71,7 @@ const addCourse = async (req, res, next) => {
       lecturerId: roleInfo._id,
       thumbnailUrl: imageInfo.url,
       publicId: imageInfo.public_id,
+      slug: title + ' - ' + category.name,
     };
 
     const course = await CoursesServices.createCourse(newCourse);

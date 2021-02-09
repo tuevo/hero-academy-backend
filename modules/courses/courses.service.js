@@ -188,7 +188,7 @@ const getCoursesByConditionsHasPagination = async ({
     if (keyword) {
       matchStage.$match['$or'] = [
         {
-          title: {
+          slug: {
             $regex: keyword,
             $options: 'i',
           },

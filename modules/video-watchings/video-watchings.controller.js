@@ -78,6 +78,75 @@ const getVideoWatchings = async (req, res, next) => {
   }
 };
 
+const addVideoWatching = async (req, res, next) => {
+  logger.info(
+    `${VideoWatchingsConstant.LOGGER.CONTROLLER}::addVideoWatching::is called`
+  );
+  try {
+    const { course } = req;
+    const { videoId } = req.body;
+    const roleInfo = req.user.roleInfo || null;
+    let responseData = null;
+
+    if (!roleInfo || !roleInfo._id) {
+      responseData = {
+        status: HttpStatus.NOT_FOUND,
+        messages: [
+          VideoWatchingsConstant.MESSAGES.ADD_VIDEO_WATCHING.STUDENT_NOT_FOUND,
+        ],
+      };
+
+      logger.info(
+        `${VideoWatchingsConstant.LOGGER.CONTROLLER}::addVideoWatching::student not found`
+      );
+      return res.status(HttpStatus.NOT_FOUND).json(responseData);
+    }
+
+    const video = await VideosServices.getVideoById(videoId);
+
+    if (!video) {
+      responseData = {
+        status: HttpStatus.NOT_FOUND,
+        messages: [
+          VideoWatchingsConstant.MESSAGES.ADD_VIDEO_WATCHING.VIDEO_NOT_FOUND,
+        ],
+      };
+
+      logger.info(
+        `${VideoWatchingsConstant.LOGGER.CONTROLLER}::addVideoWatching::video not found`
+      );
+      return res.status(HttpStatus.NOT_FOUND).json(responseData);
+    }
+
+    await VideoWatchingsServices.createVideoWatching({
+      studentId: roleInfo._id,
+      videoId,
+      courseId: course._id,
+    });
+    await VideosServices.updateNumberOfViews({ videoId, cumulativeValue: 1 });
+
+    responseData = {
+      status: HttpStatus.CREATED,
+      messages: [
+        VideoWatchingsConstant.MESSAGES.ADD_VIDEO_WATCHING
+          .ADDED_VIDEO_WATCHING_SUCCESSFULLY,
+      ],
+    };
+
+    logger.info(
+      `${VideoWatchingsConstant.LOGGER.CONTROLLER}::addVideoWatching::success`
+    );
+    return res.status(HttpStatus.CREATED).json(responseData);
+  } catch (e) {
+    logger.error(
+      `${VideoWatchingsConstant.LOGGER.CONTROLLER}::addVideoWatching::error`,
+      e
+    );
+    return next(e);
+  }
+};
+
 module.exports = {
   getVideoWatchings,
+  addVideoWatching,
 };
