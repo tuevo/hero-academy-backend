@@ -103,7 +103,7 @@ const isValidRefreshToken = async (id, refreshToken) => {
   }
 };
 
-const createUser = async ({ avatar, password, fullName, email, otpCode }) => {
+const createUser = async ({ password, fullName, email, otpCode }) => {
   logger.info(`${UserConstant.LOGGER.SERVICE}::createUser::is called`);
   try {
     const salt = bcrypt.genSaltSync(AuthConstant.SALT_LENGTH);
