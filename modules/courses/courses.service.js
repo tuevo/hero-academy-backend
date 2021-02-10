@@ -228,13 +228,13 @@ const getCoursesByConditionsHasPagination = async ({
     const query = [matchStage, sortStage, facetStage];
 
     logger.info(
-      `${CoursesConstant.LOGGER.SERVICE}::getRegistrationsHasPagination::query`,
+      `${CoursesConstant.LOGGER.SERVICE}::getCoursesByConditionsHasPagination::query`,
       JSON.stringify(query)
     );
     const result = await CoursesModel.aggregate(query);
 
     logger.info(
-      `${CoursesConstant.LOGGER.SERVICE}::getRegistrationsHasPagination::success`
+      `${CoursesConstant.LOGGER.SERVICE}::getCoursesByConditionsHasPagination::success`
     );
     return result;
   } catch (e) {
