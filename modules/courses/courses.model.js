@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 const ObjectId = mongoose.Types.ObjectId;
 
 const Schema = mongoose.Schema;
@@ -21,12 +21,12 @@ const courseSchema = new Schema(
     discountPercent: { type: Number, default: 0 },
     isDeleted: { type: Boolean, default: false },
     publicId: { type: String, default: null },
-    slug: { type: String, default: '' },
+    slug: { type: String, default: "" },
   },
   { timestamps: true, paranoid: true }
 );
 
-const CourseModel = mongoose.model('Course', courseSchema, 'Courses');
+const CourseModel = mongoose.model("Course", courseSchema, "Courses");
 
 module.exports = CourseModel;
 module.exports.Model = courseSchema;

@@ -1,12 +1,13 @@
-const log4js = require('log4js');
-const logger = log4js.getLogger('Services');
-const mongoose = require('mongoose');
+const log4js = require("log4js");
+const logger = log4js.getLogger("Services");
+const mongoose = require("mongoose");
+const slug = require("slug");
 
-const CoursesModel = require('./courses.model');
-const CoursesConstant = require('./courses.constant');
-const cloudinary = require('../../utils/cloudinary');
-const FileTypesCloudDinaryConstant = require('../../constants/file-types-cloudinary.constant');
-const RegistrationsServices = require('../registrations/registrations.service');
+const CoursesModel = require("./courses.model");
+const CoursesConstant = require("./courses.constant");
+const cloudinary = require("../../utils/cloudinary");
+const FileTypesCloudDinaryConstant = require("../../constants/file-types-cloudinary.constant");
+const RegistrationsServices = require("../registrations/registrations.service");
 
 const findCourseHasConditions = async ({ lecturerId, courseId }) => {
   logger.info(
@@ -18,11 +19,11 @@ const findCourseHasConditions = async ({ lecturerId, courseId }) => {
     };
 
     if (lecturerId) {
-      conditions['lecturerId'] = mongoose.Types.ObjectId(lecturerId);
+      conditions["lecturerId"] = mongoose.Types.ObjectId(lecturerId);
     }
 
     if (courseId) {
-      conditions['_id'] = mongoose.Types.ObjectId(courseId);
+      conditions["_id"] = mongoose.Types.ObjectId(courseId);
     }
 
     logger.info(
@@ -60,7 +61,7 @@ const updateCourse = async ({ course, updateInfo }) => {
       logger.info(
         `${CoursesConstant.LOGGER.SERVICE}::updateCourse::update categoryId`
       );
-      course['categoryId'] = updateInfo.categoryId;
+      course["categoryId"] = updateInfo.categoryId;
       isChange = true;
     }
 
@@ -68,7 +69,7 @@ const updateCourse = async ({ course, updateInfo }) => {
       logger.info(
         `${CoursesConstant.LOGGER.SERVICE}::updateCourse::update title`
       );
-      course['title'] = updateInfo.title;
+      course["title"] = updateInfo.title;
       isChange = true;
     }
 
@@ -76,7 +77,7 @@ const updateCourse = async ({ course, updateInfo }) => {
       logger.info(
         `${CoursesConstant.LOGGER.SERVICE}::updateCourse::update description`
       );
-      course['description'] = updateInfo.description;
+      course["description"] = updateInfo.description;
       isChange = true;
     }
 
@@ -84,7 +85,7 @@ const updateCourse = async ({ course, updateInfo }) => {
       logger.info(
         `${CoursesConstant.LOGGER.SERVICE}::updateCourse::update content`
       );
-      course['content'] = updateInfo.content;
+      course["content"] = updateInfo.content;
       isChange = true;
     }
 
@@ -92,8 +93,8 @@ const updateCourse = async ({ course, updateInfo }) => {
       logger.info(
         `${CoursesConstant.LOGGER.SERVICE}::updateCourse::update tuition`
       );
-      course['content'] = updateInfo.content;
-      course['tuition'] = updateInfo.tuition;
+      course["content"] = updateInfo.content;
+      course["tuition"] = updateInfo.tuition;
       isChange = true;
     }
 
@@ -101,16 +102,16 @@ const updateCourse = async ({ course, updateInfo }) => {
       logger.info(
         `${CoursesConstant.LOGGER.SERVICE}::updateCourse::update discountPercent`
       );
-      course['discountPercent'] = updateInfo.discountPercent;
+      course["discountPercent"] = updateInfo.discountPercent;
       isChange = true;
     }
 
     if (updateInfo.thumbnail) {
-      if (course['publicId']) {
+      if (course["publicId"]) {
         logger.info(
           `${CoursesConstant.LOGGER.SERVICE}::updateCourse::remove image`
         );
-        await cloudinary.deleteFile(course['publicId']);
+        await cloudinary.deleteFile(course["publicId"]);
       }
 
       logger.info(
@@ -120,8 +121,8 @@ const updateCourse = async ({ course, updateInfo }) => {
         updateInfo.thumbnail,
         FileTypesCloudDinaryConstant.image
       );
-      course['thumbnailUrl'] = thumbnailInfo.url;
-      course['publicId'] = thumbnailInfo.public_id;
+      course["thumbnailUrl"] = thumbnailInfo.url;
+      course["publicId"] = thumbnailInfo.public_id;
       isChange = true;
     }
 
@@ -178,20 +179,17 @@ const getCoursesByConditionsHasPagination = async ({
     };
 
     if (lecturerId) {
-      matchStage.$match['lecturerId'] = mongoose.Types.ObjectId(lecturerId);
+      matchStage.$match["lecturerId"] = mongoose.Types.ObjectId(lecturerId);
     }
 
     if (categoryId) {
-      matchStage.$match['categoryId'] = mongoose.Types.ObjectId(categoryId);
+      matchStage.$match["categoryId"] = mongoose.Types.ObjectId(categoryId);
     }
 
     if (keyword) {
-      matchStage.$match['$or'] = [
+      matchStage.$match["$or"] = [
         {
-          slug: {
-            $regex: keyword,
-            $options: 'i',
-          },
+          $text: { $search: slug(keyword) },
         },
         // {
         //   description: {
@@ -215,7 +213,7 @@ const getCoursesByConditionsHasPagination = async ({
     if (sortBy) {
       sortStage.$sort[sortBy] = isSortUpAscending ? 1 : -1;
     } else {
-      sortStage.$sort['averageRating'] = isSortUpAscending ? 1 : -1;
+      sortStage.$sort["averageRating"] = isSortUpAscending ? 1 : -1;
     }
 
     const facetStage = {
@@ -319,11 +317,11 @@ const getCoursesListForHomePage = async ({
     }
 
     if (isSortCreatedAt) {
-      sortStage['createdAt'] = isCreatedAtSortUpAscending ? 1 : -1;
+      sortStage["createdAt"] = isCreatedAtSortUpAscending ? 1 : -1;
     }
 
     if (startDate && endDate) {
-      conditions['createdAt'] = {
+      conditions["createdAt"] = {
         $gte: new Date(startDate),
         $lte: new Date(endDate),
       };
@@ -378,9 +376,9 @@ const getCategoryWithTheMostEnrollmentCourses = async (limit) => {
 
     const groupStage = {
       $group: {
-        _id: '$categoryId',
+        _id: "$categoryId",
         totalRegistration: {
-          $sum: '$numberOfRegistrations',
+          $sum: "$numberOfRegistrations",
         },
       },
     };
@@ -440,15 +438,15 @@ const findCoursesHasConditions = async ({
     let sortStage = {};
 
     if (lecturerId) {
-      conditions['lecturerId'] = mongoose.Types.ObjectId(lecturerId);
+      conditions["lecturerId"] = mongoose.Types.ObjectId(lecturerId);
     }
 
     if (courseId) {
-      conditions['_id'] = mongoose.Types.ObjectId(courseId);
+      conditions["_id"] = mongoose.Types.ObjectId(courseId);
     }
 
     if (categoryId) {
-      conditions['categoryId'] = mongoose.Types.ObjectId(categoryId);
+      conditions["categoryId"] = mongoose.Types.ObjectId(categoryId);
     }
 
     if (sortBy) {

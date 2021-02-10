@@ -1,19 +1,20 @@
-const log4js = require('log4js');
-const logger = log4js.getLogger('Controllers');
-const HttpStatus = require('http-status-codes');
+const log4js = require("log4js");
+const logger = log4js.getLogger("Controllers");
+const HttpStatus = require("http-status-codes");
+const slug = require("slug");
 
-const CoursesConstant = require('./courses.constant');
-const CoursesServices = require('./courses.service');
-const CategoriesServices = require('../categories/categories.service');
-const Cloudinary = require('../../utils/cloudinary');
-const FileTypesCloudinaryConstant = require('../../constants/file-types-cloudinary.constant');
-const AdminServices = require('../admins/admins.service');
-const LecturersServices = require('../lecturers/lecturers.service');
-const PaginationConstant = require('../../constants/pagination.constant');
-const RegistrationServices = require('../registrations/registrations.service');
-const UsersServices = require('../users/users.service');
-const Services = require('../../services/services');
-const CategoryClusterServices = require('../category-clusters/category-clusters.service');
+const CoursesConstant = require("./courses.constant");
+const CoursesServices = require("./courses.service");
+const CategoriesServices = require("../categories/categories.service");
+const Cloudinary = require("../../utils/cloudinary");
+const FileTypesCloudinaryConstant = require("../../constants/file-types-cloudinary.constant");
+const AdminServices = require("../admins/admins.service");
+const LecturersServices = require("../lecturers/lecturers.service");
+const PaginationConstant = require("../../constants/pagination.constant");
+const RegistrationServices = require("../registrations/registrations.service");
+const UsersServices = require("../users/users.service");
+const Services = require("../../services/services");
+const CategoryClusterServices = require("../category-clusters/category-clusters.service");
 
 const addCourse = async (req, res, next) => {
   logger.info(`${CoursesConstant.LOGGER.CONTROLLER}::addCourse::is called`);
@@ -71,13 +72,13 @@ const addCourse = async (req, res, next) => {
       lecturerId: roleInfo._id,
       thumbnailUrl: imageInfo.url,
       publicId: imageInfo.public_id,
-      slug: title + ' - ' + category.name,
+      slug: slug(title + " " + category.name),
     };
 
     const course = await CoursesServices.createCourse(newCourse);
     await AdminServices.updateNumberOfCourses(1);
     await LecturersServices.updateNumberOfCoursesPosted({
-      lecturerId: course['lecturerId'],
+      lecturerId: course["lecturerId"],
       cumulativeValue: 1,
     });
 
@@ -148,14 +149,14 @@ const getCourseDetail = async (req, res, next) => {
       return res.status(HttpStatus.NOT_FOUND).json(responseData);
     }
 
-    course['numberOfViews'] = course['numberOfViews'] + 1;
+    course["numberOfViews"] = course["numberOfViews"] + 1;
     isUpdate && (await course.save());
     course = JSON.parse(JSON.stringify(course));
-    course['isRegistered'] = !isUpdate;
+    course["isRegistered"] = !isUpdate;
     const mostRegisteredCourses = await CoursesServices.findCoursesHasConditions(
       {
         categoryId: course.categoryId,
-        sortBy: 'numberOfRegistrations',
+        sortBy: "numberOfRegistrations",
         isSortUpAscending: false,
         limit: 10,
       }
@@ -223,7 +224,7 @@ const updateCourse = async (req, res, next) => {
     let responseData = null;
 
     if (files && Object.keys(files).length !== 0) {
-      thumbnail = files['thumbnail'][0];
+      thumbnail = files["thumbnail"][0];
     }
 
     if (categoryId) {
@@ -281,11 +282,11 @@ const deleteCourse = async (req, res, next) => {
     const course = req.course;
     let responseData = null;
 
-    course['isDeleted'] = true;
+    course["isDeleted"] = true;
     await course.save();
     await AdminServices.updateNumberOfCourses(-1);
     await LecturersServices.updateNumberOfCoursesPosted({
-      lecturerId: course['lecturerId'],
+      lecturerId: course["lecturerId"],
       cumulativeValue: -1,
     });
 
