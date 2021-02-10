@@ -211,9 +211,11 @@ const getCoursesByConditionsHasPagination = async ({
     };
 
     if (sortBy) {
-      sortStage.$sort[sortBy] = isSortUpAscending ? 1 : -1;
+      sortStage.$sort[sortBy] =
+        isSortUpAscending === true || isSortUpAscending === "true" ? 1 : -1;
     } else {
-      sortStage.$sort["averageRating"] = isSortUpAscending ? 1 : -1;
+      sortStage.$sort["averageRating"] =
+        isSortUpAscending === true || isSortUpAscending === "true" ? 1 : -1;
     }
 
     const facetStage = {
@@ -313,11 +315,13 @@ const getCoursesListForHomePage = async ({
     };
 
     if (findBy) {
-      sortStage[findBy] = isSortUpAscending ? 1 : -1;
+      sortStage[findBy] =
+        isSortUpAscending === true || isSortUpAscending === "true" ? 1 : -1;
     }
 
     if (isSortCreatedAt) {
-      sortStage["createdAt"] = isCreatedAtSortUpAscending ? 1 : -1;
+      sortStage["createdAt"] =
+        isSortUpAscending === true || isSortUpAscending === "true" ? 1 : -1;
     }
 
     if (startDate && endDate) {
@@ -450,7 +454,8 @@ const findCoursesHasConditions = async ({
     }
 
     if (sortBy) {
-      sortStage[sortBy] = isSortUpAscending ? 1 : -1;
+      sortStage[sortBy] =
+        isSortUpAscending === true || isSortUpAscending === "true" ? 1 : -1;
     }
 
     if (sortBy && limit) {
@@ -512,10 +517,6 @@ const mapIsRegisteredFieldIntoCourses = async ({ roleId, courses }) => {
         }
       })
     );
-
-    result.sort((courseA, courseB) => {
-      return new Date(courseB.createdAt) - new Date(courseA.createdAt);
-    });
 
     logger.info(
       `${CoursesConstant.LOGGER.SERVICE}::mapIsRegisteredFieldIntoCourses::success`

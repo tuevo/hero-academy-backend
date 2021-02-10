@@ -1,11 +1,11 @@
-const log4js = require('log4js');
-const logger = log4js.getLogger('Services');
-const mongoose = require('mongoose');
+const log4js = require("log4js");
+const logger = log4js.getLogger("Services");
+const mongoose = require("mongoose");
 
-const FeedbacksConstant = require('./feedbacks.constant');
-const FeedbacksModel = require('./feedbacks.model');
-const RatingsServices = require('../ratings/ratings.services');
-const Services = require('../../services/services');
+const FeedbacksConstant = require("./feedbacks.constant");
+const FeedbacksModel = require("./feedbacks.model");
+const RatingsServices = require("../ratings/ratings.services");
+const Services = require("../../services/services");
 
 const createFeedback = async (info) => {
   logger.info(`${FeedbacksConstant.LOGGER.SERVICE}::createFeedback::is called`);
@@ -50,7 +50,7 @@ const createRating = async ({ lecturer, course, studentId, rating }) => {
       agvRatingOfCourse = result.agvRatingOfCourse;
       agvRatingOfLecturer = result.agvRatingOfLecturer;
 
-      ratingInfo['isDeleted'] = true;
+      ratingInfo["isDeleted"] = true;
     } else {
       const result = calculateAvgRatingWhenNotExistsInRatingsTable({
         lecturer,
@@ -61,8 +61,8 @@ const createRating = async ({ lecturer, course, studentId, rating }) => {
       agvRatingOfCourse = result.agvRatingOfCourse;
       agvRatingOfLecturer = result.agvRatingOfLecturer;
 
-      course['numberOfRatings'] = course['numberOfRatings'] + 1;
-      lecturer['numberOfRatings'] = lecturer['numberOfRatings'] + 1;
+      course["numberOfRatings"] = course["numberOfRatings"] + 1;
+      lecturer["numberOfRatings"] = lecturer["numberOfRatings"] + 1;
     }
 
     const newRating = await RatingsServices.createRating({
@@ -71,8 +71,8 @@ const createRating = async ({ lecturer, course, studentId, rating }) => {
       studentId,
     });
 
-    course['averageRating'] = agvRatingOfCourse;
-    lecturer['averageRating'] = agvRatingOfLecturer;
+    course["averageRating"] = agvRatingOfCourse;
+    lecturer["averageRating"] = agvRatingOfLecturer;
 
     await course.save();
     await lecturer.save();
@@ -99,9 +99,9 @@ const calculateAvgRatingWhenExistsInRatingsTable = ({
     let agvRatingOfCourse = 0;
     let agvRatingOfLecturer = 0;
 
-    if (course['numberOfRatings'] > 1) {
+    if (course["numberOfRatings"] > 1) {
       let oldRatingOfCourse =
-        course['averageRating'] * 2 - ratingInfo['rating'];
+        course["averageRating"] * 2 - ratingInfo["rating"];
       oldRatingOfCourse = Services.rounding(oldRatingOfCourse);
 
       agvRatingOfCourse = (oldRatingOfCourse + rating) / 2;
@@ -110,9 +110,9 @@ const calculateAvgRatingWhenExistsInRatingsTable = ({
       agvRatingOfCourse = rating;
     }
 
-    if (lecturer['numberOfRatings'] > 1) {
+    if (lecturer["numberOfRatings"] > 1) {
       let oldRatingOfLecturer =
-        lecturer['averageRating'] * 2 - ratingInfo['rating'];
+        lecturer["averageRating"] * 2 - ratingInfo["rating"];
       oldRatingOfLecturer = Services.rounding(oldRatingOfLecturer);
 
       agvRatingOfLecturer = (oldRatingOfLecturer + rating) / 2;
@@ -141,14 +141,14 @@ const calculateAvgRatingWhenNotExistsInRatingsTable = ({
   );
   try {
     let agvRatingOfCourse =
-      course['averageRating'] === 0
+      course["averageRating"] === 0
         ? rating
-        : Services.rounding((course['averageRating'] + rating) / 2);
+        : Services.rounding((course["averageRating"] + rating) / 2);
 
     let agvRatingOfLecturer =
-      lecturer['averageRating'] === 0
+      lecturer["averageRating"] === 0
         ? rating
-        : Services.rounding((lecturer['averageRating'] + rating) / 2);
+        : Services.rounding((lecturer["averageRating"] + rating) / 2);
 
     return { agvRatingOfCourse, agvRatingOfLecturer };
   } catch (e) {
@@ -180,17 +180,19 @@ const getFeedbacksByConditionsHasPagination = async ({
     };
 
     if (courseId) {
-      matchStage.$match['courseId'] = mongoose.Types.ObjectId(courseId);
+      matchStage.$match["courseId"] = mongoose.Types.ObjectId(courseId);
     }
 
     if (studentId) {
-      matchStage.$match['studentId'] = mongoose.Types.ObjectId(studentId);
+      matchStage.$match["studentId"] = mongoose.Types.ObjectId(studentId);
     }
 
     if (sortBy) {
-      sortStage.$sort[sortBy] = isSortUpAscending ? 1 : -1;
+      sortStage.$sort[sortBy] =
+        isSortUpAscending === true || isSortUpAscending === "true" ? 1 : -1;
     } else {
-      sortStage.$sort['createdAt'] = isSortUpAscending ? 1 : -1;
+      sortStage.$sort["createdAt"] =
+        isSortUpAscending === true || isSortUpAscending === "true" ? 1 : -1;
     }
 
     const facetStage = {

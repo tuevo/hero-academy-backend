@@ -1,9 +1,9 @@
-const log4js = require('log4js');
-const logger = log4js.getLogger('Services');
-const mongoose = require('mongoose');
+const log4js = require("log4js");
+const logger = log4js.getLogger("Services");
+const mongoose = require("mongoose");
 
-const VideosModel = require('./videos.model');
-const VideosConstant = require('./videos.constant');
+const VideosModel = require("./videos.model");
+const VideosConstant = require("./videos.constant");
 
 const createVideo = async (videoInfo) => {
   logger.info(`${VideosConstant.LOGGER.SERVICE}::createVideo::is called`);
@@ -101,14 +101,15 @@ const getVideosByChapterHasConditions = async ({
       logger.info(
         `${VideosConstant.LOGGER.SERVICE}::getVideosByChapterHasConditions::find by chapter`
       );
-      conditions['chapterId'] = mongoose.Types.ObjectId(chapterId);
+      conditions["chapterId"] = mongoose.Types.ObjectId(chapterId);
     }
 
     if (sortBy) {
       logger.info(
         `${VideosConstant.LOGGER.SERVICE}::getVideosByChapterHasConditions::sort`
       );
-      sortStage[sortBy] = isSortUpAscending ? 1 : -1;
+      sortStage[sortBy] =
+        isSortUpAscending === true || isSortUpAscending === "true" ? 1 : -1;
     }
 
     if (limit) {
