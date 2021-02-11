@@ -1,17 +1,17 @@
-const log4js = require('log4js');
-const logger = log4js.getLogger('Services');
-const mongoose = require('mongoose');
-const bcrypt = require('bcrypt');
-const randomString = require('randomstring');
+const log4js = require("log4js");
+const logger = log4js.getLogger("Services");
+const mongoose = require("mongoose");
+const bcrypt = require("bcrypt");
+const randomString = require("randomstring");
 
-const UserModel = require('./users.model');
-const UserConstant = require('./users.constant');
-const AuthConstant = require('../auth/auth.constant');
-const AdminsServices = require('../admins/admins.service');
-const LecturersServices = require('../lecturers/lecturers.service');
-const StudentsServices = require('../students/students.service');
-const cloudinary = require('../../utils/cloudinary');
-const FileTypesCloudDinaryConstant = require('../../constants/file-types-cloudinary.constant');
+const UserModel = require("./users.model");
+const UserConstant = require("./users.constant");
+const AuthConstant = require("../auth/auth.constant");
+const AdminsServices = require("../admins/admins.service");
+const LecturersServices = require("../lecturers/lecturers.service");
+const StudentsServices = require("../students/students.service");
+const cloudinary = require("../../utils/cloudinary");
+const FileTypesCloudDinaryConstant = require("../../constants/file-types-cloudinary.constant");
 
 const findUserByNameOrEmail = async (nameOrEmail) => {
   logger.info(
@@ -251,19 +251,17 @@ const findUsersByRoleHasPagination = async ({ role, page, limit }) => {
   }
 };
 
-const createUserHasLecturerRole = async ({ email, password }) => {
+const createUserHasLecturerRole = async ({ email, password, fullName }) => {
   logger.info(
     `${UserConstant.LOGGER.SERVICE}::createUserHasLecturerRole::is called`
   );
   try {
     const salt = bcrypt.genSaltSync(AuthConstant.SALT_LENGTH);
-    const fullName = randomString.generate({
-      length: 5,
-      charset: 'alphabetic',
-    });
 
     const newUser = new UserModel({
-      fullName: fullName,
+      fullName: fullName
+        ? fullName
+        : randomString.generate({ length: 5, charset: "alphabetic" }),
       email,
       passwordSalt: salt,
       passwordHash: bcrypt.hashSync(password, salt),
@@ -296,16 +294,16 @@ const updateUserInfo = async ({ fullName, avatar, user }) => {
       logger.info(
         `${UserConstant.LOGGER.SERVICE}::updateUserInfo::update full name`
       );
-      user['fullName'] = fullName;
+      user["fullName"] = fullName;
       isChange = true;
     }
 
     if (avatar) {
-      if (user['publicId']) {
+      if (user["publicId"]) {
         logger.info(
           `${UserConstant.LOGGER.SERVICE}::updateUserInfo::remove image`
         );
-        await cloudinary.deleteFile(course['publicId']);
+        await cloudinary.deleteFile(course["publicId"]);
       }
 
       logger.info(
@@ -315,8 +313,8 @@ const updateUserInfo = async ({ fullName, avatar, user }) => {
         avatar,
         FileTypesCloudDinaryConstant.image
       );
-      user['avatarUrl'] = avatarInfo.url;
-      user['publicId'] = avatarInfo.public_id;
+      user["avatarUrl"] = avatarInfo.url;
+      user["publicId"] = avatarInfo.public_id;
       isChange = true;
     }
 

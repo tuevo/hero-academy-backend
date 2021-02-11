@@ -1,11 +1,11 @@
-const log4js = require('log4js');
-const logger = log4js.getLogger('Controllers');
-const HttpStatus = require('http-status-codes');
+const log4js = require("log4js");
+const logger = log4js.getLogger("Controllers");
+const HttpStatus = require("http-status-codes");
 
-const VideoWatchingsServices = require('./video-watchings.service');
-const VideoWatchingsConstant = require('./video-watchings.constant');
-const VideosServices = require('../videos/videos.service');
-const PaginationConstant = require('../../constants/pagination.constant');
+const VideoWatchingsServices = require("./video-watchings.service");
+const VideoWatchingsConstant = require("./video-watchings.constant");
+const VideosServices = require("../videos/videos.service");
+const PaginationConstant = require("../../constants/pagination.constant");
 
 const getVideoWatchings = async (req, res, next) => {
   logger.info(
@@ -37,13 +37,15 @@ const getVideoWatchings = async (req, res, next) => {
     );
 
     let { entries } = videoWatchings[0];
-    let meta = {
-      _id: null,
-      totalItems: 0,
-    };
+    const meta =
+      videoWatchings[0].meta.length > 0
+        ? videoWatchings[0].meta[0]
+        : {
+            _id: null,
+            totalItems: 0,
+          };
 
     if (entries.length > 0) {
-      meta = videoWatchings[0].meta[0];
       const videosId = entries.map((info) => info.videoId);
       const videos = await VideosServices.findVideoByVideosId(videosId);
 

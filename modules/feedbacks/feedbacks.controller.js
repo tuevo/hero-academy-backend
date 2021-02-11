@@ -1,15 +1,15 @@
-const log4js = require('log4js');
-const logger = log4js.getLogger('Controllers');
-const HttpStatus = require('http-status-codes');
-const mongoose = require('mongoose');
+const log4js = require("log4js");
+const logger = log4js.getLogger("Controllers");
+const HttpStatus = require("http-status-codes");
+const mongoose = require("mongoose");
 
-const FeedbacksConstant = require('./feedbacks.constant');
-const FeedbacksServices = require('./feedbacks.service');
-const LecturersServices = require('../lecturers/lecturers.service');
-const RatingsServices = require('../ratings/ratings.services');
-const RegistrationsServices = require('../registrations/registrations.service');
-const PaginationConstant = require('../../constants/pagination.constant');
-const Services = require('../../services/services');
+const FeedbacksConstant = require("./feedbacks.constant");
+const FeedbacksServices = require("./feedbacks.service");
+const LecturersServices = require("../lecturers/lecturers.service");
+const RatingsServices = require("../ratings/ratings.services");
+const RegistrationsServices = require("../registrations/registrations.service");
+const PaginationConstant = require("../../constants/pagination.constant");
+const Services = require("../../services/services");
 
 const addFeedback = async (req, res, next) => {
   logger.info(`${FeedbacksConstant.LOGGER.CONTROLLER}::addFeedback::is called`);
@@ -109,13 +109,15 @@ const getFeedbacks = async (req, res, next) => {
     );
 
     let { entries } = feedbacks[0];
-    let meta = {
-      _id: null,
-      totalItems: 0,
-    };
+    const meta =
+      feedbacks[0].meta.length > 0
+        ? feedbacks[0].meta[0]
+        : {
+            _id: null,
+            totalItems: 0,
+          };
 
     if (entries.length !== 0) {
-      meta = feedbacks[0].meta[0];
       let coursesId = entries.map((feedback) => feedback.courseId.toString());
       coursesId = coursesId
         .filter(Services.onlyUnique)

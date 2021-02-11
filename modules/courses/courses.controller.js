@@ -342,14 +342,15 @@ const getCoursesListByLecturer = async (req, res, next) => {
     });
 
     let { entries } = courses[0];
-    let meta = {
-      _id: null,
-      totalItems: 0,
-    };
+    const meta =
+      courses[0].meta.length > 0
+        ? courses[0].meta[0]
+        : {
+            _id: null,
+            totalItems: 0,
+          };
 
     if (entries.length > 0) {
-      meta = courses[0].meta[0];
-
       const categoriesId = entries.map((course) => course.categoryId);
       const categories = await CategoriesServices.getCategoriesByIds(
         categoriesId
@@ -439,14 +440,15 @@ const getCoursesListByCategory = async (req, res, next) => {
     });
 
     let { entries } = courses[0];
-    let meta = {
-      _id: null,
-      totalItems: 0,
-    };
+    const meta =
+      courses[0].meta.length > 0
+        ? courses[0].meta[0]
+        : {
+            _id: null,
+            totalItems: 0,
+          };
 
     if (entries.length > 0) {
-      meta = courses[0].meta[0];
-
       const categoryClusters = await CategoryClusterServices.findCategoryClustersByIds(
         [category.categoryClusterId]
       );
@@ -514,14 +516,15 @@ const getCoursesListByCriteria = async (req, res, next) => {
     });
 
     let { entries } = courses[0];
-    let meta = {
-      _id: null,
-      totalItems: 0,
-    };
+    const meta =
+      courses[0].meta.length > 0
+        ? courses[0].meta[0]
+        : {
+            _id: null,
+            totalItems: 0,
+          };
 
     if (entries.length > 0) {
-      meta = courses[0].meta[0];
-
       const categoriesId = entries.map((course) => course.categoryId);
       const categories = await CategoriesServices.getCategoriesByIds(
         categoriesId

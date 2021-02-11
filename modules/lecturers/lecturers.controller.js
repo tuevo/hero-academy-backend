@@ -1,16 +1,16 @@
-const log4js = require('log4js');
-const logger = log4js.getLogger('Controllers');
-const HttpStatus = require('http-status-codes');
-const randomString = require('randomstring');
+const log4js = require("log4js");
+const logger = log4js.getLogger("Controllers");
+const HttpStatus = require("http-status-codes");
+const randomString = require("randomstring");
 
-const LecturersConstant = require('./lecturers.constant');
-const LecturersServices = require('./lecturers.service');
-const UsersConstant = require('../users/users.constant');
-const UsersServices = require('../users/users.service');
-const PaginationConstant = require('../../constants/pagination.constant');
-const Services = require('../../services/services');
-const SendGrid = require('../../utils/send-grid');
-const AdminsServices = require('../admins/admins.service');
+const LecturersConstant = require("./lecturers.constant");
+const LecturersServices = require("./lecturers.service");
+const UsersConstant = require("../users/users.constant");
+const UsersServices = require("../users/users.service");
+const PaginationConstant = require("../../constants/pagination.constant");
+const Services = require("../../services/services");
+const SendGrid = require("../../utils/send-grid");
+const AdminsServices = require("../admins/admins.service");
 
 const getLecturersList = async (req, res, next) => {
   logger.info(
@@ -28,13 +28,15 @@ const getLecturersList = async (req, res, next) => {
     });
 
     let { entries } = users[0];
-    let meta = {
-      _id: null,
-      totalItems: 0,
-    };
+    const meta =
+      users[0].meta.length > 0
+        ? users[0].meta[0]
+        : {
+            _id: null,
+            totalItems: 0,
+          };
 
     if (entries.length > 0) {
-      meta = users[0].meta[0];
       const usersId = entries.map((user) => user._id);
       const lecturers = await LecturersServices.getLecturersByUsersId(usersId);
 
@@ -146,10 +148,10 @@ const deleteLecturer = async (req, res, next) => {
       return res.status(HttpStatus.NOT_FOUND).json(responseData);
     }
 
-    user['isDeleted'] = true;
-    role['isDeleted'] = true;
+    user["isDeleted"] = true;
+    //role["isDeleted"] = true;
     await user.save();
-    await role.save();
+    //await role.save();
     await AdminsServices.updateNumberOfLecturers(-1);
 
     responseData = {
@@ -178,7 +180,7 @@ const createdLecturer = async (req, res, next) => {
     `${LecturersConstant.LOGGER.CONTROLLER}::createdLecturer::is called`
   );
   try {
-    const { email } = req.body;
+    const { email, fullName } = req.body;
     let responseData = null;
 
     let user = await UsersServices.findUserByNameOrEmail(email);
@@ -199,10 +201,10 @@ const createdLecturer = async (req, res, next) => {
 
     const password = randomString.generate({
       length: 8,
-      charset: 'alphanumeric',
+      charset: "alphanumeric",
     });
-    user = await UsersServices.createUserHasLecturerRole({ email, password });
-    await SendGrid.sendAuthorizationMail({ email, password });
+    user = await UsersServices.createUserHasLecturerRole({ email, password, fullName });
+    await SendGrid.sendAuthorizationMail({ email, password, fullName });
     await AdminsServices.updateNumberOfLecturers(1);
 
     responseData = {

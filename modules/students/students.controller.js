@@ -1,14 +1,14 @@
-const log4js = require('log4js');
-const logger = log4js.getLogger('Controllers');
-const HttpStatus = require('http-status-codes');
+const log4js = require("log4js");
+const logger = log4js.getLogger("Controllers");
+const HttpStatus = require("http-status-codes");
 
-const StudentsConstant = require('./students.constant');
-const StudentsServices = require('./students.service');
-const UsersConstant = require('../users/users.constant');
-const UsersServices = require('../users/users.service');
-const PaginationConstant = require('../../constants/pagination.constant');
-const Services = require('../../services/services');
-const AdminsService = require('../admins/admins.service');
+const StudentsConstant = require("./students.constant");
+const StudentsServices = require("./students.service");
+const UsersConstant = require("../users/users.constant");
+const UsersServices = require("../users/users.service");
+const PaginationConstant = require("../../constants/pagination.constant");
+const Services = require("../../services/services");
+const AdminsService = require("../admins/admins.service");
 
 const getStudentsList = async (req, res, next) => {
   logger.info(
@@ -26,13 +26,15 @@ const getStudentsList = async (req, res, next) => {
     });
 
     let { entries } = users[0];
-    let meta = {
-      _id: null,
-      totalItems: 0,
-    };
+    const meta =
+      users[0].meta.length > 0
+        ? users[0].meta[0]
+        : {
+            _id: null,
+            totalItems: 0,
+          };
 
     if (entries.length > 0) {
-      meta = users[0].meta[0];
       const usersId = entries.map((user) => user._id);
       const students = await StudentsServices.getStudentsByUsersId(usersId);
 
@@ -141,7 +143,7 @@ const deleteStudent = async (req, res, next) => {
       return res.status(HttpStatus.NOT_FOUND).json(responseData);
     }
 
-    user['isDeleted'] = true;
+    user["isDeleted"] = true;
     await user.save();
     await AdminsService.updateNumberOfStudents(-1);
 

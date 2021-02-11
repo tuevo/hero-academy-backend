@@ -1,15 +1,15 @@
-const log4js = require('log4js');
-const logger = log4js.getLogger('Controllers');
-const HttpStatus = require('http-status-codes');
+const log4js = require("log4js");
+const logger = log4js.getLogger("Controllers");
+const HttpStatus = require("http-status-codes");
 
-const FavoritesConstant = require('./favorites.constant');
-const FavoritesServices = require('./favorites.service');
-const PaginationConstant = require('../../constants/pagination.constant');
-const StudentServices = require('../students/students.service');
-const CoursesServices = require('../courses/courses.service');
-const CategoriesServices = require('../categories/categories.service');
-const CategoryClusterServices = require('../category-clusters/category-clusters.service');
-const Services = require('../../services/services');
+const FavoritesConstant = require("./favorites.constant");
+const FavoritesServices = require("./favorites.service");
+const PaginationConstant = require("../../constants/pagination.constant");
+const StudentServices = require("../students/students.service");
+const CoursesServices = require("../courses/courses.service");
+const CategoriesServices = require("../categories/categories.service");
+const CategoryClusterServices = require("../category-clusters/category-clusters.service");
+const Services = require("../../services/services");
 
 const getFavoritesList = async (req, res, next) => {
   logger.info(
@@ -40,14 +40,15 @@ const getFavoritesList = async (req, res, next) => {
     );
 
     let { entries } = favorites[0];
-    let meta = {
-      _id: null,
-      totalItems: 0,
-    };
+    const meta =
+      favorites[0].meta.length > 0
+        ? favorites[0].meta[0]
+        : {
+            _id: null,
+            totalItems: 0,
+          };
 
     if (entries.length > 0) {
-      console.log('hihi');
-      meta = favorites[0].meta[0];
       const coursesId = entries.map((favorite) => favorite.courseId);
 
       let courses = await CoursesServices.findCoursesByIds(coursesId);
@@ -146,8 +147,8 @@ const createFavoriteCourse = async (req, res, next) => {
     });
 
     if (favorite) {
-      if (favorite['isDeleted']) {
-        favorite['isDeleted'] = false;
+      if (favorite["isDeleted"]) {
+        favorite["isDeleted"] = false;
         await favorite.save();
         await StudentServices.updateNumberOfFavoriteCourses({
           studentId: roleInfo._id,
@@ -231,8 +232,8 @@ const removeTheCourseFromFavorites = async (req, res, next) => {
       return res.status(HttpStatus.NOT_FOUND).json(responseData);
     }
 
-    if (!favorite['isDeleted']) {
-      favorite['isDeleted'] = true;
+    if (!favorite["isDeleted"]) {
+      favorite["isDeleted"] = true;
       await favorite.save();
       await StudentServices.updateNumberOfFavoriteCourses({
         studentId: roleInfo._id,

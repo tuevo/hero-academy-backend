@@ -1,10 +1,10 @@
-const log4js = require('log4js');
-const logger = log4js.getLogger('Controllers');
-const HttpStatus = require('http-status-codes');
+const log4js = require("log4js");
+const logger = log4js.getLogger("Controllers");
+const HttpStatus = require("http-status-codes");
 
-const CategoryClustersConstant = require('./category-clusters.constant');
-const CategoryClustersServices = require('./category-clusters.service');
-const PaginationConstant = require('../../constants/pagination.constant');
+const CategoryClustersConstant = require("./category-clusters.constant");
+const CategoryClustersServices = require("./category-clusters.service");
+const PaginationConstant = require("../../constants/pagination.constant");
 
 const getCategoryClustersInfo = async (req, res, next) => {
   logger.info(
@@ -20,13 +20,15 @@ const getCategoryClustersInfo = async (req, res, next) => {
     );
 
     let { entries } = categoryData[0];
-    let meta = {
-      _id: null,
-      totalItems: 0,
-    };
+    const meta =
+      categoryData[0].meta.length > 0
+        ? categoryData[0].meta[0]
+        : {
+            _id: null,
+            totalItems: 0,
+          };
 
     if (entries.length !== 0) {
-      meta = categoryData[0].meta[0];
       entries = await CategoryClustersServices.mapCategoryClusterDataWithCategoriesData(
         entries
       );

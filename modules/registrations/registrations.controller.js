@@ -1,16 +1,16 @@
-const log4js = require('log4js');
-const logger = log4js.getLogger('Controllers');
-const HttpStatus = require('http-status-codes');
+const log4js = require("log4js");
+const logger = log4js.getLogger("Controllers");
+const HttpStatus = require("http-status-codes");
 
-const RegistrationsServices = require('./registrations.service');
-const RegistrationsConstant = require('./registrations.constant');
-const StudentsServices = require('../students/students.service');
-const CoursesServices = require('../courses/courses.service');
-const PaginationConstant = require('../../constants/pagination.constant');
-const LecturersServices = require('../lecturers/lecturers.service');
-const CategoriesServices = require('../categories/categories.service');
-const CategoryClusterServices = require('../category-clusters/category-clusters.service');
-const Services = require('../../services/services');
+const RegistrationsServices = require("./registrations.service");
+const RegistrationsConstant = require("./registrations.constant");
+const StudentsServices = require("../students/students.service");
+const CoursesServices = require("../courses/courses.service");
+const PaginationConstant = require("../../constants/pagination.constant");
+const LecturersServices = require("../lecturers/lecturers.service");
+const CategoriesServices = require("../categories/categories.service");
+const CategoryClusterServices = require("../category-clusters/category-clusters.service");
+const Services = require("../../services/services");
 
 const registerTheCourse = async (req, res, next) => {
   logger.info(
@@ -125,13 +125,15 @@ const getCoursesListRegistered = async (req, res, next) => {
     );
 
     let { entries } = registrations[0];
-    let meta = {
-      _id: null,
-      totalItems: 0,
-    };
+    const meta =
+      registrations[0].meta.length > 0
+        ? registrations[0].meta[0]
+        : {
+            _id: null,
+            totalItems: 0,
+          };
 
     if (entries.length > 0) {
-      meta = registrations[0].meta[0];
       const coursesId = entries.map((registration) => registration.courseId);
 
       let courses = await CoursesServices.findCoursesByIds(coursesId);
