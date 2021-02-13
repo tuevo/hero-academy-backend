@@ -494,10 +494,11 @@ const getCoursesListByCategory = async (req, res, next) => {
       data: {
         entries,
         meta,
-        categoryCluster:
-          categoryClusters.length > 0
-            ? { ...JSON.parse(JSON.stringify(categoryClusters[0])), category }
-            : null,
+        category: {
+          ...JSON.parse(JSON.stringify(category)),
+          categoryCluster:
+            categoryClusters.length > 0 ? categoryClusters[0] : null,
+        },
       },
     };
 
