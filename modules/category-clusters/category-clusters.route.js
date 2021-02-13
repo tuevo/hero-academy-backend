@@ -20,7 +20,6 @@ router.get(
   ValidateMiddleware(GetCategoryClustersValidationSchema, [
     ParametersConstant.QUERY,
   ]),
-  CheckAccessTokenMiddleware({ isRequired: true }),
   CategoryClustersController.getCategoryClustersInfo
 );
 router.post(
