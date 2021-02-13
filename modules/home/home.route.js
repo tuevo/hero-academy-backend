@@ -1,8 +1,14 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router({});
 
-const HomeController = require('./home.controller');
+const HomeController = require("./home.controller");
 
-router.get('/', HomeController.getCoursesListForHomePage);
+const CheckAccessTokenMiddleware = require("../../middleware/check-access-token.middleware");
+
+router.get(
+  "/",
+  CheckAccessTokenMiddleware({ isRequired: false }),
+  HomeController.getCoursesListForHomePage
+);
 
 module.exports = router;
