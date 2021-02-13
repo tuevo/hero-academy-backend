@@ -189,7 +189,7 @@ const createdLecturer = async (req, res, next) => {
       responseData = {
         status: HttpStatus.BAD_REQUEST,
         messages: [
-          LecturersConstant.MESSAGES.CREATE_LECTURER.EMAIL_ALREADY_EXIST,
+          LecturersConstant.MESSAGES.CREATE_LECTURER.EMAIL_ALREADY_EXISTS,
         ],
       };
 
@@ -203,7 +203,12 @@ const createdLecturer = async (req, res, next) => {
       length: 8,
       charset: "alphanumeric",
     });
-    user = await UsersServices.createUserHasLecturerRole({ email, password, fullName });
+    user = await UsersServices.createUserHasLecturerRole({
+      email,
+      password,
+      fullName,
+    });
+
     await SendGrid.sendAuthorizationMail({ email, password, fullName });
     await AdminsServices.updateNumberOfLecturers(1);
 
