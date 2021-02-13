@@ -15,6 +15,7 @@ const RegistrationServices = require("../registrations/registrations.service");
 const UsersServices = require("../users/users.service");
 const Services = require("../../services/services");
 const CategoryClusterServices = require("../category-clusters/category-clusters.service");
+const FavoritesServices = require("../favorites/favorites.service");
 
 const addCourse = async (req, res, next) => {
   logger.info(`${CoursesConstant.LOGGER.CONTROLLER}::addCourse::is called`);
@@ -107,14 +108,20 @@ const getCourseDetail = async (req, res, next) => {
     const { user } = req;
     const roleInfo = !user ? null : user.roleInfo;
     let isUpdate = true;
+    let isFavorite = false;
     let responseData = null;
 
     if (roleInfo && roleInfo._id) {
       const registration = await RegistrationServices.findRegistrationsHasConditions(
         { studentId: roleInfo._id, courseId: course._id }
       );
+      const favorite = await FavoritesServices.findFavoriteHasConditions({
+        studentId: roleInfo._id,
+        courseId: course.id,
+      });
 
       if (registration) isUpdate = false;
+      if (favorite) isFavorite = true;
     }
 
     const role = await LecturersServices.findLecturerById(course.lecturerId);
@@ -153,6 +160,7 @@ const getCourseDetail = async (req, res, next) => {
     isUpdate && (await course.save());
     course = JSON.parse(JSON.stringify(course));
     course["isRegistered"] = !isUpdate;
+    course["isFavorite"] = isFavorite;
     course["lecturer"] = {
       ...Services.deleteFieldsUser(userInfo),
       roleInfo: role,
