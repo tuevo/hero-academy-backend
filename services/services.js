@@ -1,5 +1,5 @@
-const log4js = require('log4js');
-const logger = log4js.getLogger('Services');
+const log4js = require("log4js");
+const logger = log4js.getLogger("Services");
 
 const deleteFieldsUser = (user) => {
   logger.info(`SERVICE::deleteFieldsUser::is called`);
@@ -45,7 +45,13 @@ const onlyUnique = (value, index, self) => {
   }
 };
 
-const mapDataIntoCourse = ({ courses, categories, categoryClusters }) => {
+const mapDataIntoCourse = ({
+  courses,
+  categories,
+  categoryClusters,
+  lecturers,
+  users,
+}) => {
   logger.info(`SERVICE::mapDataIntoCourse::is called`);
   try {
     const result = courses.map((course) => {
@@ -65,12 +71,34 @@ const mapDataIntoCourse = ({ courses, categories, categoryClusters }) => {
         : null;
       categoryCluster = JSON.parse(JSON.stringify(categoryCluster));
 
-      return {
-        ...courseJsonParse,
-        categoryCluster: categoryCluster
-          ? { ...categoryCluster, category }
-          : categoryCluster,
-      };
+      const lecturer = lecturers.find(
+        (lecturer) => lecturer._id.toString() === course.lecturerId.toString()
+      );
+
+      let user = lecturer
+        ? users.find(
+            (user) => user._id.toString() === lecturer.userId.toString()
+          )
+        : null;
+
+      user = user && deleteFieldsUser(user);
+
+      if (users.length > 0) {
+        return {
+          ...courseJsonParse,
+          lecturer: user ? { ...user, roleInfo: lecturer } : user,
+          categoryCluster: categoryCluster
+            ? { ...categoryCluster, categories: [category] }
+            : categoryCluster,
+        };
+      } else {
+        return {
+          ...courseJsonParse,
+          categoryCluster: categoryCluster
+            ? { ...categoryCluster, categories: [category] }
+            : categoryCluster,
+        };
+      }
     });
     logger.info(`SERVICE::mapDataIntoCourse::success`);
     return result;

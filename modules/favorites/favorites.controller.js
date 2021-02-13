@@ -10,6 +10,8 @@ const CoursesServices = require("../courses/courses.service");
 const CategoriesServices = require("../categories/categories.service");
 const CategoryClusterServices = require("../category-clusters/category-clusters.service");
 const Services = require("../../services/services");
+const LecturersServices = require("../lecturers/lecturers.service");
+const UsersServices = require("../users/users.service");
 
 const getFavoritesList = async (req, res, next) => {
   logger.info(
@@ -65,10 +67,18 @@ const getFavoritesList = async (req, res, next) => {
         categoryClustersId
       );
 
+      const lecturersId = courses.map((course) => course.lecturerId);
+      const lecturers = await LecturersServices.getLecturersByIds(lecturersId);
+
+      const usersId = lecturers.map((lecturer) => lecturer.userId);
+      const users = await UsersServices.getUsersByIds(usersId);
+
       courses = Services.mapDataIntoCourse({
         courses,
         categories,
         categoryClusters,
+        lecturers,
+        users,
       });
 
       entries = FavoritesServices.mapCourseIntoFavoritesCourse({

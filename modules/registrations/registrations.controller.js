@@ -11,6 +11,7 @@ const LecturersServices = require("../lecturers/lecturers.service");
 const CategoriesServices = require("../categories/categories.service");
 const CategoryClusterServices = require("../category-clusters/category-clusters.service");
 const Services = require("../../services/services");
+const UsersServices = require("../users/users.service");
 
 const registerTheCourse = async (req, res, next) => {
   logger.info(
@@ -150,10 +151,18 @@ const getCoursesListRegistered = async (req, res, next) => {
         categoryClustersId
       );
 
+      const lecturersId = courses.map((course) => course.lecturerId);
+      const lecturers = await LecturersServices.getLecturersByIds(lecturersId);
+
+      const usersId = lecturers.map((lecturer) => lecturer.userId);
+      const users = await UsersServices.getUsersByIds(usersId);
+
       courses = Services.mapDataIntoCourse({
         courses,
         categories,
         categoryClusters,
+        lecturers,
+        users,
       });
 
       entries = RegistrationsServices.mapCoursesIntoRegistrations({
