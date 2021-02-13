@@ -1,18 +1,18 @@
-const log4js = require('log4js');
-const logger = log4js.getLogger('Controllers');
-const HttpStatus = require('http-status-codes');
-const uuid = require('uuid');
-const jwt = require('jsonwebtoken');
-const randomString = require('randomstring');
+const log4js = require("log4js");
+const logger = log4js.getLogger("Controllers");
+const HttpStatus = require("http-status-codes");
+const uuid = require("uuid");
+const jwt = require("jsonwebtoken");
+const randomString = require("randomstring");
 
-const AuthConstant = require('./auth.constant');
-const FileTypesCloudinaryConstant = require('../../constants/file-types-cloudinary.constant');
-const AuthServices = require('./auth.service');
-const UserServices = require('../users/users.service');
-const jwtConstant = require('../../constants/jwt.constant');
-const AdminsServices = require('../admins/admins.service');
-const SendGrid = require('../../utils/send-grid');
-const cloudinary = require('../../utils/cloudinary');
+const AuthConstant = require("./auth.constant");
+const FileTypesCloudinaryConstant = require("../../constants/file-types-cloudinary.constant");
+const AuthServices = require("./auth.service");
+const UserServices = require("../users/users.service");
+const jwtConstant = require("../../constants/jwt.constant");
+const AdminsServices = require("../admins/admins.service");
+const SendGrid = require("../../utils/send-grid");
+const cloudinary = require("../../utils/cloudinary");
 
 const login = async (req, res, next) => {
   logger.info(`${AuthConstant.LOGGER.CONTROLLER}::Login::is called`);
@@ -141,7 +141,7 @@ const register = async (req, res, next) => {
 
     const otpCode = randomString.generate({
       length: 8,
-      charset: 'alphanumeric',
+      charset: "alphanumeric",
     });
     user = await UserServices.createUser({
       password,
@@ -278,10 +278,55 @@ const changePass = async (req, res, next) => {
   }
 };
 
+const resendOtpCode = async (req, res, next) => {
+  logger.info(`${AuthConstant.LOGGER.CONTROLLER}::resendOtpCode::is called`);
+  try {
+    const { email } = req.body;
+    let responseData = null;
+
+    const user = await UserServices.findUserByNameOrEmail(email);
+
+    if (!user) {
+      responseData = {
+        status: HttpStatus.NOT_FOUND,
+        messages: [AuthConstant.MESSAGES.RESEND_OTP_CODE.EMAIL_NOT_FOUND],
+      };
+
+      logger.info(
+        `${AuthConstant.LOGGER.CONTROLLER}::resendOtpCode::email not found`
+      );
+      return res.status(HttpStatus.NOT_FOUND).json(responseData);
+    }
+
+    const otpCode = randomString.generate({
+      length: 8,
+      charset: "alphanumeric",
+    });
+
+    user["otpCode"] = otpCode;
+    await user.save();
+    await SendGrid.sendConfirmMail({ email, fullName: user.fullName, otpCode });
+
+    responseData = {
+      status: HttpStatus.OK,
+      messages: [
+        AuthConstant.MESSAGES.RESEND_OTP_CODE.SEND_OTP_CODE_SUCCESSFULLY,
+      ],
+    };
+
+    logger.info(`${AuthConstant.LOGGER.CONTROLLER}::resendOtpCode::success`);
+    return res.status(HttpStatus.OK).json(responseData);
+  } catch (e) {
+    logger.error(`${AuthConstant.LOGGER.CONTROLLER}::resendOtpCode::Error`, e);
+    return next(e);
+  }
+};
+
 module.exports = {
   login,
   refreshToken,
   register,
   confirmOtpCode,
   changePass,
+  resendOtpCode,
 };
