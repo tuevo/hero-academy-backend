@@ -203,7 +203,7 @@ const removeTheCourseFromFavorites = async (req, res, next) => {
     `${FavoritesConstant.LOGGER.CONTROLLER}::removeTheCourseFromFavorites::is called`
   );
   try {
-    const { courseId } = req.body;
+    const { courseId } = req.params;
     const roleInfo = req.user.roleInfo || null;
     let responseData = null;
 

@@ -1,15 +1,15 @@
-const log4js = require('log4js');
-const logger = log4js.getLogger('Services');
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-const HttpStatus = require('http-status-codes');
+const log4js = require("log4js");
+const logger = log4js.getLogger("Services");
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+const HttpStatus = require("http-status-codes");
 
-const JwtConfig = require('../../constants/jwt.constant');
-const AuthConstant = require('./auth.constant');
-const AdminsServices = require('../admins/admins.service');
-const LecturersServices = require('../lecturers/lecturers.service');
-const StudentsServices = require('../students/students.service');
-const UsersConstant = require('../users/users.constant');
+const JwtConfig = require("../../constants/jwt.constant");
+const AuthConstant = require("./auth.constant");
+const AdminsServices = require("../admins/admins.service");
+const LecturersServices = require("../lecturers/lecturers.service");
+const StudentsServices = require("../students/students.service");
+const UsersConstant = require("../users/users.constant");
 
 const isValidPasswordHash = ({ passwordHash, password }) => {
   logger.info(`${AuthConstant.LOGGER.SERVICE}::isValidHashPassword::Is called`);

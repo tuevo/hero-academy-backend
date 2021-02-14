@@ -4,6 +4,7 @@ const HttpStatus = require("http-status-codes");
 const slug = require("slug");
 
 const CoursesConstant = require("./courses.constant");
+const UsersConstant = require("../users/users.constant");
 const CoursesServices = require("./courses.service");
 const CategoriesServices = require("../categories/categories.service");
 const Cloudinary = require("../../utils/cloudinary");
@@ -16,6 +17,9 @@ const UsersServices = require("../users/users.service");
 const Services = require("../../services/services");
 const CategoryClusterServices = require("../category-clusters/category-clusters.service");
 const FavoritesServices = require("../favorites/favorites.service");
+const StudentServices = require("../students/students.service");
+const FeedbacksServices = require("../feedbacks/feedbacks.service");
+const RatingsServices = require("../ratings/ratings.services");
 
 const addCourse = async (req, res, next) => {
   logger.info(`${CoursesConstant.LOGGER.CONTROLLER}::addCourse::is called`);
@@ -113,11 +117,13 @@ const getCourseDetail = async (req, res, next) => {
     let isFavorite = false;
     let responseData = null;
     let roleId = null;
+    let feedbacks = [];
 
     if (roleInfo && roleInfo._id) {
       const registration = await RegistrationServices.findRegistrationsHasConditions(
         { studentId: roleInfo._id, courseId: course._id }
       );
+
       const favorite = await FavoritesServices.findFavoriteHasConditions({
         studentId: roleInfo._id,
         courseId: course.id,
@@ -127,6 +133,38 @@ const getCourseDetail = async (req, res, next) => {
       if (favorite) isFavorite = true;
 
       roleId = roleInfo._id;
+
+      if (user.role === UsersConstant.ROLE.STUDENT) {
+        feedbacks = await FeedbacksServices.getFeedbacksHasConditions({
+          studentId: roleInfo._id,
+          courseId: course._id,
+        });
+
+        if (feedbacks.length > 0) {
+          let coursesId = feedbacks.map((feedback) => feedback.courseId);
+
+          const ratings = await RatingsServices.getRatingsByCoursesId(
+            coursesId
+          );
+
+          feedbacks = FeedbacksServices.mapRatingsIntoFeedbacks({
+            ratings,
+            feedbacks,
+          });
+
+          const studentsId = feedbacks.map((feedback) => feedback.studentId);
+          const students = await StudentServices.getStudentsByIds(studentsId);
+
+          const usersId = students.map((student) => student.userId);
+          const users = await UsersServices.getUsersByIds(usersId);
+
+          feedbacks = FeedbacksServices.mapUsersIntoFeedbacks({
+            users,
+            students,
+            feedbacks,
+          });
+        }
+      }
     }
 
     const role = await LecturersServices.findLecturerById(course.lecturerId);
@@ -246,6 +284,7 @@ const getCourseDetail = async (req, res, next) => {
       data: {
         course: course[0],
         mostRegisteredCourses,
+        feedbacks,
       },
     };
 

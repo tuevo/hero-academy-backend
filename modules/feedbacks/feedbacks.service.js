@@ -229,12 +229,13 @@ const mapRatingsIntoFeedbacks = ({ ratings, feedbacks }) => {
   );
   try {
     const result = feedbacks.map((feedback) => {
+      const feedbackJsonParse = JSON.parse(JSON.stringify(feedback));
       const rating = ratings.find(
         (rating) =>
           rating.studentId.toString() === feedback.studentId.toString()
       );
 
-      return { ...feedback, rating: rating || null };
+      return { ...feedbackJsonParse, rating: rating || null };
     });
 
     logger.info(
@@ -250,9 +251,81 @@ const mapRatingsIntoFeedbacks = ({ ratings, feedbacks }) => {
   }
 };
 
+const mapUsersIntoFeedbacks = ({ students, users, feedbacks }) => {
+  logger.info(
+    `${FeedbacksConstant.LOGGER.SERVICE}::mapUsersIntoFeedbacks::is called`
+  );
+  try {
+    const result = feedbacks.map((feedback) => {
+      const feedbackJsonParse = JSON.parse(JSON.stringify(feedback));
+      const student = students.find(
+        (student) => student._id.toString() === feedback.studentId.toString()
+      );
+
+      let user = student
+        ? users.find(
+            (user) => user._id.toString() === student.userId.toString()
+          )
+        : null;
+
+      user = user && Services.deleteFieldsUser(user);
+
+      return {
+        ...feedbackJsonParse,
+        student: user ? { ...user, roleInfo: student } : user,
+      };
+    });
+
+    logger.info(
+      `${FeedbacksConstant.LOGGER.SERVICE}::mapUsersIntoFeedbacks::success`
+    );
+    return result;
+  } catch (e) {
+    logger.error(
+      `${FeedbacksConstant.LOGGER.SERVICE}::mapUsersIntoFeedbacks::error`,
+      e
+    );
+    throw new Error(e);
+  }
+};
+
+const getFeedbacksHasConditions = async ({ studentId, courseId }) => {
+  logger.info(
+    `${FeedbacksConstant.LOGGER.SERVICE}::getFeedbacksHasConditions::is called`
+  );
+  try {
+    let conditions = {};
+
+    if (studentId) {
+      conditions["studentId"] = mongoose.Types.ObjectId(studentId);
+    }
+
+    if (courseId) {
+      conditions["courseId"] = mongoose.Types.ObjectId(courseId);
+    }
+
+    const feedbacks = await FeedbacksModel.find(conditions).sort({
+      createdAt: -1,
+    });
+
+    logger.info(
+      `${FeedbacksConstant.LOGGER.SERVICE}::getFeedbacksHasConditions::success`
+    );
+    return feedbacks;
+  } catch (e) {
+    logger.error(
+      `${FeedbacksConstant.LOGGER.SERVICE}::getFeedbacksHasConditions::error`,
+      e
+    );
+    throw new Error(e);
+  }
+};
+
 module.exports = {
   createFeedback,
   createRating,
   getFeedbacksByConditionsHasPagination,
   mapRatingsIntoFeedbacks,
+  mapUsersIntoFeedbacks,
+  getFeedbacksHasConditions,
 };

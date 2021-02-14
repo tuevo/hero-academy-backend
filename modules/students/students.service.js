@@ -1,10 +1,10 @@
-const log4js = require('log4js');
-const logger = log4js.getLogger('Services');
-const mongoose = require('mongoose');
+const log4js = require("log4js");
+const logger = log4js.getLogger("Services");
+const mongoose = require("mongoose");
 
-const StudentsConstant = require('./students.constant');
-const StudentsModel = require('./students.model');
-const Services = require('../../services/services');
+const StudentsConstant = require("./students.constant");
+const StudentsModel = require("./students.model");
+const Services = require("../../services/services");
 
 const findStudentByUserId = async (userId) => {
   logger.info(
@@ -142,6 +142,26 @@ const mapStudentsIntoUsers = ({ users, students }) => {
   }
 };
 
+const getStudentsByIds = async (ids) => {
+  logger.info(
+    `${StudentsConstant.LOGGER.SERVICE}::getStudentsByIds::is called`
+  );
+  try {
+    const students = await StudentsModel.find({ _id: { $in: ids } });
+
+    logger.info(
+      `${StudentsConstant.LOGGER.SERVICE}::getStudentsByIds::success`
+    );
+    return students;
+  } catch (e) {
+    logger.error(
+      `${StudentsConstant.LOGGER.SERVICE}::getStudentsByIds::Error`,
+      e
+    );
+    throw new Error(e);
+  }
+};
+
 module.exports = {
   findStudentByUserId,
   createStudent,
@@ -149,4 +169,5 @@ module.exports = {
   updateNumberOfFavoriteCourses,
   getStudentsByUsersId,
   mapStudentsIntoUsers,
+  getStudentsByIds,
 };

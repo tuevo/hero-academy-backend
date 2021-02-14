@@ -10,6 +10,8 @@ const RatingsServices = require("../ratings/ratings.services");
 const RegistrationsServices = require("../registrations/registrations.service");
 const PaginationConstant = require("../../constants/pagination.constant");
 const Services = require("../../services/services");
+const StudentServices = require("../students/students.service");
+const UsersServices = require("../users/users.service");
 
 const addFeedback = async (req, res, next) => {
   logger.info(`${FeedbacksConstant.LOGGER.CONTROLLER}::addFeedback::is called`);
@@ -126,6 +128,18 @@ const getFeedbacks = async (req, res, next) => {
       const ratings = await RatingsServices.getRatingsByCoursesId(coursesId);
       entries = FeedbacksServices.mapRatingsIntoFeedbacks({
         ratings,
+        feedbacks: entries,
+      });
+
+      const studentsId = entries.map((feedback) => feedback.studentId);
+      const students = await StudentServices.getStudentsByIds(studentsId);
+
+      const usersId = students.map((student) => student.userId);
+      const users = await UsersServices.getUsersByIds(usersId);
+
+      entries = FeedbacksServices.mapUsersIntoFeedbacks({
+        users,
+        students,
         feedbacks: entries,
       });
     }
