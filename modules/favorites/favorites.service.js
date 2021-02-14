@@ -68,7 +68,9 @@ const findFavoriteHasConditions = async ({ studentId, courseId }) => {
     `${FavoritesConstant.LOGGER.SERVICE}::findFavoriteHasConditions::is called`
   );
   try {
-    let conditions = {};
+    let conditions = {
+      isDeleted: false
+    };
 
     if (studentId) {
       conditions['studentId'] = mongoose.Types.ObjectId(studentId);

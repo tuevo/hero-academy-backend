@@ -117,7 +117,7 @@ const getCourseDetail = async (req, res, next) => {
     let isFavorite = false;
     let responseData = null;
     let roleId = null;
-    let feedbacks = [];
+    let rating = null;
 
     if (roleInfo && roleInfo._id) {
       const registration = await RegistrationServices.findRegistrationsHasConditions(
@@ -135,34 +135,25 @@ const getCourseDetail = async (req, res, next) => {
       roleId = roleInfo._id;
 
       if (user.role === UsersConstant.ROLE.STUDENT) {
-        feedbacks = await FeedbacksServices.getFeedbacksHasConditions({
+        rating = await RatingsServices.getRatingHasConditions({
           studentId: roleInfo._id,
           courseId: course._id,
         });
 
-        if (feedbacks.length > 0) {
-          let coursesId = feedbacks.map((feedback) => feedback.courseId);
+        if (rating) {
+          const student = await StudentServices.getStudentById(roleInfo._id);
+          let user = student
+            ? await UsersServices.findUserById(student.userId)
+            : null;
+          user = user
+            ? { ...Services.deleteFieldsUser(user), roleInfo: student }
+            : null;
 
-          const ratings = await RatingsServices.getRatingsByCoursesId(
-            coursesId
-          );
-
-          feedbacks = FeedbacksServices.mapRatingsIntoFeedbacks({
-            ratings,
-            feedbacks,
-          });
-
-          const studentsId = feedbacks.map((feedback) => feedback.studentId);
-          const students = await StudentServices.getStudentsByIds(studentsId);
-
-          const usersId = students.map((student) => student.userId);
-          const users = await UsersServices.getUsersByIds(usersId);
-
-          feedbacks = FeedbacksServices.mapUsersIntoFeedbacks({
-            users,
-            students,
-            feedbacks,
-          });
+          const ratingJsonParse = JSON.parse(JSON.stringify(rating));
+          rating = {
+            ...ratingJsonParse,
+            student: user,
+          };
         }
       }
     }
@@ -284,7 +275,7 @@ const getCourseDetail = async (req, res, next) => {
       data: {
         course: course[0],
         mostRegisteredCourses,
-        feedbacks,
+        rating,
       },
     };
 

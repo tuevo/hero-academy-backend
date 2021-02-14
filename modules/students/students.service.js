@@ -162,6 +162,26 @@ const getStudentsByIds = async (ids) => {
   }
 };
 
+const getStudentById = async (id) => {
+  logger.info(
+    `${StudentsConstant.LOGGER.SERVICE}::getStudentById::is called`
+  );
+  try {
+    const student = await StudentsModel.findOne({ _id: mongoose.Types.ObjectId(id)});
+
+    logger.info(
+      `${StudentsConstant.LOGGER.SERVICE}::getStudentById::success`
+    );
+    return student;
+  } catch (e) {
+    logger.error(
+      `${StudentsConstant.LOGGER.SERVICE}::getStudentById::Error`,
+      e
+    );
+    throw new Error(e);
+  }
+};
+
 module.exports = {
   findStudentByUserId,
   createStudent,
@@ -170,4 +190,5 @@ module.exports = {
   getStudentsByUsersId,
   mapStudentsIntoUsers,
   getStudentsByIds,
+  getStudentById
 };
