@@ -176,6 +176,34 @@ const updateNumberOfViews = async ({ videoId, cumulativeValue }) => {
   }
 };
 
+const removePublicIdFieldInVideosData = ({ videos }) => {
+  logger.info(
+    `${VideosConstant.LOGGER.SERVICE}::removePublicIdFieldInVideosData::is called`
+  );
+  try {
+    const result = videos.map((video, index) => {
+      const videoJsonParse = JSON.parse(JSON.stringify(video));
+
+      if (index !== 0) {
+        delete videoJsonParse["publicIdOfVideo"];
+      }
+
+      return videoJsonParse;
+    });
+
+    logger.info(
+      `${VideosConstant.LOGGER.SERVICE}::removePublicIdFieldInVideosData::success`
+    );
+    return result;
+  } catch (e) {
+    logger.error(
+      `${VideosConstant.LOGGER.SERVICE}::removePublicIdFieldInVideosData::error`,
+      e
+    );
+    throw new Error(e);
+  }
+};
+
 module.exports = {
   createVideo,
   getVideoByChapterHasPagination,
@@ -183,4 +211,5 @@ module.exports = {
   getVideosByChapterHasConditions,
   getVideoById,
   updateNumberOfViews,
+  removePublicIdFieldInVideosData,
 };
