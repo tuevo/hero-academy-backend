@@ -431,6 +431,7 @@ const findCoursesHasConditions = async ({
   sortBy,
   isSortUpAscending,
   limit,
+  coursesIsExcluded,
 }) => {
   logger.info(
     `${CoursesConstant.LOGGER.SERVICE}::findCoursesHasConditions::is called`
@@ -450,7 +451,14 @@ const findCoursesHasConditions = async ({
     }
 
     if (categoryId) {
+      console.log("dsd");
       conditions["categoryId"] = mongoose.Types.ObjectId(categoryId);
+    }
+
+    if (coursesIsExcluded) {
+      conditions["_id"] = {
+        $nin: coursesIsExcluded,
+      };
     }
 
     if (sortBy) {
@@ -458,6 +466,10 @@ const findCoursesHasConditions = async ({
         isSortUpAscending === true || isSortUpAscending === "true" ? 1 : -1;
     }
 
+    logger.info(
+      `${CoursesConstant.LOGGER.SERVICE}::findCoursesHasConditions::conditions`,
+      JSON.stringify(conditions)
+    );
     if (sortBy && limit) {
       logger.info(
         `${CoursesConstant.LOGGER.SERVICE}::findCoursesHasConditions::find by sort and limit success`

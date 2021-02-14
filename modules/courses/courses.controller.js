@@ -112,6 +112,7 @@ const getCourseDetail = async (req, res, next) => {
     let isUpdate = true;
     let isFavorite = false;
     let responseData = null;
+    let roleId = null;
 
     if (roleInfo && roleInfo._id) {
       const registration = await RegistrationServices.findRegistrationsHasConditions(
@@ -124,6 +125,8 @@ const getCourseDetail = async (req, res, next) => {
 
       if (registration) isUpdate = false;
       if (favorite) isFavorite = true;
+
+      roleId = roleInfo._id;
     }
 
     const role = await LecturersServices.findLecturerById(course.lecturerId);
@@ -168,14 +171,14 @@ const getCourseDetail = async (req, res, next) => {
       roleInfo: role,
     };
 
-    const mostRegisteredCourses = await CoursesServices.findCoursesHasConditions(
-      {
-        categoryId: course.categoryId,
-        sortBy: "numberOfRegistrations",
-        isSortUpAscending: false,
-        limit: 10,
-      }
-    );
+    let mostRegisteredCourses = await CoursesServices.findCoursesHasConditions({
+      categoryId: course.categoryId,
+      sortBy: "numberOfRegistrations",
+      isSortUpAscending: false,
+      limit: 10,
+      coursesIsExcluded: [course._id],
+    });
+
     const categories = await CategoriesServices.getCategoriesByIds([
       course.categoryId,
     ]);
@@ -194,6 +197,45 @@ const getCourseDetail = async (req, res, next) => {
       lecturers: [],
       users: [],
     });
+
+    if (mostRegisteredCourses.length > 0) {
+      const categoriesId = mostRegisteredCourses.map(
+        (course) => course.categoryId
+      );
+      const categories = await CategoriesServices.getCategoriesByIds(
+        categoriesId
+      );
+
+      const categoryClustersId = categories.map(
+        (category) => category.categoryClusterId
+      );
+      const categoryClusters = await CategoryClusterServices.findCategoryClustersByIds(
+        categoryClustersId
+      );
+
+      const lecturersId = mostRegisteredCourses.map(
+        (course) => course.lecturerId
+      );
+      const lecturers = await LecturersServices.getLecturersByIds(lecturersId);
+
+      const usersId = lecturers.map((lecturer) => lecturer.userId);
+      const users = await UsersServices.getUsersByIds(usersId);
+
+      mostRegisteredCourses = Services.mapDataIntoCourse({
+        courses: mostRegisteredCourses,
+        categories,
+        categoryClusters,
+        lecturers,
+        users,
+      });
+
+      mostRegisteredCourses = await CoursesServices.mapIsRegisteredFieldIntoCourses(
+        {
+          roleId,
+          courses: mostRegisteredCourses,
+        }
+      );
+    }
 
     responseData = {
       status: HttpStatus.OK,
