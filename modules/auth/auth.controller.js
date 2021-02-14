@@ -220,7 +220,7 @@ const confirmOtpCode = async (req, res, next) => {
 const changePass = async (req, res, next) => {
   logger.info(`${AuthConstant.LOGGER.CONTROLLER}::changePass::is called`);
   try {
-    const { oldPassword, password, confirmPassword } = req.body;
+    const { currentPassword, newPassword, confirmNewPassword } = req.body;
     let responseData = null;
 
     let user = await UserServices.findUserById(req.user._id);
@@ -229,7 +229,7 @@ const changePass = async (req, res, next) => {
     if (
       !AuthServices.isValidPasswordHash({
         passwordHash: user.passwordHash,
-        password: oldPassword,
+        password: currentPassword,
       })
     ) {
       responseData = {
@@ -244,7 +244,7 @@ const changePass = async (req, res, next) => {
       return res.status(HttpStatus.BAD_REQUEST).json(responseData);
     }
 
-    if (password !== confirmPassword) {
+    if (newPassword !== confirmNewPassword) {
       responseData = {
         status: HttpStatus.BAD_REQUEST,
         messages: [
@@ -259,7 +259,7 @@ const changePass = async (req, res, next) => {
       return res.status(HttpStatus.BAD_REQUEST).json(responseData);
     }
 
-    await UserServices.updatePass({ user, password });
+    await UserServices.updatePass({ user, password: newPassword });
 
     responseData = {
       status: HttpStatus.OK,
