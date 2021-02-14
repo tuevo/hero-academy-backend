@@ -8,6 +8,7 @@ const AddCourseValidationSchema = Joi.object().keys({
   content: Joi.string().required(),
   tuition: Joi.number().min(0),
   discountPercent: Joi.number().min(0).max(1),
+  isFinished: Joi.boolean()
 });
 
 module.exports = {

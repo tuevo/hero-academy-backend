@@ -27,6 +27,7 @@ const addCourse = async (req, res, next) => {
       content,
       tuition,
       discountPercent,
+      isFinished,
     } = req.body;
     const roleInfo = req.user.roleInfo || null;
     const thumbnail = req.files.thumbnail[0] || null;
@@ -74,6 +75,7 @@ const addCourse = async (req, res, next) => {
       thumbnailUrl: imageInfo.url,
       publicId: imageInfo.public_id,
       slug: slug(title + " " + category.name),
+      isFinished: !isFinished || isFinished === "false" ? false : true,
     };
 
     const course = await CoursesServices.createCourse(newCourse);
