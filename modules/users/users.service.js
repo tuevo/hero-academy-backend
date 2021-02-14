@@ -303,7 +303,7 @@ const updateUserInfo = async ({ fullName, avatar, user }) => {
         logger.info(
           `${UserConstant.LOGGER.SERVICE}::updateUserInfo::remove image`
         );
-        await cloudinary.deleteFile(course["publicId"]);
+        await cloudinary.deleteFile(user["publicId"]);
       }
 
       logger.info(
