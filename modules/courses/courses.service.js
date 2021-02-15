@@ -214,7 +214,7 @@ const getCoursesByConditionsHasPagination = async ({
       sortStage.$sort[sortBy] =
         isSortUpAscending === true || isSortUpAscending === "true" ? 1 : -1;
     } else {
-      sortStage.$sort["createAt"] =
+      sortStage.$sort["createdAt"] =
         isSortUpAscending === true || isSortUpAscending === "true" ? 1 : -1;
     }
 
