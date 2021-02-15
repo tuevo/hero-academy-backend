@@ -4,9 +4,9 @@ const log4js = require('log4js');
 const logger = log4js.getLogger('Services');
 
 cloudinary.config({
-  cloud_name: 'dye8sx2yk',
-  api_key: '666872169352632',
-  api_secret: 'QbmcqYuYX_5RddmCZx-k4CEVvHw',
+  cloud_name: 'dcpiiafc6',
+  api_key: '832357147372524',
+  api_secret: 'kAcnXN4HTp-cpr3Ac4xKNeZvi-8',
 });
 
 const uploadByLink = (link) => {
