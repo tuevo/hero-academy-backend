@@ -97,12 +97,12 @@ const getCoursesListForHomePage = async (req, res, next) => {
         users,
       });
 
-      coursesListWithTheMostViews = await CoursesServices.mapIsRegisteredFieldIntoCourses(
-        {
-          roleId,
-          courses: coursesListWithTheMostViews,
-        }
-      );
+      // coursesListWithTheMostViews = await CoursesServices.mapIsRegisteredFieldIntoCourses(
+      //   {
+      //     roleId,
+      //     courses: coursesListWithTheMostViews,
+      //   }
+      // );
     }
 
     if (ListOfLatestCourses.length > 0) {
@@ -136,12 +136,12 @@ const getCoursesListForHomePage = async (req, res, next) => {
         users,
       });
 
-      ListOfLatestCourses = await CoursesServices.mapIsRegisteredFieldIntoCourses(
-        {
-          roleId,
-          courses: ListOfLatestCourses,
-        }
-      );
+      // ListOfLatestCourses = await CoursesServices.mapIsRegisteredFieldIntoCourses(
+      //   {
+      //     roleId,
+      //     courses: ListOfLatestCourses,
+      //   }
+      // );
     }
 
     if (outstandingCourseList.length > 0) {
@@ -175,12 +175,12 @@ const getCoursesListForHomePage = async (req, res, next) => {
         users,
       });
 
-      outstandingCourseList = await CoursesServices.mapIsRegisteredFieldIntoCourses(
-        {
-          roleId,
-          courses: outstandingCourseList,
-        }
-      );
+      // outstandingCourseList = await CoursesServices.mapIsRegisteredFieldIntoCourses(
+      //   {
+      //     roleId,
+      //     courses: outstandingCourseList,
+      //   }
+      // );
     }
 
     if (mostRegisteredCategory.length > 0) {

@@ -24,15 +24,9 @@ const RatingsServices = require("../ratings/ratings.services");
 const addCourse = async (req, res, next) => {
   logger.info(`${CoursesConstant.LOGGER.CONTROLLER}::addCourse::is called`);
   try {
-    const {
-      categoryId,
-      title,
-      description,
-      content,
-      tuition,
-      discountPercent,
-      isFinished,
-    } = req.body;
+    const { categoryId, title, description, content, isFinished } = req.body;
+    const tuition = Number(req.body.tuition) || 0;
+    const discountPercent = Number(req.body.discountPercent) || 0;
     const roleInfo = req.user.roleInfo || null;
     const thumbnail = req.files.thumbnail[0] || null;
     let responseData = null;
@@ -80,6 +74,8 @@ const addCourse = async (req, res, next) => {
       publicId: imageInfo.public_id,
       slug: slug(title + " " + category.name),
       isFinished: !isFinished || isFinished === "false" ? false : true,
+      tuitionAfterDiscount:
+        tuition - Services.rounding(tuition * discountPercent),
     };
 
     const course = await CoursesServices.createCourse(newCourse);
@@ -258,12 +254,12 @@ const getCourseDetail = async (req, res, next) => {
         users,
       });
 
-      mostRegisteredCourses = await CoursesServices.mapIsRegisteredFieldIntoCourses(
-        {
-          roleId,
-          courses: mostRegisteredCourses,
-        }
-      );
+      // mostRegisteredCourses = await CoursesServices.mapIsRegisteredFieldIntoCourses(
+      //   {
+      //     roleId,
+      //     courses: mostRegisteredCourses,
+      //   }
+      // );
     }
 
     responseData = {
@@ -298,14 +294,10 @@ const updateCourse = async (req, res, next) => {
     let course = req.course;
     const { files } = req;
     let thumbnail = null;
-    const {
-      categoryId,
-      title,
-      description,
-      content,
-      tuition,
-      discountPercent,
-    } = req.body;
+    const { categoryId, title, description, content } = req.body;
+    const tuition = Number(req.body.tuition) || course.tuition;
+    const discountPercent =
+      Number(req.body.discountPercent) || course.discountPercent;
     let responseData = null;
 
     if (files && Object.keys(files).length !== 0) {
@@ -336,6 +328,8 @@ const updateCourse = async (req, res, next) => {
       tuition,
       discountPercent,
       thumbnail,
+      tuitionAfterDiscount:
+        tuition - Services.rounding(tuition * discountPercent),
     };
 
     course = await CoursesServices.updateCourse({ course, updateInfo });
@@ -560,10 +554,10 @@ const getCoursesListByCategory = async (req, res, next) => {
         users,
       });
 
-      entries = await CoursesServices.mapIsRegisteredFieldIntoCourses({
-        roleId,
-        courses: entries,
-      });
+      // entries = await CoursesServices.mapIsRegisteredFieldIntoCourses({
+      //   roleId,
+      //   courses: entries,
+      // });
     }
 
     responseData = {
@@ -657,10 +651,10 @@ const getCoursesListByCriteria = async (req, res, next) => {
         users,
       });
 
-      entries = await CoursesServices.mapIsRegisteredFieldIntoCourses({
-        roleId,
-        courses: entries,
-      });
+      // entries = await CoursesServices.mapIsRegisteredFieldIntoCourses({
+      //   roleId,
+      //   courses: entries,
+      // });
     }
 
     responseData = {

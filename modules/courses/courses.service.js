@@ -126,6 +126,14 @@ const updateCourse = async ({ course, updateInfo }) => {
       isChange = true;
     }
 
+    if (tuitionAfterDiscount) {
+      logger.info(
+        `${CoursesConstant.LOGGER.SERVICE}::updateCourse::update tuitionAfterDiscount`
+      );
+      course["tuitionAfterDiscount"] = updateInfo.tuitionAfterDiscount;
+      isChange = true;
+    }
+
     if (isChange) {
       logger.info(
         `${CoursesConstant.LOGGER.SERVICE}::updateCourse::update course`
@@ -211,8 +219,13 @@ const getCoursesByConditionsHasPagination = async ({
     };
 
     if (sortBy) {
-      sortStage.$sort[sortBy] =
-        isSortUpAscending === true || isSortUpAscending === "true" ? 1 : -1;
+      if (sortBy === "tuition") {
+        sortStage.$sort["tuitionAfterDiscount"] =
+          isSortUpAscending === true || isSortUpAscending === "true" ? 1 : -1;
+      } else {
+        sortStage.$sort[sortBy] =
+          isSortUpAscending === true || isSortUpAscending === "true" ? 1 : -1;
+      }
     } else {
       sortStage.$sort["createdAt"] =
         isSortUpAscending === true || isSortUpAscending === "true" ? 1 : -1;

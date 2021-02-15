@@ -18,6 +18,7 @@ const courseSchema = new Schema(
     isFinished: { type: Boolean, default: false },
     isHidden: { type: Boolean, default: false },
     tuition: { type: Number, default: 0 },
+    tuitionAfterDiscount: { type: Number, default: 0 },
     discountPercent: { type: Number, default: 0 },
     isDeleted: { type: Boolean, default: false },
     publicId: { type: String, default: null },
