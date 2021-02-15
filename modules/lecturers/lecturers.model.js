@@ -6,7 +6,7 @@ const Schema = mongoose.Schema;
 const lecturerSchema = new Schema(
   {
     userId: { type: ObjectId, unique: true },
-    introduction: { type: String, default: null },
+    introduction: { type: String, default: "" },
     averageRating: { type: Number, default: 0 },
     numberOfRatings: { type: Number, default: 0 },
     numberOfStudents: { type: Number, default: 0 },
