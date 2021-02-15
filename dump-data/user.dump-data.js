@@ -22,8 +22,8 @@ const createUsers = () => {
       const config = DumpDataConstant.USER.userDetail;
 
       await Promise.all(
-        users.map(async (fullName) => {
-          let user = await UserModel.findOne({ fullName }).lean();
+        users.map(async (email) => {
+          let user = await UserModel.findOne({ email }).lean();
 
           if (!user) {
             logger.info(

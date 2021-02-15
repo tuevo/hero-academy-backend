@@ -149,9 +149,9 @@ const deleteLecturer = async (req, res, next) => {
     }
 
     user["isDeleted"] = true;
-    //role["isDeleted"] = true;
+    role["isDeleted"] = true;
     await user.save();
-    //await role.save();
+    await role.save();
     await AdminsServices.updateNumberOfLecturers(-1);
 
     responseData = {
