@@ -540,13 +540,12 @@ const getCoursesListByCategory = async (req, res, next) => {
             _id: null,
             totalItems: 0,
           };
-    let categoryClusters = [];
+
+    let categoryClusters = await CategoryClusterServices.findCategoryClustersByIds(
+      [category.categoryClusterId]
+    );
 
     if (entries.length > 0) {
-      categoryClusters = await CategoryClusterServices.findCategoryClustersByIds(
-        [category.categoryClusterId]
-      );
-
       const lecturersId = entries.map((course) => course.lecturerId);
       const lecturers = await LecturersServices.getLecturersByIds(lecturersId);
 
