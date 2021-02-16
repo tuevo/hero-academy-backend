@@ -294,7 +294,7 @@ const updateCourse = async (req, res, next) => {
     let course = req.course;
     const { files } = req;
     let thumbnail = null;
-    const { categoryId, title, description, content } = req.body;
+    const { categoryId, title, description, content, isFinished } = req.body;
     const tuition = Number(req.body.tuition) || course.tuition;
     const discountPercent =
       Number(req.body.discountPercent) || course.discountPercent;
@@ -330,6 +330,7 @@ const updateCourse = async (req, res, next) => {
       thumbnail,
       tuitionAfterDiscount:
         tuition - Services.rounding(tuition * discountPercent),
+      isFinished,
     };
 
     course = await CoursesServices.updateCourse({ course, updateInfo });

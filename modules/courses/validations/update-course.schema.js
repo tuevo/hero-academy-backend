@@ -9,6 +9,7 @@ const UpdateCourseValidationSchema = Joi.object().keys({
   content: Joi.string(),
   tuition: Joi.number().min(0),
   discountPercent: Joi.number().min(0).max(1),
+  isFinished: Joi.boolean(),
 });
 
 module.exports = {

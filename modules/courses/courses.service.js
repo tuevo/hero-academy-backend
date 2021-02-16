@@ -126,11 +126,24 @@ const updateCourse = async ({ course, updateInfo }) => {
       isChange = true;
     }
 
-    if (tuitionAfterDiscount) {
+    if (updateInfo.tuitionAfterDiscount) {
       logger.info(
         `${CoursesConstant.LOGGER.SERVICE}::updateCourse::update tuitionAfterDiscount`
       );
       course["tuitionAfterDiscount"] = updateInfo.tuitionAfterDiscount;
+      isChange = true;
+    }
+
+    if (
+      updateInfo.isFinished === "true" ||
+      updateInfo.isFinished === true ||
+      updateInfo.isFinished === "false" ||
+      updateInfo.isFinished === false
+    ) {
+      logger.info(
+        `${CoursesConstant.LOGGER.SERVICE}::updateCourse::update isFinished`
+      );
+      course["isFinished"] = updateInfo.isFinished;
       isChange = true;
     }
 
