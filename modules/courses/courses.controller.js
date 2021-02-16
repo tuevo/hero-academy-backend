@@ -334,6 +334,25 @@ const updateCourse = async (req, res, next) => {
     };
 
     course = await CoursesServices.updateCourse({ course, updateInfo });
+    const category = await CategoriesServices.getCategoryById(
+      course.categoryId
+    );
+
+    course = JSON.parse(JSON.stringify(course));
+    course["categoryCluster"] = null;
+
+    if (category) {
+      const categoryCluster = await CategoryClusterServices.findCategoryClusterById(
+        category.categoryClusterId
+      );
+
+      course["categoryCluster"] = categoryCluster
+        ? {
+            ...JSON.parse(JSON.stringify(categoryCluster)),
+            categories: category ? [category] : [],
+          }
+        : null;
+    }
 
     responseData = {
       status: HttpStatus.OK,
