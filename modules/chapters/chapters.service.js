@@ -1,9 +1,9 @@
-const log4js = require('log4js');
-const logger = log4js.getLogger('Services');
-const mongoose = require('mongoose');
+const log4js = require("log4js");
+const logger = log4js.getLogger("Services");
+const mongoose = require("mongoose");
 
-const ChaptersModel = require('./chapters.model');
-const ChaptersConstant = require('./chapters.constant');
+const ChaptersModel = require("./chapters.model");
+const ChaptersConstant = require("./chapters.constant");
 
 const findChapterHasCondition = async ({ chapterId, courseId }) => {
   logger.info(
@@ -13,11 +13,11 @@ const findChapterHasCondition = async ({ chapterId, courseId }) => {
     let condition = {};
 
     if (chapterId) {
-      condition['_id'] = mongoose.Types.ObjectId(chapterId);
+      condition["_id"] = mongoose.Types.ObjectId(chapterId);
     }
 
     if (courseId) {
-      condition['courseId'] = mongoose.Types.ObjectId(courseId);
+      condition["courseId"] = mongoose.Types.ObjectId(courseId);
     }
 
     logger.info(
@@ -85,9 +85,30 @@ const createChapter = async (chapterInfo) => {
   }
 };
 
+const findChaptersByIds = async (chaptersId) => {
+  logger.info(
+    `${ChaptersConstant.LOGGER.SERVICE}::findChaptersByIds::is called`
+  );
+  try {
+    const chapters = await ChaptersModel.find({ _id: { $in: chaptersId } });
+
+    logger.info(
+      `${ChaptersConstant.LOGGER.SERVICE}::findChaptersByIds::success`
+    );
+    return chapters;
+  } catch (e) {
+    logger.error(
+      `${ChaptersConstant.LOGGER.SERVICE}::findChaptersByIds::error`,
+      e
+    );
+    throw new Error(e);
+  }
+};
+
 module.exports = {
   findChapterHasCondition,
   updateNumberOfVideos,
   getChapters,
   createChapter,
+  findChaptersByIds,
 };

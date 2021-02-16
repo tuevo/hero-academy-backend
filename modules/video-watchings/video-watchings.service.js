@@ -1,9 +1,9 @@
-const log4js = require('log4js');
-const logger = log4js.getLogger('Services');
-const mongoose = require('mongoose');
+const log4js = require("log4js");
+const logger = log4js.getLogger("Services");
+const mongoose = require("mongoose");
 
-const VideoWatchingsModel = require('./video-watchings.model');
-const VideoWatchingsConstant = require('./video-watchings.constant');
+const VideoWatchingsModel = require("./video-watchings.model");
+const VideoWatchingsConstant = require("./video-watchings.constant");
 
 const getVideoWatchingsHasPagination = async ({
   courseId,
@@ -20,11 +20,11 @@ const getVideoWatchingsHasPagination = async ({
     };
 
     if (courseId) {
-      matchStage.$match['courseId'] = mongoose.Types.ObjectId(courseId);
+      matchStage.$match["courseId"] = mongoose.Types.ObjectId(courseId);
     }
 
     if (studentId) {
-      matchStage.$match['studentId'] = mongoose.Types.ObjectId(studentId);
+      matchStage.$match["studentId"] = mongoose.Types.ObjectId(studentId);
     }
 
     const sortStage = {
@@ -81,23 +81,32 @@ const createVideoWatching = async (info) => {
   }
 };
 
-const mapVideosIntoVideoWatchings = ({ videoWatchings, videos }) => {
+const mapVideosIntoVideoWatchings = ({ videoWatchings, videos, chapters }) => {
   logger.info(
-    `${VideoWatchingsConstant.LOGGER.SERVICE}::createVideoWatching::is called`
+    `${VideoWatchingsConstant.LOGGER.SERVICE}::mapVideosIntoVideoWatchings::is called`
   );
   try {
     const videosWatchingsJsonParse = JSON.parse(JSON.stringify(videoWatchings));
 
     const result = videosWatchingsJsonParse.map((videoWatching) => {
-      const video = videos.find(
+      let video = videos.find(
         (video) => video._id.toString() === videoWatching.videoId.toString()
       );
 
-      return { ...videoWatching, video: video || null };
+      const chapter = video
+        ? chapters.find(
+            (chapter) => chapter._id.toString() === video.chapterId.toString()
+          )
+        : null;
+
+      return {
+        ...videoWatching,
+        video: video ? { ...JSON.parse(JSON.stringify(video)), chapter } : null,
+      };
     });
 
     logger.info(
-      `${VideoWatchingsConstant.LOGGER.SERVICE}::createVideoWatching::success`
+      `${VideoWatchingsConstant.LOGGER.SERVICE}::mapVideosIntoVideoWatchings::success`
     );
     return result;
   } catch (e) {

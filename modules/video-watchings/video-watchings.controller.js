@@ -6,6 +6,7 @@ const VideoWatchingsServices = require("./video-watchings.service");
 const VideoWatchingsConstant = require("./video-watchings.constant");
 const VideosServices = require("../videos/videos.service");
 const PaginationConstant = require("../../constants/pagination.constant");
+const ChaptersServices = require("../chapters/chapters.service");
 
 const getVideoWatchings = async (req, res, next) => {
   logger.info(
@@ -49,9 +50,13 @@ const getVideoWatchings = async (req, res, next) => {
       const videosId = entries.map((info) => info.videoId);
       const videos = await VideosServices.findVideoByVideosId(videosId);
 
+      const chaptersId = videos.map((video) => video.chapterId);
+      const chapters = await ChaptersServices.findChaptersByIds(chaptersId);
+
       entries = VideoWatchingsServices.mapVideosIntoVideoWatchings({
         videoWatchings: entries,
         videos,
+        chapters,
       });
     }
 
