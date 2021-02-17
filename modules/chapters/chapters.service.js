@@ -46,7 +46,7 @@ const updateNumberOfVideos = async (chapterId, cumulativeValue) => {
     );
 
     logger.info(
-      `${AdminsConstant.LOGGER.SERVICE}::updateNumberOfVideos::success`
+      `${ChaptersConstant.LOGGER.SERVICE}::updateNumberOfVideos::success`
     );
     return;
   } catch (e) {
