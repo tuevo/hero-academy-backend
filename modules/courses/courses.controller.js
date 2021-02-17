@@ -200,7 +200,7 @@ const getCourseDetail = async (req, res, next) => {
       categoryId: course.categoryId,
       sortBy: "numberOfRegistrations",
       isSortUpAscending: false,
-      limit: 10,
+      limit: 5,
       coursesIsExcluded: [course._id],
     });
 
@@ -381,24 +381,24 @@ const deleteCourse = async (req, res, next) => {
     const course = req.course;
     let responseData = null;
 
-    const registration = await RegistrationServices.findRegistrationHasConditions(
-      { courseId: course._id }
-    );
+    // const registration = await RegistrationServices.findRegistrationHasConditions(
+    //   { courseId: course._id }
+    // );
 
-    if (registration) {
-      responseData = {
-        status: HttpStatus.BAD_REQUEST,
-        messages: [
-          CoursesConstant.MESSAGES.DELETE_COURSE
-            .THE_COURSE_IS_ALREADY_REGISTERED,
-        ],
-      };
+    // if (registration) {
+    //   responseData = {
+    //     status: HttpStatus.BAD_REQUEST,
+    //     messages: [
+    //       CoursesConstant.MESSAGES.DELETE_COURSE
+    //         .THE_COURSE_IS_ALREADY_REGISTERED,
+    //     ],
+    //   };
 
-      logger.info(
-        `${CoursesConstant.LOGGER.CONTROLLER}::deleteCourse::the course already registered`
-      );
-      return res.status(HttpStatus.BAD_REQUEST).json(responseData);
-    }
+    //   logger.info(
+    //     `${CoursesConstant.LOGGER.CONTROLLER}::deleteCourse::the course already registered`
+    //   );
+    //   return res.status(HttpStatus.BAD_REQUEST).json(responseData);
+    // }
 
     course["isDeleted"] = true;
     await course.save();
@@ -407,6 +407,7 @@ const deleteCourse = async (req, res, next) => {
       lecturerId: course["lecturerId"],
       cumulativeValue: -1,
     });
+    await RegistrationServices.updateIsDeletedRegistrationsByCourse(course._id);
 
     responseData = {
       status: HttpStatus.OK,
