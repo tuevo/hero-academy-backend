@@ -75,7 +75,7 @@ const getVideosByChapter = async (req, res, next) => {
 
     if (roleInfo && roleInfo._id) {
       if (user.role === UsersConstant.ROLE.STUDENT) {
-        const registration = await RegistrationServices.findRegistrationsHasConditions(
+        const registration = await RegistrationServices.findRegistrationHasConditions(
           { studentId: roleInfo._id, courseId: course._id }
         );
 

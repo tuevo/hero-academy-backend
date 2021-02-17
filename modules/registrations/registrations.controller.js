@@ -36,7 +36,7 @@ const registerTheCourse = async (req, res, next) => {
       return res.status(HttpStatus.NOT_FOUND).json(responseData);
     }
 
-    let registration = await RegistrationsServices.findRegistrationsHasConditions(
+    let registration = await RegistrationsServices.findRegistrationHasConditions(
       { studentId: roleInfo._id, courseId: course._id }
     );
 

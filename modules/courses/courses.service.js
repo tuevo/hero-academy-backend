@@ -541,7 +541,7 @@ const mapIsRegisteredFieldIntoCourses = async ({ roleId, courses }) => {
       courses.map(async (course) => {
         const courseJsonParse = JSON.parse(JSON.stringify(course));
         if (roleId) {
-          const registration = await RegistrationsServices.findRegistrationsHasConditions(
+          const registration = await RegistrationsServices.findRegistrationHasConditions(
             { studentId: roleId, courseId: course._id }
           );
 

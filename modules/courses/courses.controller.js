@@ -116,7 +116,7 @@ const getCourseDetail = async (req, res, next) => {
     let rating = null;
 
     if (roleInfo && roleInfo._id) {
-      const registration = await RegistrationServices.findRegistrationsHasConditions(
+      const registration = await RegistrationServices.findRegistrationHasConditions(
         { studentId: roleInfo._id, courseId: course._id }
       );
 
@@ -381,6 +381,25 @@ const deleteCourse = async (req, res, next) => {
     const course = req.course;
     let responseData = null;
 
+    const registration = await RegistrationServices.findRegistrationHasConditions(
+      { courseId: course._id }
+    );
+
+    if (registration) {
+      responseData = {
+        status: HttpStatus.BAD_REQUEST,
+        messages: [
+          CoursesConstant.MESSAGES.DELETE_COURSE
+            .THE_COURSE_IS_ALREADY_REGISTERED,
+        ],
+      };
+
+      logger.info(
+        `${CoursesConstant.LOGGER.CONTROLLER}::deleteCourse::the course already registered`
+      );
+      return res.status(HttpStatus.BAD_REQUEST).json(responseData);
+    }
+
     course["isDeleted"] = true;
     await course.save();
     await AdminServices.updateNumberOfCourses(-1);
@@ -391,7 +410,9 @@ const deleteCourse = async (req, res, next) => {
 
     responseData = {
       status: HttpStatus.OK,
-      messages: [],
+      messages: [
+        CoursesConstant.MESSAGES.DELETE_COURSE.DELETED_COURSE_SUCCESSFULLY,
+      ],
     };
 
     logger.info(`${CoursesConstant.LOGGER.CONTROLLER}::deleteCourse::success`);

@@ -1,9 +1,9 @@
-const log4js = require('log4js');
-const logger = log4js.getLogger('Services');
-const mongoose = require('mongoose');
+const log4js = require("log4js");
+const logger = log4js.getLogger("Services");
+const mongoose = require("mongoose");
 
-const RegistrationsModel = require('./registrations.model');
-const RegistrationsConstant = require('./registrations.constant');
+const RegistrationsModel = require("./registrations.model");
+const RegistrationsConstant = require("./registrations.constant");
 
 const createRegistration = async (info) => {
   logger.info(
@@ -25,28 +25,28 @@ const createRegistration = async (info) => {
   }
 };
 
-const findRegistrationsHasConditions = async ({ studentId, courseId }) => {
+const findRegistrationHasConditions = async ({ studentId, courseId }) => {
   logger.info(
-    `${RegistrationsConstant.LOGGER.SERVICE}::findRegistrationsHasConditions::is called`
+    `${RegistrationsConstant.LOGGER.SERVICE}::findRegistrationHasConditions::is called`
   );
   try {
     const conditions = {};
 
     if (studentId) {
-      conditions['studentId'] = mongoose.Types.ObjectId(studentId);
+      conditions["studentId"] = mongoose.Types.ObjectId(studentId);
     }
 
     if (courseId) {
-      conditions['courseId'] = mongoose.Types.ObjectId(courseId);
+      conditions["courseId"] = mongoose.Types.ObjectId(courseId);
     }
 
     logger.info(
-      `${RegistrationsConstant.LOGGER.SERVICE}::findRegistrationsHasConditions::success`
+      `${RegistrationsConstant.LOGGER.SERVICE}::findRegistrationHasConditions::success`
     );
     return await RegistrationsModel.findOne(conditions);
   } catch (e) {
     logger.error(
-      `${RegistrationsConstant.LOGGER.SERVICE}::findRegistrationsHasConditions::error`,
+      `${RegistrationsConstant.LOGGER.SERVICE}::findRegistrationHasConditions::error`,
       e
     );
     throw new Error(e);
@@ -125,7 +125,7 @@ const mapCoursesIntoRegistrations = ({ courses, registrations }) => {
 
 module.exports = {
   createRegistration,
-  findRegistrationsHasConditions,
+  findRegistrationHasConditions,
   getRegistrationsHasPagination,
   mapCoursesIntoRegistrations,
 };
