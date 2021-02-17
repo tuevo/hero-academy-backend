@@ -1,12 +1,12 @@
-const cloudinary = require('cloudinary').v2;
-const streamifier = require('streamifier');
-const log4js = require('log4js');
-const logger = log4js.getLogger('Services');
+const cloudinary = require("cloudinary").v2;
+const streamifier = require("streamifier");
+const log4js = require("log4js");
+const logger = log4js.getLogger("Services");
 
 cloudinary.config({
-  cloud_name: 'dcpiiafc6',
-  api_key: '832357147372524',
-  api_secret: 'kAcnXN4HTp-cpr3Ac4xKNeZvi-8',
+  cloud_name: "dye8sx2yk",
+  api_key: "666872169352632",
+  api_secret: "QbmcqYuYX_5RddmCZx-k4CEVvHw",
 });
 
 const uploadByLink = (link) => {
@@ -36,7 +36,7 @@ const uploadByBuffer = (file, type) => {
       if (!file) {
         logger.info(`Utils::uploadByBuffer::file not found`);
         return resolve({
-          url: '',
+          url: "",
         });
       }
 
