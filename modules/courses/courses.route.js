@@ -1,71 +1,71 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router({});
-const multer = require('multer');
+const multer = require("multer");
 const upload = multer();
 
-const RoleConstant = require('../users/users.constant');
-const FileTypesConstant = require('../../constants/file-types.constant');
-const ParametersConstant = require('../../constants/parameters.constant');
-const CoursesController = require('./courses.controller');
-const VideosController = require('../videos/videos.controller');
-const ChaptersController = require('../chapters/chapters.controller');
-const RegistrationsController = require('../registrations/registrations.controller');
-const VideoWatchingsController = require('../video-watchings/video-watchings.controller');
-const LecturersController = require('../lecturers/lecturers.controller');
-const FeedbacksController = require('../feedbacks/feedbacks.controller');
+const RoleConstant = require("../users/users.constant");
+const FileTypesConstant = require("../../constants/file-types.constant");
+const ParametersConstant = require("../../constants/parameters.constant");
+const CoursesController = require("./courses.controller");
+const VideosController = require("../videos/videos.controller");
+const ChaptersController = require("../chapters/chapters.controller");
+const RegistrationsController = require("../registrations/registrations.controller");
+const VideoWatchingsController = require("../video-watchings/video-watchings.controller");
+const LecturersController = require("../lecturers/lecturers.controller");
+const FeedbacksController = require("../feedbacks/feedbacks.controller");
 
-const ValidateMiddleware = require('../../middleware/validate.middleware');
-const ValidateFileTypesMiddleware = require('../../middleware/validate-file-types.middleware');
-const CheckAccessTokenMiddleware = require('../../middleware/check-access-token.middleware');
-const CheckCourseIdMiddleware = require('../../middleware/check-course-id.middleware');
-const CheckRoleMiddleware = require('../../middleware/check-role.middleware');
-const CheckChapterIdMiddleware = require('../../middleware/check-chapter-id.middleware');
+const ValidateMiddleware = require("../../middleware/validate.middleware");
+const ValidateFileTypesMiddleware = require("../../middleware/validate-file-types.middleware");
+const CheckAccessTokenMiddleware = require("../../middleware/check-access-token.middleware");
+const CheckCourseIdMiddleware = require("../../middleware/check-course-id.middleware");
+const CheckRoleMiddleware = require("../../middleware/check-role.middleware");
+const CheckChapterIdMiddleware = require("../../middleware/check-chapter-id.middleware");
 
 const {
   AddVideoValidationSchema,
-} = require('../videos/validations/add-video.schema');
+} = require("../videos/validations/add-video.schema");
 const {
   GetVideosByChapterValidationSchema,
-} = require('../videos/validations/get-videos-by-chapter.schema');
+} = require("../videos/validations/get-videos-by-chapter.schema");
 const {
   AddCourseValidationSchema,
-} = require('./validations/add-course.schema');
+} = require("./validations/add-course.schema");
 const {
   GetCourseDetailValidationSchema,
-} = require('./validations/get-course-detail.schema');
+} = require("./validations/get-course-detail.schema");
 const {
   DeleteCourseDetailValidationSchema,
-} = require('./validations/delete-course.schema');
+} = require("./validations/delete-course.schema");
 const {
   UpdateCourseValidationSchema,
-} = require('./validations/update-course.schema');
+} = require("./validations/update-course.schema");
 const {
   GetChaptersValidationSchema,
-} = require('../chapters/validations/get-chapters.schema');
+} = require("../chapters/validations/get-chapters.schema");
 const {
   AddChapterValidationSchema,
-} = require('../chapters/validations/add-chapter.schema');
+} = require("../chapters/validations/add-chapter.schema");
 const {
   RegisterTheCourseValidationSchema,
-} = require('../registrations/validations/register-the-course.schema');
+} = require("../registrations/validations/register-the-course.schema");
 const {
   GetVideosWatchingsValidationSchema,
-} = require('../video-watchings/validations/get-video-watching.schema');
+} = require("../video-watchings/validations/get-video-watching.schema");
 const {
   GetCoursesListByCriteriaValidationSchema,
-} = require('./validations/get-courses-list-by-criteria.schema');
+} = require("./validations/get-courses-list-by-criteria.schema");
 const {
   AddFeedbackValidationSchema,
-} = require('../feedbacks/validations/add-feedback.schema');
+} = require("../feedbacks/validations/add-feedback.schema");
 const {
   GetFeedbacksValidationSchema,
-} = require('../feedbacks/validations/get-feedbacks.schema');
+} = require("../feedbacks/validations/get-feedbacks.schema");
 const {
   AddVideosWatchingValidationSchema,
-} = require('../video-watchings/validations/add-video-watching.schema');
+} = require("../video-watchings/validations/add-video-watching.schema");
 
 router.get(
-  '/',
+  "/",
   ValidateMiddleware(GetCoursesListByCriteriaValidationSchema, [
     ParametersConstant.QUERY,
   ]),
@@ -73,12 +73,12 @@ router.get(
   CoursesController.getCoursesListByCriteria
 );
 router.post(
-  '/',
-  upload.fields([{ name: 'thumbnail' }]),
+  "/",
+  upload.fields([{ name: "thumbnail" }]),
   ValidateMiddleware(AddCourseValidationSchema, [ParametersConstant.BODY]),
   ValidateFileTypesMiddleware([
     {
-      name: 'thumbnail',
+      name: "thumbnail",
       fileTypes: [FileTypesConstant.IMAGE],
       isRequired: true,
     },
@@ -88,7 +88,7 @@ router.post(
   CoursesController.addCourse
 );
 router.get(
-  '/:courseId/',
+  "/:courseId/",
   ValidateMiddleware(GetCourseDetailValidationSchema, [
     ParametersConstant.PARAMS,
   ]),
@@ -97,7 +97,7 @@ router.get(
   CoursesController.getCourseDetail
 );
 router.delete(
-  '/:courseId',
+  "/:courseId",
   ValidateMiddleware(DeleteCourseDetailValidationSchema, [
     ParametersConstant.PARAMS,
   ]),
@@ -107,15 +107,15 @@ router.delete(
   CoursesController.deleteCourse
 );
 router.put(
-  '/:courseId/',
-  upload.fields([{ name: 'thumbnail' }]),
+  "/:courseId/",
+  upload.fields([{ name: "thumbnail" }]),
   ValidateMiddleware(UpdateCourseValidationSchema, [
     ParametersConstant.BODY,
     ParametersConstant.PARAMS,
   ]),
   ValidateFileTypesMiddleware([
     {
-      name: 'thumbnail',
+      name: "thumbnail",
       fileTypes: [FileTypesConstant.IMAGE],
       isRequired: false,
     },
@@ -126,7 +126,7 @@ router.put(
   CoursesController.updateCourse
 );
 router.post(
-  '/:courseId/feedbacks/',
+  "/:courseId/feedbacks/",
   ValidateMiddleware(AddFeedbackValidationSchema, [
     ParametersConstant.PARAMS,
     ParametersConstant.BODY,
@@ -137,7 +137,7 @@ router.post(
   FeedbacksController.addFeedback
 );
 router.get(
-  '/:courseId/feedbacks/',
+  "/:courseId/feedbacks/",
   ValidateMiddleware(GetFeedbacksValidationSchema, [
     ParametersConstant.PARAMS,
     ParametersConstant.QUERY,
@@ -146,18 +146,18 @@ router.get(
   FeedbacksController.getFeedbacks
 );
 router.post(
-  '/:courseId/chapters/:chapterId/videos',
-  upload.fields([{ name: 'video' }, { name: 'thumbnail' }]),
+  "/:courseId/chapters/:chapterId/videos",
+  upload.fields([{ name: "video" }, { name: "thumbnail" }]),
   ValidateMiddleware(AddVideoValidationSchema, [
     ParametersConstant.BODY,
     ParametersConstant.PARAMS,
   ]),
   ValidateFileTypesMiddleware([
-    { name: 'video', fileTypes: [FileTypesConstant.VIDEO], isRequired: true },
+    { name: "video", fileTypes: [FileTypesConstant.VIDEO], isRequired: true },
     {
-      name: 'thumbnail',
+      name: "thumbnail",
       fileTypes: [FileTypesConstant.IMAGE],
-      isRequired: true,
+      isRequired: false,
     },
   ]),
   CheckAccessTokenMiddleware({ isRequired: true }),
@@ -167,7 +167,7 @@ router.post(
   VideosController.addVideo
 );
 router.get(
-  '/:courseId/chapters/:chapterId/videos',
+  "/:courseId/chapters/:chapterId/videos",
   ValidateMiddleware(GetVideosByChapterValidationSchema, [
     ParametersConstant.BODY,
     ParametersConstant.PARAMS,
@@ -178,13 +178,13 @@ router.get(
   VideosController.getVideosByChapter
 );
 router.get(
-  '/:courseId/chapters/',
+  "/:courseId/chapters/",
   ValidateMiddleware(GetChaptersValidationSchema, [ParametersConstant.PARAMS]),
   CheckCourseIdMiddleware({ isLecturer: false }),
   ChaptersController.getChapters
 );
 router.post(
-  '/:courseId/chapters/',
+  "/:courseId/chapters/",
   ValidateMiddleware(AddChapterValidationSchema, [
     ParametersConstant.BODY,
     ParametersConstant.PARAMS,
@@ -195,7 +195,7 @@ router.post(
   ChaptersController.addChapter
 );
 router.post(
-  '/:courseId/registrations/',
+  "/:courseId/registrations/",
   ValidateMiddleware(RegisterTheCourseValidationSchema, [
     ParametersConstant.PARAMS,
   ]),
@@ -205,7 +205,7 @@ router.post(
   RegistrationsController.registerTheCourse
 );
 router.get(
-  '/:courseId/video-watchings',
+  "/:courseId/video-watchings",
   ValidateMiddleware(GetVideosWatchingsValidationSchema, [
     ParametersConstant.PARAMS,
     ParametersConstant.QUERY,
@@ -216,7 +216,7 @@ router.get(
   VideoWatchingsController.getVideoWatchings
 );
 router.post(
-  '/:courseId/video-watchings',
+  "/:courseId/video-watchings",
   ValidateMiddleware(AddVideosWatchingValidationSchema, [
     ParametersConstant.PARAMS,
     ParametersConstant.BODY,
@@ -227,7 +227,7 @@ router.post(
   VideoWatchingsController.addVideoWatching
 );
 router.get(
-  '/:courseId/lecturers',
+  "/:courseId/lecturers",
   CheckCourseIdMiddleware({ isLecturer: false }),
   LecturersController.getLecturerInfoForCoursePage
 );
