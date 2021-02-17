@@ -30,7 +30,9 @@ const findRegistrationHasConditions = async ({ studentId, courseId }) => {
     `${RegistrationsConstant.LOGGER.SERVICE}::findRegistrationHasConditions::is called`
   );
   try {
-    const conditions = {};
+    const conditions = {
+      isDeleted: false,
+    };
 
     if (studentId) {
       conditions["studentId"] = mongoose.Types.ObjectId(studentId);
@@ -61,6 +63,7 @@ const getRegistrationsHasPagination = async ({ studentId, limit, page }) => {
     const matchStage = {
       $match: {
         studentId: mongoose.Types.ObjectId(studentId),
+        isDeleted: false,
       },
     };
     const sortStage = {
@@ -123,9 +126,33 @@ const mapCoursesIntoRegistrations = ({ courses, registrations }) => {
   }
 };
 
+const updateIsDeletedRegistrationsByCourse = async (courseId) => {
+  logger.info(
+    `${RegistrationsConstant.LOGGER.SERVICE}::updateIsDeletedRegistrationsByCourse::is called`
+  );
+  try {
+    await RegistrationsModel.updateMany(
+      { courseId: mongoose.Types.ObjectId(courseId) },
+      { $set: { isDeleted: true } }
+    );
+    logger.info(
+      `${RegistrationsConstant.LOGGER.SERVICE}::updateIsDeletedRegistrationsByCourse::success`
+    );
+
+    return;
+  } catch (e) {
+    logger.error(
+      `${RegistrationsConstant.LOGGER.SERVICE}::updateIsDeletedRegistrationsByCourse::error`,
+      e
+    );
+    throw new Error(e);
+  }
+};
+
 module.exports = {
   createRegistration,
   findRegistrationHasConditions,
   getRegistrationsHasPagination,
   mapCoursesIntoRegistrations,
+  updateIsDeletedRegistrationsByCourse,
 };
