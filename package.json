@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "nodemon app.js",
-    "test": "mocha ./test"
+    "test": "mocha --timeout 100000 ./test"
   },
   "dependencies": {
     "@hapi/joi": "^15.0.3",
