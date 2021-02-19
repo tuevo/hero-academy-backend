@@ -1,9 +1,9 @@
-const log4js = require('log4js');
-const logger = log4js.getLogger('Services');
-const mongoose = require('mongoose');
+const log4js = require("log4js");
+const logger = log4js.getLogger("Services");
+const mongoose = require("mongoose");
 
-const CategoryModel = require('./categories.model');
-const CategoryConstant = require('./categories.constant');
+const CategoryModel = require("./categories.model");
+const CategoryConstant = require("./categories.constant");
 
 const getCategoriesByCategoryClusterId = async (categoryClusterId) => {
   logger.info(
@@ -26,7 +26,7 @@ const getCategoriesByCategoryClusterId = async (categoryClusterId) => {
   }
 };
 
-const updateNumberOfCourses = async (categoryId, cumulativeValue) => {
+const updateNumberOfCourses = async ({ categoryId, cumulativeValue }) => {
   logger.info(
     `${CategoryConstant.LOGGER.SERVICE}::updateNumberOfCourses::is called`
   );
@@ -78,7 +78,7 @@ const findCategoryByName = async (name) => {
     return await CategoryModel.findOne({
       name: {
         $regex: name,
-        $options: 'i',
+        $options: "i",
       },
       isDeleted: false,
     });
