@@ -84,6 +84,10 @@ const addCourse = async (req, res, next) => {
       lecturerId: course["lecturerId"],
       cumulativeValue: 1,
     });
+    await CategoriesServices.updateNumberOfCourses({
+      categoryId,
+      cumulativeValue: 1,
+    });
 
     responseData = {
       status: HttpStatus.CREATED,
@@ -405,6 +409,10 @@ const deleteCourse = async (req, res, next) => {
     await AdminServices.updateNumberOfCourses(-1);
     await LecturersServices.updateNumberOfCoursesPosted({
       lecturerId: course["lecturerId"],
+      cumulativeValue: -1,
+    });
+    await CategoriesServices.updateNumberOfCourses({
+      categoryId: course.categoryId,
       cumulativeValue: -1,
     });
     await RegistrationServices.updateIsDeletedRegistrationsByCourse(course._id);
