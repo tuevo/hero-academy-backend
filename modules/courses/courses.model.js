@@ -23,6 +23,7 @@ const courseSchema = new Schema(
     isDeleted: { type: Boolean, default: false },
     publicId: { type: String, default: null },
     slug: { type: String, default: "" },
+    updatedAtByLecturer: { type: Date, default: new Date() },
   },
   { timestamps: true, paranoid: true }
 );
