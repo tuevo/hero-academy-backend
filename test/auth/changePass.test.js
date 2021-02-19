@@ -72,6 +72,84 @@ const changePassTest = () =>
             }
         });
 
+        it("changePass test :: currentPassword, newPassword and confirmNewPassword is empty", (done) => {
+            try {
+                chai
+                    .request(server)
+                    .put("/api/auth/password")
+                    .set(accessToken)
+                    .end((err, res) => {
+                        if (err) {
+                            console.log(err);
+                        }
+
+                        if (res) {
+                            expect(res).to.have.status(HttpStatus.BAD_REQUEST);
+                        }
+
+                        done();
+                    });
+            } catch (e) {
+                console.error(e);
+                done(e);
+            }
+        });
+
+        it("changePass test :: change password success", (done) => {
+            try {
+                chai
+                    .request(server)
+                    .put("/api/auth/password")
+                    .set(accessToken)
+                    .send({ currentPassword: "123456789", newPassword: "12345678", confirmNewPassword: "12345678" })
+                    .end((err, res) => {
+                        if (err) {
+                            console.log(err);
+                        }
+
+                        if (res) {
+                            expect(res).to.have.status(HttpStatus.OK);
+                            expect(res.body.messages)
+                                .to.be.an("array")
+                                .that.includes(AuthConstant.MESSAGES.CHANGE_PASS
+                                    .CHANGE_PASSWORD_SUCCESSFULLY);
+                        }
+
+                        done();
+                    });
+            } catch (e) {
+                console.error(e);
+                done(e);
+            }
+        });
+
+        it("changePass test :: change password success", (done) => {
+            try {
+                chai
+                    .request(server)
+                    .put("/api/auth/password")
+                    .set(accessToken)
+                    .send({ currentPassword: "12345678", newPassword: "123456789", confirmNewPassword: "123456789" })
+                    .end((err, res) => {
+                        if (err) {
+                            console.log(err);
+                        }
+
+                        if (res) {
+                            expect(res).to.have.status(HttpStatus.OK);
+                            expect(res.body.messages)
+                                .to.be.an("array")
+                                .that.includes(AuthConstant.MESSAGES.CHANGE_PASS
+                                    .CHANGE_PASSWORD_SUCCESSFULLY);
+                        }
+
+                        done();
+                    });
+            } catch (e) {
+                console.error(e);
+                done(e);
+            }
+        });
     });
 
 module.exports = changePassTest;
