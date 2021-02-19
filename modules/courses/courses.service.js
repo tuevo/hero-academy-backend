@@ -148,6 +148,8 @@ const updateCourse = async ({ course, updateInfo }) => {
     }
 
     if (isChange) {
+      course["updatedAtByLecturer"] = new Date();
+
       logger.info(
         `${CoursesConstant.LOGGER.SERVICE}::updateCourse::update course`
       );
