@@ -1,5 +1,6 @@
 const log4js = require("log4js");
 const logger = log4js.getLogger("Services");
+const moment = require('moment-timezone');
 
 const deleteFieldsUser = (user) => {
   logger.info(`SERVICE::deleteFieldsUser::is called`);
@@ -55,7 +56,12 @@ const mapDataIntoCourse = ({
   logger.info(`SERVICE::mapDataIntoCourse::is called`);
   try {
     const result = courses.map((course) => {
-      const courseJsonParse = JSON.parse(JSON.stringify(course));
+      let courseJsonParse = JSON.parse(JSON.stringify(course));
+
+      const { createdAt } = courseJsonParse;
+      const startDate = moment(createdAt);
+      const endDate = moment(createdAt).add(1, 'day');
+      courseJsonParse.isNew = moment(new Date()).isBetween(startDate, endDate);
 
       const category = categories.find(
         (category) =>
@@ -64,10 +70,10 @@ const mapDataIntoCourse = ({
 
       let categoryCluster = category
         ? categoryClusters.find(
-            (categoryCluster) =>
-              categoryCluster._id.toString() ===
-              category.categoryClusterId.toString()
-          )
+          (categoryCluster) =>
+            categoryCluster._id.toString() ===
+            category.categoryClusterId.toString()
+        )
         : null;
       categoryCluster = JSON.parse(JSON.stringify(categoryCluster));
 
@@ -77,8 +83,8 @@ const mapDataIntoCourse = ({
 
       let user = lecturer
         ? users.find(
-            (user) => user._id.toString() === lecturer.userId.toString()
-          )
+          (user) => user._id.toString() === lecturer.userId.toString()
+        )
         : null;
 
       user = user && deleteFieldsUser(user);
