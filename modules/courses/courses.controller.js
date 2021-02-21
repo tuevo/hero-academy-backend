@@ -352,9 +352,9 @@ const updateCourse = async (req, res, next) => {
 
       course["categoryCluster"] = categoryCluster
         ? {
-            ...JSON.parse(JSON.stringify(categoryCluster)),
-            categories: category ? [category] : [],
-          }
+          ...JSON.parse(JSON.stringify(categoryCluster)),
+          categories: category ? [category] : [],
+        }
         : null;
     }
 
@@ -475,9 +475,9 @@ const getCoursesListByLecturer = async (req, res, next) => {
       courses[0].meta.length > 0
         ? courses[0].meta[0]
         : {
-            _id: null,
-            totalItems: 0,
-          };
+          _id: null,
+          totalItems: 0,
+        };
 
     if (entries.length > 0) {
       const categoriesId = entries.map((course) => course.categoryId);
@@ -581,9 +581,9 @@ const getCoursesListByCategory = async (req, res, next) => {
       courses[0].meta.length > 0
         ? courses[0].meta[0]
         : {
-            _id: null,
-            totalItems: 0,
-          };
+          _id: null,
+          totalItems: 0,
+        };
 
     let categoryClusters = await CategoryClusterServices.findCategoryClustersByIds(
       [category.categoryClusterId]
@@ -666,17 +666,18 @@ const getCoursesListByCriteria = async (req, res, next) => {
     });
 
     let { entries } = courses[0];
+    let categories = [];
     const meta =
       courses[0].meta.length > 0
         ? courses[0].meta[0]
         : {
-            _id: null,
-            totalItems: 0,
-          };
+          _id: null,
+          totalItems: 0,
+        };
 
     if (entries.length > 0) {
       const categoriesId = entries.map((course) => course.categoryId);
-      const categories = await CategoriesServices.getCategoriesByIds(
+      categories = await CategoriesServices.getCategoriesByIds(
         categoriesId
       );
 
@@ -715,6 +716,7 @@ const getCoursesListByCriteria = async (req, res, next) => {
       ],
       data: {
         entries,
+        categories,
         meta,
       },
     };
