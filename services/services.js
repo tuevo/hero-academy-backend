@@ -55,15 +55,12 @@ const mapDataIntoCourse = ({
 }) => {
   logger.info(`SERVICE::mapDataIntoCourse::is called`);
   try {
-    const bestSellerCourse = courses.sort((a, b) => b.numberOfRegistrations - a.numberOfRegistrations)[0];
     const result = courses.map((course) => {
       let courseJsonParse = JSON.parse(JSON.stringify(course));
-
       const { createdAt } = courseJsonParse;
       const startDate = moment(createdAt);
       const endDate = moment(createdAt).add(1, 'day');
       courseJsonParse.isNew = moment(new Date()).isBetween(startDate, endDate);
-      courseJsonParse.isBestSeller = course._id.toString() === bestSellerCourse._id.toString();
 
       const category = categories.find(
         (category) =>

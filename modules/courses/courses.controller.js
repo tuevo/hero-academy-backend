@@ -694,8 +694,10 @@ const getCoursesListByCriteria = async (req, res, next) => {
       const usersId = lecturers.map((lecturer) => lecturer.userId);
       const users = await UsersServices.getUsersByIds(usersId);
 
+      const bestSellerCourse = entries.sort((a, b) => b.numberOfRegistrations - a.numberOfRegistrations)[0];
+
       entries = Services.mapDataIntoCourse({
-        courses: entries,
+        courses: entries.map(item => ({ ...item, isBestSeller: item._id.toString() === bestSellerCourse._id.toString() })),
         categories,
         categoryClusters,
         lecturers,
