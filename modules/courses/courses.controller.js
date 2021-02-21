@@ -666,6 +666,7 @@ const getCoursesListByCriteria = async (req, res, next) => {
     });
 
     let { entries } = courses[0];
+    let categories = [];
     const meta =
       courses[0].meta.length > 0
         ? courses[0].meta[0]
@@ -676,9 +677,7 @@ const getCoursesListByCriteria = async (req, res, next) => {
 
     if (entries.length > 0) {
       const categoriesId = entries.map((course) => course.categoryId);
-      const categories = await CategoriesServices.getCategoriesByIds(
-        categoriesId
-      );
+      categories = await CategoriesServices.getCategoriesByIds(categoriesId);
 
       const categoryClustersId = categories.map(
         (category) => category.categoryClusterId
@@ -693,8 +692,15 @@ const getCoursesListByCriteria = async (req, res, next) => {
       const usersId = lecturers.map((lecturer) => lecturer.userId);
       const users = await UsersServices.getUsersByIds(usersId);
 
+      const bestSellerCourse = entries.sort(
+        (a, b) => b.numberOfRegistrations - a.numberOfRegistrations
+      )[0];
+
       entries = Services.mapDataIntoCourse({
-        courses: entries,
+        courses: entries.map((item) => ({
+          ...item,
+          isBestSeller: item._id.toString() === bestSellerCourse._id.toString(),
+        })),
         categories,
         categoryClusters,
         lecturers,
@@ -715,6 +721,7 @@ const getCoursesListByCriteria = async (req, res, next) => {
       ],
       data: {
         entries,
+        categories,
         meta,
       },
     };
