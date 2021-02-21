@@ -35,6 +35,31 @@ const getLecturerInfoForCoursePage = () =>
                 done(e);
             }
         });
+
+        it("LecturerInfoForCoursePage test :: Course not found", (done) => {
+            try {
+                chai
+                    .request(server)
+                    .get("/api/courses/60223b77f7e4d94848a4eee2/lecturers")
+                    .end((err, res) => {
+                        if (err) {
+                            console.log(err);
+                        }
+
+                        if (res) {
+                            expect(res).to.have.status(HttpStatus.NOT_FOUND);
+                            expect(res.body.messages)
+                                .to.be.an("array")
+                                .that.includes('COURSE_NOT_FOUND');
+                        }
+
+                        done();
+                    });
+            } catch (e) {
+                console.error(e);
+                done(e);
+            }
+        });
     });
 
 module.exports = getLecturerInfoForCoursePage;
