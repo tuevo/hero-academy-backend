@@ -130,9 +130,9 @@ const getCoursesListRegistered = async (req, res, next) => {
       registrations[0].meta.length > 0
         ? registrations[0].meta[0]
         : {
-            _id: null,
-            totalItems: 0,
-          };
+          _id: null,
+          totalItems: 0,
+        };
 
     if (entries.length > 0) {
       const coursesId = entries.map((registration) => registration.courseId);
@@ -157,7 +157,7 @@ const getCoursesListRegistered = async (req, res, next) => {
       const usersId = lecturers.map((lecturer) => lecturer.userId);
       const users = await UsersServices.getUsersByIds(usersId);
 
-      courses = Services.mapDataIntoCourse({
+      courses = await Services.mapDataIntoCourse({
         courses,
         categories,
         categoryClusters,

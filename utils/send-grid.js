@@ -2,9 +2,15 @@ const sgMail = require("@sendgrid/mail");
 const log4js = require("log4js");
 const logger = log4js.getLogger("Services");
 
-sgMail.setApiKey(
-  "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"
-);
+if (process.env.NODE_ENV === "production") {
+  sgMail.setApiKey(
+    "SG.iOfGDKHtTcyTYKUAWtvRTA.RzUYDKGqe3fzTteGPEkkBefCQUME_s3ONNUfyAupD-s"
+  );
+} else {
+  sgMail.setApiKey(
+    "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"
+  );
+}
 
 const sendConfirmMail = ({ email, fullName, otpCode }) => {
   logger.info("Utils::sendConfirmMail::is called");

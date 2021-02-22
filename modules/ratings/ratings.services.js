@@ -1,9 +1,9 @@
-const log4js = require('log4js');
-const logger = log4js.getLogger('Services');
-const mongoose = require('mongoose');
+const log4js = require("log4js");
+const logger = log4js.getLogger("Services");
+const mongoose = require("mongoose");
 
-const RatingsConstant = require('./rating.constant');
-const RatingsModel = require('./ratings.model');
+const RatingsConstant = require("./rating.constant");
+const RatingsModel = require("./ratings.model");
 
 const createRating = async (info) => {
   logger.info(`${RatingsConstant.LOGGER.SERVICE}::createRating::is called`);
@@ -31,11 +31,11 @@ const getRatingHasConditions = async ({ courseId, studentId }) => {
     };
 
     if (courseId) {
-      conditions['courseId'] = courseId;
+      conditions["courseId"] = courseId;
     }
 
     if (studentId) {
-      conditions['studentId'] = studentId;
+      conditions["studentId"] = studentId;
     }
 
     logger.info(
@@ -80,8 +80,34 @@ const getRatingsByCoursesId = async (coursesId) => {
   }
 };
 
+const removeRatingByCourse = async (courseId) => {
+  logger.info(
+    `${RatingsConstant.LOGGER.SERVICE}::removeRatingByCourse::is called`
+  );
+  try {
+    await RatingsModel.updateMany(
+      {
+        courseId: mongoose.Types.ObjectId(courseId),
+      },
+      { $set: { isDeleted: true } }
+    );
+
+    logger.info(
+      `${RatingsConstant.LOGGER.SERVICE}::removeRatingByCourse::success`
+    );
+    return;
+  } catch (e) {
+    logger.error(
+      `${RatingsConstant.LOGGER.SERVICE}::removeRatingByCourse::error`,
+      e
+    );
+    throw new Error(e);
+  }
+};
+
 module.exports = {
   createRating,
   getRatingHasConditions,
   getRatingsByCoursesId,
+  removeRatingByCourse,
 };
