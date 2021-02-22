@@ -208,6 +208,29 @@ const updateIsDeletedByCourseId = async (courseId) => {
   }
 };
 
+const findFavoritesByCoursesId = async (coursesId) => {
+  logger.info(
+    `${FavoritesConstant.LOGGER.SERVICE}::findFavoritesByCoursesId::is called`
+  );
+  try {
+    const favorites = await FavoritesModel.find({
+      courseId: { $in: coursesId },
+      isDeleted: false,
+    });
+
+    logger.info(
+      `${FavoritesConstant.LOGGER.SERVICE}::findFavoritesByCoursesId::success`
+    );
+    return favorites;
+  } catch (e) {
+    logger.error(
+      `${FavoritesConstant.LOGGER.SERVICE}::findFavoritesByCoursesId::error`,
+      e
+    );
+    throw new Error(e);
+  }
+};
+
 module.exports = {
   getFavoritesByConditionsHasPagination,
   findFavoriteHasConditions,
@@ -215,4 +238,5 @@ module.exports = {
   mapCourseIntoFavoritesCourse,
   findFavoritesHasConditions,
   updateIsDeletedByCourseId,
+  findFavoritesByCoursesId,
 };
