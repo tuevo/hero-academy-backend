@@ -163,19 +163,67 @@ const getStudentsByIds = async (ids) => {
 };
 
 const getStudentById = async (id) => {
-  logger.info(
-    `${StudentsConstant.LOGGER.SERVICE}::getStudentById::is called`
-  );
+  logger.info(`${StudentsConstant.LOGGER.SERVICE}::getStudentById::is called`);
   try {
-    const student = await StudentsModel.findOne({ _id: mongoose.Types.ObjectId(id)});
+    const student = await StudentsModel.findOne({
+      _id: mongoose.Types.ObjectId(id),
+    });
 
-    logger.info(
-      `${StudentsConstant.LOGGER.SERVICE}::getStudentById::success`
-    );
+    logger.info(`${StudentsConstant.LOGGER.SERVICE}::getStudentById::success`);
     return student;
   } catch (e) {
     logger.error(
       `${StudentsConstant.LOGGER.SERVICE}::getStudentById::Error`,
+      e
+    );
+    throw new Error(e);
+  }
+};
+
+const updateNumberOfCoursesRegisteredByStudentsId = async ({
+  studentsId,
+  cumulativeValue,
+}) => {
+  logger.info(
+    `${StudentsConstant.LOGGER.SERVICE}::updateNumberOfCoursesRegisteredByStudentsId::is called`
+  );
+  try {
+    const condition = { $inc: { numberOfCoursesRegistered: cumulativeValue } };
+
+    await StudentsModel.updateMany({ _id: { $in: studentsId } }, condition);
+
+    logger.info(
+      `${StudentsConstant.LOGGER.SERVICE}::updateNumberOfCoursesRegisteredByStudentsId::success`
+    );
+    return;
+  } catch (e) {
+    logger.error(
+      `${StudentsConstant.LOGGER.SERVICE}::updateNumberOfCoursesRegisteredByStudentsId::Error`,
+      e
+    );
+    throw new Error(e);
+  }
+};
+
+const updateNumberOfFavoriteCoursesByStudentsId = async ({
+  studentsId,
+  cumulativeValue,
+}) => {
+  logger.info(
+    `${StudentsConstant.LOGGER.SERVICE}::updateNumberOfFavoriteCoursesByStudentsId::is called`
+  );
+  try {
+    const condition = { $inc: { numberOfFavoriteCourses: cumulativeValue } };
+
+    await StudentsModel.updateOne({ _id: { $in: studentsId } }, condition);
+
+    logger.info(
+      `${StudentsConstant.LOGGER.SERVICE}::updateNumberOfFavoriteCoursesByStudentsId::success`
+    );
+    return;
+  } catch (e) {
+    logger.error(
+      `${StudentsConstant.LOGGER.SERVICE}::updateNumberOfFavoriteCoursesByStudentsId::Error`,
       e
     );
     throw new Error(e);
@@ -190,5 +238,7 @@ module.exports = {
   getStudentsByUsersId,
   mapStudentsIntoUsers,
   getStudentsByIds,
-  getStudentById
+  getStudentById,
+  updateNumberOfCoursesRegisteredByStudentsId,
+  updateNumberOfFavoriteCoursesByStudentsId,
 };

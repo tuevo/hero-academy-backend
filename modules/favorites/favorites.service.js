@@ -1,9 +1,9 @@
-const log4js = require('log4js');
-const logger = log4js.getLogger('Services');
-const mongoose = require('mongoose');
+const log4js = require("log4js");
+const logger = log4js.getLogger("Services");
+const mongoose = require("mongoose");
 
-const FavoritesModel = require('./favorites.model');
-const FavoritesConstant = require('./favorites.constant');
+const FavoritesModel = require("./favorites.model");
+const FavoritesConstant = require("./favorites.constant");
 
 const getFavoritesByConditionsHasPagination = async ({
   studentId,
@@ -22,11 +22,11 @@ const getFavoritesByConditionsHasPagination = async ({
     };
 
     if (studentId) {
-      matchStage.$match['studentId'] = mongoose.Types.ObjectId(studentId);
+      matchStage.$match["studentId"] = mongoose.Types.ObjectId(studentId);
     }
 
     if (courseId) {
-      matchStage.$match['courseId'] = mongoose.Types.ObjectId(courseId);
+      matchStage.$match["courseId"] = mongoose.Types.ObjectId(courseId);
     }
 
     const sortStage = {
@@ -63,21 +63,31 @@ const getFavoritesByConditionsHasPagination = async ({
   }
 };
 
-const findFavoriteHasConditions = async ({ studentId, courseId }) => {
+const findFavoriteHasConditions = async ({
+  studentId,
+  courseId,
+  isDeleted,
+}) => {
   logger.info(
     `${FavoritesConstant.LOGGER.SERVICE}::findFavoriteHasConditions::is called`
   );
   try {
-    let conditions = {
-      isDeleted: false
-    };
+    let conditions = {};
+
+    if (isDeleted === true || isDeleted === "true") {
+      conditions["isDeleted"] = true;
+    }
+
+    if (isDeleted === false || isDeleted === "false") {
+      conditions["isDeleted"] = false;
+    }
 
     if (studentId) {
-      conditions['studentId'] = mongoose.Types.ObjectId(studentId);
+      conditions["studentId"] = mongoose.Types.ObjectId(studentId);
     }
 
     if (courseId) {
-      conditions['courseId'] = mongoose.Types.ObjectId(courseId);
+      conditions["courseId"] = mongoose.Types.ObjectId(courseId);
     }
 
     const favorite = await FavoritesModel.findOne(conditions);
@@ -89,6 +99,38 @@ const findFavoriteHasConditions = async ({ studentId, courseId }) => {
   } catch (e) {
     logger.error(
       `${FavoritesConstant.LOGGER.SERVICE}::findFavoriteHasConditions::error`,
+      e
+    );
+    throw new Error(e);
+  }
+};
+
+const findFavoritesHasConditions = async ({ studentId, courseId }) => {
+  logger.info(
+    `${FavoritesConstant.LOGGER.SERVICE}::findFavoritesHasConditions::is called`
+  );
+  try {
+    let conditions = {
+      isDeleted: false,
+    };
+
+    if (studentId) {
+      conditions["studentId"] = mongoose.Types.ObjectId(studentId);
+    }
+
+    if (courseId) {
+      conditions["courseId"] = mongoose.Types.ObjectId(courseId);
+    }
+
+    const favorite = await FavoritesModel.find(conditions);
+
+    logger.info(
+      `${FavoritesConstant.LOGGER.SERVICE}::findFavoritesHasConditions::success`
+    );
+    return favorite;
+  } catch (e) {
+    logger.error(
+      `${FavoritesConstant.LOGGER.SERVICE}::findFavoritesHasConditions::error`,
       e
     );
     throw new Error(e);
@@ -143,9 +185,34 @@ const mapCourseIntoFavoritesCourse = ({ courses, favoritesCourse }) => {
   }
 };
 
+const updateIsDeletedByCourseId = async (courseId) => {
+  logger.info(
+    `${FavoritesConstant.LOGGER.SERVICE}::updateIsDeletedByCourseId::is called`
+  );
+  try {
+    await FavoritesModel.updateMany(
+      { courseId: mongoose.Types.ObjectId(courseId) },
+      { $set: { isDeleted: true } }
+    );
+
+    logger.info(
+      `${FavoritesConstant.LOGGER.SERVICE}::updateIsDeletedByCourseId::success`
+    );
+    return;
+  } catch (e) {
+    logger.error(
+      `${FavoritesConstant.LOGGER.SERVICE}::updateIsDeletedByCourseId::error`,
+      e
+    );
+    throw new Error(e);
+  }
+};
+
 module.exports = {
   getFavoritesByConditionsHasPagination,
   findFavoriteHasConditions,
   createFavoriteCourse,
   mapCourseIntoFavoritesCourse,
+  findFavoritesHasConditions,
+  updateIsDeletedByCourseId,
 };
