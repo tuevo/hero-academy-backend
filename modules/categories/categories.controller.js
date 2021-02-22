@@ -243,7 +243,7 @@ const deleteCategory = async (req, res, next) => {
     });
 
     if (courses.length > 0) {
-      const coursesId = courses.map((course) => course.courseId);
+      const coursesId = courses.map((course) => course._id);
       const lecturersId = courses.map((course) => course.lecturerId);
 
       const favorites = await FavoritesServices.findFavoritesByCoursesId(
