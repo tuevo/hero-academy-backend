@@ -5,9 +5,5 @@ const changePassTest = require("./changePass.test");
 module.exports = () => {
   loginTest();
   //registerTest();
-<<<<<<< HEAD
-  changePassTest();
-=======
   //changePassTest();
->>>>>>> master
 };
