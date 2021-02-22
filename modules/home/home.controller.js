@@ -89,7 +89,7 @@ const getCoursesListForHomePage = async (req, res, next) => {
       const usersId = lecturers.map((lecturer) => lecturer.userId);
       const users = await UsersServices.getUsersByIds(usersId);
 
-      coursesListWithTheMostViews = Services.mapDataIntoCourse({
+      coursesListWithTheMostViews = await Services.mapDataIntoCourse({
         courses: coursesListWithTheMostViews,
         categories,
         categoryClusters,
@@ -128,7 +128,7 @@ const getCoursesListForHomePage = async (req, res, next) => {
       const usersId = lecturers.map((lecturer) => lecturer.userId);
       const users = await UsersServices.getUsersByIds(usersId);
 
-      ListOfLatestCourses = Services.mapDataIntoCourse({
+      ListOfLatestCourses = await Services.mapDataIntoCourse({
         courses: ListOfLatestCourses,
         categories,
         categoryClusters,
@@ -167,7 +167,7 @@ const getCoursesListForHomePage = async (req, res, next) => {
       const usersId = lecturers.map((lecturer) => lecturer.userId);
       const users = await UsersServices.getUsersByIds(usersId);
 
-      outstandingCourseList = Services.mapDataIntoCourse({
+      outstandingCourseList = await Services.mapDataIntoCourse({
         courses: outstandingCourseList,
         categories,
         categoryClusters,

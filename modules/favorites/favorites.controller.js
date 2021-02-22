@@ -46,9 +46,9 @@ const getFavoritesList = async (req, res, next) => {
       favorites[0].meta.length > 0
         ? favorites[0].meta[0]
         : {
-            _id: null,
-            totalItems: 0,
-          };
+          _id: null,
+          totalItems: 0,
+        };
 
     if (entries.length > 0) {
       const coursesId = entries.map((favorite) => favorite.courseId);
@@ -73,7 +73,7 @@ const getFavoritesList = async (req, res, next) => {
       const usersId = lecturers.map((lecturer) => lecturer.userId);
       const users = await UsersServices.getUsersByIds(usersId);
 
-      courses = Services.mapDataIntoCourse({
+      courses = await Services.mapDataIntoCourse({
         courses,
         categories,
         categoryClusters,
