@@ -34,6 +34,59 @@ const getFeedbacksTest = () =>
                 done(e);
             }
         });
+
+        it("Feedbacks test :: Get feedbacks successfully with page", (done) => {
+            try {
+                chai
+                    .request(server)
+                    .get("/api/courses/60223b77f7e4d94848a4eeec/feedbacks")
+                    .query({ page: 1 })
+                    .end((err, res) => {
+                        if (err) {
+                            console.log(err);
+                        }
+
+                        if (res) {
+                            expect(res).to.have.status(HttpStatus.OK);
+                            expect(res.body.messages)
+                                .to.be.an("array")
+                                .that.includes(FeedbacksConstant.MESSAGES.GET_FEEDBACKS.GET_FEEDBACKS_SUCCESSFULLY);
+                        }
+
+                        done();
+                    });
+            } catch (e) {
+                console.error(e);
+                done(e);
+            }
+        });
+
+        it("Feedbacks test :: Get feedbacks successfully with limit", (done) => {
+            try {
+                chai
+                    .request(server)
+                    .get("/api/courses/60223b77f7e4d94848a4eeec/feedbacks")
+                    .query({ page: 1, limit: 4 })
+                    .end((err, res) => {
+                        if (err) {
+                            console.log(err);
+                        }
+
+                        if (res) {
+                            expect(res).to.have.status(HttpStatus.OK);
+                            expect(res.body.messages)
+                                .to.be.an("array")
+                                .that.includes(FeedbacksConstant.MESSAGES.GET_FEEDBACKS.GET_FEEDBACKS_SUCCESSFULLY);
+                        }
+
+                        done();
+                    });
+            } catch (e) {
+                console.error(e);
+                done(e);
+            }
+        });
+
         it("Feedbacks test :: Get feedbacks successfully with page, limit", (done) => {
             try {
                 chai
