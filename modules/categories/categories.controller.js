@@ -1,11 +1,14 @@
-const log4js = require('log4js');
-const logger = log4js.getLogger('Controllers');
-const HttpStatus = require('http-status-codes');
+const log4js = require("log4js");
+const logger = log4js.getLogger("Controllers");
+const HttpStatus = require("http-status-codes");
 
-const CategoriesConstant = require('./categories.constant');
-const CategoriesServices = require('./categories.service');
-const CategoryClusterServices = require('../category-clusters/category-clusters.service');
-const CoursesServices = require('../courses/courses.service');
+const CategoriesConstant = require("./categories.constant");
+const CategoriesServices = require("./categories.service");
+const CategoryClusterServices = require("../category-clusters/category-clusters.service");
+const CoursesServices = require("../courses/courses.service");
+const FavoritesServices = require("../favorites/favorites.service");
+const StudentsServices = require("../students/students.service");
+const LecturersServices = require("../lecturers/lecturers.service");
 
 const addCategory = async (req, res, next) => {
   logger.info(
@@ -232,9 +235,39 @@ const deleteCategory = async (req, res, next) => {
       return res.status(HttpStatus.BAD_REQUEST).json(responseData);
     }
 
-    category['isDeleted'] = true;
+    category["isDeleted"] = true;
     await category.save();
-    await CoursesServices.removeCoursesByCategoryId({ categoryId });
+
+    const courses = await CoursesServices.findCoursesHasConditions({
+      categoryId,
+    });
+
+    if (courses.length > 0) {
+      const coursesId = courses.map((course) => course._id);
+      const lecturersId = courses.map((course) => course.lecturerId);
+
+      const favorites = await FavoritesServices.findFavoritesByCoursesId(
+        coursesId
+      );
+      const studentsId = favorites.map((favorite) => favorite.studentId);
+
+      studentsId.length > 0 &&
+        (await StudentsServices.updateNumberOfFavoriteCoursesByStudentsId({
+          studentsId,
+          cumulativeValue: -1,
+        }));
+
+      await CoursesServices.removeCoursesByCategoryId({ categoryId });
+      await Promise.all(
+        lecturersId.map(
+          async (lecturerId) =>
+            await LecturersServices.updateNumberOfCoursesPosted({
+              lecturerId,
+              cumulativeValue: -1,
+            })
+        )
+      );
+    }
 
     responseData = {
       status: HttpStatus.OK,
