@@ -220,7 +220,7 @@ const getCourseDetail = async (req, res, next) => {
       categoryClustersId
     );
 
-    course = Services.mapDataIntoCourse({
+    course = await Services.mapDataIntoCourse({
       courses: [course],
       categories,
       categoryClusters,
@@ -251,7 +251,7 @@ const getCourseDetail = async (req, res, next) => {
       const usersId = lecturers.map((lecturer) => lecturer.userId);
       const users = await UsersServices.getUsersByIds(usersId);
 
-      mostRegisteredCourses = Services.mapDataIntoCourse({
+      mostRegisteredCourses = await Services.mapDataIntoCourse({
         courses: mostRegisteredCourses,
         categories,
         categoryClusters,
@@ -353,9 +353,9 @@ const updateCourse = async (req, res, next) => {
 
       course["categoryCluster"] = categoryCluster
         ? {
-            ...JSON.parse(JSON.stringify(categoryCluster)),
-            categories: category ? [category] : [],
-          }
+          ...JSON.parse(JSON.stringify(categoryCluster)),
+          categories: category ? [category] : [],
+        }
         : null;
     }
 
@@ -516,9 +516,9 @@ const getCoursesListByLecturer = async (req, res, next) => {
       courses[0].meta.length > 0
         ? courses[0].meta[0]
         : {
-            _id: null,
-            totalItems: 0,
-          };
+          _id: null,
+          totalItems: 0,
+        };
 
     if (entries.length > 0) {
       const categoriesId = entries.map((course) => course.categoryId);
@@ -539,7 +539,7 @@ const getCoursesListByLecturer = async (req, res, next) => {
         roleInfo._id,
       ]);
 
-      entries = Services.mapDataIntoCourse({
+      entries = await Services.mapDataIntoCourse({
         courses: entries,
         categories,
         categoryClusters,
@@ -622,9 +622,9 @@ const getCoursesListByCategory = async (req, res, next) => {
       courses[0].meta.length > 0
         ? courses[0].meta[0]
         : {
-            _id: null,
-            totalItems: 0,
-          };
+          _id: null,
+          totalItems: 0,
+        };
 
     let categoryClusters = await CategoryClusterServices.findCategoryClustersByIds(
       [category.categoryClusterId]
@@ -637,7 +637,7 @@ const getCoursesListByCategory = async (req, res, next) => {
       const usersId = lecturers.map((lecturer) => lecturer.userId);
       const users = await UsersServices.getUsersByIds(usersId);
 
-      entries = Services.mapDataIntoCourse({
+      entries = await Services.mapDataIntoCourse({
         courses: entries,
         categories: [category],
         categoryClusters,
@@ -712,9 +712,9 @@ const getCoursesListByCriteria = async (req, res, next) => {
       courses[0].meta.length > 0
         ? courses[0].meta[0]
         : {
-            _id: null,
-            totalItems: 0,
-          };
+          _id: null,
+          totalItems: 0,
+        };
 
     if (entries.length > 0) {
       const categoriesId = entries.map((course) => course.categoryId);
@@ -733,15 +733,8 @@ const getCoursesListByCriteria = async (req, res, next) => {
       const usersId = lecturers.map((lecturer) => lecturer.userId);
       const users = await UsersServices.getUsersByIds(usersId);
 
-      const bestSellerCourse = entries.sort(
-        (a, b) => b.numberOfRegistrations - a.numberOfRegistrations
-      )[0];
-
-      entries = Services.mapDataIntoCourse({
-        courses: entries.map((item) => ({
-          ...item,
-          isBestSeller: item._id.toString() === bestSellerCourse._id.toString(),
-        })),
+      entries = await Services.mapDataIntoCourse({
+        courses: entries,
         categories,
         categoryClusters,
         lecturers,
