@@ -35,6 +35,36 @@ const getCoursesListForHomePage = () =>
                 done(e);
             }
         });
+        it("Home test :: Home should have at most 3 outstanding courses, 10 most view courses, 10 new courses, 10 most registered categories",
+            (done) => {
+                try {
+                    chai
+                        .request(server)
+                        .get("/api/home")
+                        .end((err, res) => {
+                            if (err) {
+                                console.log(err);
+                                done();
+                            }
+
+                            const {
+                                outstandingCourseList,
+                                coursesListWithTheMostViews,
+                                ListOfLatestCourses,
+                                mostRegisteredCategory
+                            } = res.body.data;
+
+                            expect(outstandingCourseList.length).lte(3);
+                            expect(coursesListWithTheMostViews.length).lte(10);
+                            expect(ListOfLatestCourses.length).lte(10);
+                            expect(mostRegisteredCategory.length).lte(10);
+                            done();
+                        });
+                } catch (e) {
+                    console.error(e);
+                    done(e);
+                }
+            });
     });
 
 module.exports = getCoursesListForHomePage;
