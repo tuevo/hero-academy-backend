@@ -5,5 +5,5 @@ const changePassTest = require("./changePass.test");
 module.exports = () => {
   loginTest();
   //registerTest();
-  //changePassTest();
+  changePassTest();
 };

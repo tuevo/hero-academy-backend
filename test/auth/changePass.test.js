@@ -7,44 +7,17 @@ const server = require("../../app");
 const AuthConstant = require("../../modules/auth/auth.constant");
 
 chai.use(chaiHttp);
-let tokenOfLecturer = null;
-let tokenOfLecturerAfter = null;
+
+const accessToken = { accessToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InJvbGUiOjMsInB1YmxpY0lkIjpudWxsLCJpc0RlbGV0ZWQiOmZhbHNlLCJfaWQiOiI2MDIyMWQ0MzYyNjlhMTRlMzBhMmQ3ODAifSwiaWF0IjoxNjEzNzIxNjcwLCJleHAiOjE2MTM3MjE3MzB9.vQyGZ0Wb4PRPLghMjvnd-jfxY8_PYsKGASQk17KLn0U" };
 
 const changePassTest = () =>
     describe("Auth::changePass", async () => {
-        //before running api must get token
-        beforeEach((done) => {
-            try {
-                //get token of lecturer
-                chai
-                    .request(server)
-                    .post("/api/auth/login")
-                    .send({
-                        email: "lecturer6@gmail.com",
-                        password: "123456789",
-                    })
-                    .end((err, res) => {
-                        if (err) {
-                            console.log(err);
-                        }
-
-                        if (res) {
-                            tokenOfLecturer = res.body.data.meta.accessToken;
-                        }
-
-                        done();
-                    });
-            } catch (e) {
-                done(e);
-            }
-        });
-
         it("changePass test :: old password incorrect", (done) => {
             try {
                 chai
                     .request(server)
                     .put("/api/auth/password")
-                    .set({ accessToken: tokenOfLecturer })
+                    .set(accessToken)
                     .send({ currentPassword: "12345678", newPassword: "12345678", confirmNewPassword: "12345678" })
                     .end((err, res) => {
                         if (err) {
@@ -74,7 +47,7 @@ const changePassTest = () =>
                 chai
                     .request(server)
                     .put("/api/auth/password")
-                    .set({ accessToken: tokenOfLecturer })
+                    .set(accessToken)
                     .send({ currentPassword: "123456789", newPassword: "12345678", confirmNewPassword: "123456789" })
                     .end((err, res) => {
                         if (err) {
@@ -104,7 +77,7 @@ const changePassTest = () =>
                 chai
                     .request(server)
                     .put("/api/auth/password")
-                    .set({ accessToken: tokenOfLecturer })
+                    .set(accessToken)
                     .end((err, res) => {
                         if (err) {
                             console.log(err);
@@ -127,7 +100,7 @@ const changePassTest = () =>
                 chai
                     .request(server)
                     .put("/api/auth/password")
-                    .set({ accessToken: tokenOfLecturer })
+                    .set(accessToken)
                     .send({ currentPassword: "123456789", newPassword: "12345678", confirmNewPassword: "12345678" })
                     .end((err, res) => {
                         if (err) {
@@ -141,6 +114,7 @@ const changePassTest = () =>
                                 .that.includes(AuthConstant.MESSAGES.CHANGE_PASS
                                     .CHANGE_PASSWORD_SUCCESSFULLY);
                         }
+
                         done();
                     });
             } catch (e) {
@@ -149,60 +123,33 @@ const changePassTest = () =>
             }
         });
 
-        // afterEach((done) => {
-        //     try {
-        //         //get token of lecturer
-        //         chai
-        //             .request(server)
-        //             .post("/api/auth/login")
-        //             .send({
-        //                 email: "lecturer6@gmail.com",
-        //                 password: "12345678",
-        //             })
-        //             .end((err, res) => {
-        //                 if (err) {
-        //                     console.log(err);
-        //                 }
+        it("changePass test :: change password success", (done) => {
+            try {
+                chai
+                    .request(server)
+                    .put("/api/auth/password")
+                    .set(accessToken)
+                    .send({ currentPassword: "12345678", newPassword: "123456789", confirmNewPassword: "123456789" })
+                    .end((err, res) => {
+                        if (err) {
+                            console.log(err);
+                        }
 
-        //                 if (res) {
-        //                     tokenOfLecturerAfter = res.body.data.meta.accessToken;
-        //                 }
+                        if (res) {
+                            expect(res).to.have.status(HttpStatus.OK);
+                            expect(res.body.messages)
+                                .to.be.an("array")
+                                .that.includes(AuthConstant.MESSAGES.CHANGE_PASS
+                                    .CHANGE_PASSWORD_SUCCESSFULLY);
+                        }
 
-        //                 done();
-        //             });
-        //     } catch (e) {
-        //         done(e);
-        //     }
-        // });
-
-        // it("changePass test :: change password success after", (done) => {
-        //     try {
-        //         chai
-        //             .request(server)
-        //             .put("/api/auth/password")
-        //             .set({ accessToken: tokenOfLecturerAfter })
-        //             .send({ currentPassword: "12345678", newPassword: "123456789", confirmNewPassword: "123456789" })
-        //             .end((err, res) => {
-        //                 if (err) {
-        //                     console.log(err);
-        //                 }
-
-        //                 if (res) {
-        //                     expect(res).to.have.status(HttpStatus.OK);
-        //                     expect(res.body.messages)
-        //                         .to.be.an("array")
-        //                         .that.includes(AuthConstant.MESSAGES.CHANGE_PASS
-        //                             .CHANGE_PASSWORD_SUCCESSFULLY);
-        //                 }
-
-        //                 done();
-        //             });
-        //     } catch (e) {
-        //         console.error(e);
-        //         done(e);
-        //     }
-        // });
-
+                        done();
+                    });
+            } catch (e) {
+                console.error(e);
+                done(e);
+            }
+        });
     });
 
 module.exports = changePassTest;
