@@ -405,13 +405,14 @@ const deleteCourse = async (req, res, next) => {
     //   return res.status(HttpStatus.BAD_REQUEST).json(responseData);
     // }
 
+    const lecturer = await LecturersServices.findLecturerById(
+      course["lecturerId"]
+    );
+
     course["isDeleted"] = true;
+    lecturer["numberOfCoursesPosted"] = lecturer["numberOfCoursesPosted"] - 1;
     await course.save();
     await AdminServices.updateNumberOfCourses(-1);
-    await LecturersServices.updateNumberOfCoursesPosted({
-      lecturerId: course["lecturerId"],
-      cumulativeValue: -1,
-    });
     await CategoriesServices.updateNumberOfCourses({
       categoryId: course.categoryId,
       cumulativeValue: -1,
@@ -422,11 +423,29 @@ const deleteCourse = async (req, res, next) => {
     const registrations = await RegistrationServices.findRegistrationsHasConditions(
       { courseId: course._id }
     );
-    //const ratings = await RatingsServices.getRatingsByCoursesId(course._id);
+    const ratings = await RatingsServices.getRatingsByCoursesId(course._id);
 
     if (ratings.length) {
-      console.log(ratings);
+      if (lecturer["averageRating"] > ratings.length) {
+        const currentAverageRating = Services.rounding(
+          ratings.reduce(
+            (rating, currentRating) => rating * 2 - currentRating.rating,
+            lecturer["averageRating"]
+          )
+        );
+
+        lecturer["averageRating"] = currentAverageRating;
+        lecturer["numberOfRatings"] =
+          lecturer["numberOfRatings"] - ratings.length;
+      } else {
+        lecturer["averageRating"] = 0;
+        lecturer["numberOfRatings"] = 0;
+      }
+
+      await RatingsServices.removeRatingByCourse(course._id);
     }
+
+    await lecturer.save();
 
     if (favorites.length > 0) {
       const studentsIdOfFavorites = favorites.map(
