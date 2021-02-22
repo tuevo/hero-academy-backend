@@ -8,7 +8,7 @@ chai.use(chaiHttp);
 
 const constants = require('./constants.test');
 
-const getAll = async () => {
+const getCourseList = async () => {
   describe('Courses :: Get course list with criteria', () => {
     it('Descending averageRating', (done) => {
       try {
@@ -129,4 +129,4 @@ const getAll = async () => {
   });
 }
 
-module.exports = getAll;
+module.exports = getCourseList;
