@@ -127,6 +127,7 @@ const getCourseDetail = async (req, res, next) => {
       const favorite = await FavoritesServices.findFavoriteHasConditions({
         studentId: roleInfo._id,
         courseId: course.id,
+        isDeleted: false,
       });
 
       if (registration) isUpdate = false;
@@ -415,7 +416,47 @@ const deleteCourse = async (req, res, next) => {
       categoryId: course.categoryId,
       cumulativeValue: -1,
     });
-    await RegistrationServices.updateIsDeletedRegistrationsByCourse(course._id);
+    const favorites = await FavoritesServices.findFavoritesHasConditions({
+      courseId: course._id,
+    });
+    const registrations = await RegistrationServices.findRegistrationsHasConditions(
+      { courseId: course._id }
+    );
+    //const ratings = await RatingsServices.getRatingsByCoursesId(course._id);
+
+    if (ratings.length) {
+      console.log(ratings);
+    }
+
+    if (favorites.length > 0) {
+      const studentsIdOfFavorites = favorites.map(
+        (favorite) => favorite.studentId
+      );
+
+      await StudentServices.updateNumberOfFavoriteCoursesByStudentsId({
+        studentsId: studentsIdOfFavorites,
+        cumulativeValue: -1,
+      });
+      await FavoritesServices.updateIsDeletedByCourseId(course._id);
+    }
+
+    if (registrations.length > 0) {
+      const studentsId = registrations.map(
+        (registration) => registration.studentId
+      );
+
+      await RegistrationServices.updateIsDeletedRegistrationsByCourse(
+        course._id
+      );
+      await LecturersServices.updateNumberOfStudents({
+        lecturerId: course["lecturerId"],
+        cumulativeValue: 0 - registrations.length,
+      });
+      await StudentServices.updateNumberOfCoursesRegisteredByStudentsId({
+        studentsId,
+        cumulativeValue: 1,
+      });
+    }
 
     responseData = {
       status: HttpStatus.OK,
