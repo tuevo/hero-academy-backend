@@ -17,7 +17,7 @@ const sendConfirmMail = ({ email, fullName, otpCode }) => {
   return new Promise(async (res, rej) => {
     try {
       const msg = {
-        from: "abc040898.vt@gmail.com",
+        from: "trantuanviet040898.vt@gmail.com",
         to: email,
         subject: "Online-Academy - Xác nhận đăng kí",
         text: `Xin chào ${fullName}\n\nOnline-Academy xin gửi đến bạn mã xác nhận mail: ${otpCode}.`,
@@ -39,7 +39,7 @@ const sendAuthorizationMail = ({ email, password, fullName }) => {
   return new Promise(async (res, rej) => {
     try {
       const msg = {
-        from: "abc040898.vt@gmail.com",
+        from: "trantuanviet040898.vt@gmail.com",
         to: email,
         subject: "Online-Academy - Cấp quyền giảng viên",
         text: `Xin chào ${fullName}\n\n
