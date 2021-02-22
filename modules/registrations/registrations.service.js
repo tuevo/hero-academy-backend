@@ -149,10 +149,41 @@ const updateIsDeletedRegistrationsByCourse = async (courseId) => {
   }
 };
 
+const findRegistrationsHasConditions = async ({ studentId, courseId }) => {
+  logger.info(
+    `${RegistrationsConstant.LOGGER.SERVICE}::findRegistrationsHasConditions::is called`
+  );
+  try {
+    const conditions = {
+      isDeleted: false,
+    };
+
+    if (studentId) {
+      conditions["studentId"] = mongoose.Types.ObjectId(studentId);
+    }
+
+    if (courseId) {
+      conditions["courseId"] = mongoose.Types.ObjectId(courseId);
+    }
+
+    logger.info(
+      `${RegistrationsConstant.LOGGER.SERVICE}::findRegistrationsHasConditions::success`
+    );
+    return await RegistrationsModel.find(conditions);
+  } catch (e) {
+    logger.error(
+      `${RegistrationsConstant.LOGGER.SERVICE}::findRegistrationsHasConditions::error`,
+      e
+    );
+    throw new Error(e);
+  }
+};
+
 module.exports = {
   createRegistration,
   findRegistrationHasConditions,
   getRegistrationsHasPagination,
   mapCoursesIntoRegistrations,
   updateIsDeletedRegistrationsByCourse,
+  findRegistrationsHasConditions,
 };
