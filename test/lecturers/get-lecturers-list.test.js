@@ -191,6 +191,102 @@ const getLecturersList = async () =>
                 done(e);
             }
         });
+
+        it("get lecturer list test :: get lecturers list successfully with limit", (done) => {
+            try {
+                chai
+                    .request(server)
+                    .get("/api/lecturers/")
+                    .query({ limit: 4 })
+                    .set({
+                        accessToken: tokenOfAdmin,
+                    })
+                    .end((err, res) => {
+                        if (err) {
+                            console.log(err);
+                        }
+
+                        if (res) {
+                            expect(res).to.have.status(HttpStatus.OK);
+                            expect(res.body.messages)
+                                .to.be.an("array")
+                                .that.includes(
+                                    LecturersConstant.MESSAGES.GET_LECTURERS_LIST
+                                        .GET_LECTURERS_LIST_SUCCESSFULLY
+                                );
+                        }
+
+                        done();
+                    });
+            } catch (e) {
+                console.error(e);
+                done(e);
+            }
+        });
+
+        it("get lecturer list test :: get lecturers list successfully with page", (done) => {
+            try {
+                chai
+                    .request(server)
+                    .get("/api/lecturers/")
+                    .query({ page: 2 })
+                    .set({
+                        accessToken: tokenOfAdmin,
+                    })
+                    .end((err, res) => {
+                        if (err) {
+                            console.log(err);
+                        }
+
+                        if (res) {
+                            expect(res).to.have.status(HttpStatus.OK);
+                            expect(res.body.messages)
+                                .to.be.an("array")
+                                .that.includes(
+                                    LecturersConstant.MESSAGES.GET_LECTURERS_LIST
+                                        .GET_LECTURERS_LIST_SUCCESSFULLY
+                                );
+                        }
+
+                        done();
+                    });
+            } catch (e) {
+                console.error(e);
+                done(e);
+            }
+        });
+
+        it("get lecturer list test :: get lecturers list successfully with page, limit", (done) => {
+            try {
+                chai
+                    .request(server)
+                    .get("/api/lecturers/")
+                    .query({ page: 1, limit: 8 })
+                    .set({
+                        accessToken: tokenOfAdmin,
+                    })
+                    .end((err, res) => {
+                        if (err) {
+                            console.log(err);
+                        }
+
+                        if (res) {
+                            expect(res).to.have.status(HttpStatus.OK);
+                            expect(res.body.messages)
+                                .to.be.an("array")
+                                .that.includes(
+                                    LecturersConstant.MESSAGES.GET_LECTURERS_LIST
+                                        .GET_LECTURERS_LIST_SUCCESSFULLY
+                                );
+                        }
+
+                        done();
+                    });
+            } catch (e) {
+                console.error(e);
+                done(e);
+            }
+        });
     });
 
 module.exports = getLecturersList;
