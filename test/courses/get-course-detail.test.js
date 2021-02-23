@@ -58,6 +58,32 @@ const getCourseDetail = () =>
                 done(e);
             }
         });
+        it('Most registered course list has at most 5 courses and each course should belong to the same category of this course',
+            (done) => {
+                try {
+                    chai
+                        .request(server)
+                        .get("/api/courses/60223b77f7e4d94848a4eeec")
+                        .end((err, res) => {
+                            if (err) {
+                                console.log(err);
+                                done();
+                            }
+
+                            const { course, mostRegisteredCourses } = res.body.data;
+
+                            expect(mostRegisteredCourses.length).lte(5);
+
+                            for (const c of mostRegisteredCourses)
+                                expect(c.categoryId).equal(course.categoryId);
+
+                            done();
+                        })
+                } catch (e) {
+                    console.error(e);
+                    done(e);
+                }
+            })
     });
 
 module.exports = getCourseDetail;
