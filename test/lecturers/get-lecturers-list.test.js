@@ -160,6 +160,37 @@ const getLecturersList = async () =>
                 done(e);
             }
         });
+
+        it("get lecturer list test :: get lecturers list successfully", (done) => {
+            try {
+                chai
+                    .request(server)
+                    .get("/api/lecturers/")
+                    .set({
+                        accessToken: tokenOfAdmin,
+                    })
+                    .end((err, res) => {
+                        if (err) {
+                            console.log(err);
+                        }
+
+                        if (res) {
+                            expect(res).to.have.status(HttpStatus.OK);
+                            expect(res.body.messages)
+                                .to.be.an("array")
+                                .that.includes(
+                                    LecturersConstant.MESSAGES.GET_LECTURERS_LIST
+                                        .GET_LECTURERS_LIST_SUCCESSFULLY
+                                );
+                        }
+
+                        done();
+                    });
+            } catch (e) {
+                console.error(e);
+                done(e);
+            }
+        });
     });
 
 module.exports = getLecturersList;
