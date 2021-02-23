@@ -161,6 +161,67 @@ const getLecturerDetail = async () =>
                 done(e);
             }
         });
+
+        it("get lecturer detail test :: get lecturer detail successfully", (done) => {
+            try {
+                chai
+                    .request(server)
+                    .get(`${constants.BASE_URL}/602a3615dcbc331805515016`)
+                    .set({
+                        accessToken: tokenOfAdmin,
+                    })
+                    .end((err, res) => {
+                        if (err) {
+                            console.log(err);
+                        }
+
+                        if (res) {
+                            expect(res).to.have.status(HttpStatus.OK);
+                            expect(res.body.messages)
+                                .to.be.an("array")
+                                .that.includes(
+                                    LecturersConstant.MESSAGES.GET_LECTURER_DETAIL
+                                        .GET_LECTURER_DETAIL_SUCCESSFULLY
+                                );
+                        }
+
+                        done();
+                    });
+            } catch (e) {
+                console.error(e);
+                done(e);
+            }
+        });
+
+        it("get lecturer detail test :: lecturer not found", (done) => {
+            try {
+                chai
+                    .request(server)
+                    .get(`${constants.BASE_URL}/602a3615dcbc331805515017`)
+                    .set({
+                        accessToken: tokenOfAdmin,
+                    })
+                    .end((err, res) => {
+                        if (err) {
+                            console.log(err);
+                        }
+
+                        if (res) {
+                            expect(res).to.have.status(HttpStatus.NOT_FOUND);
+                            expect(res.body.messages)
+                                .to.be.an("array")
+                                .that.includes(
+                                    LecturersConstant.MESSAGES.GET_LECTURER_DETAIL.LECTURER_NOT_FOUND
+                                );
+                        }
+
+                        done();
+                    });
+            } catch (e) {
+                console.error(e);
+                done(e);
+            }
+        });
     });
 
 module.exports = getLecturerDetail;
