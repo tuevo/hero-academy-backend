@@ -5,6 +5,7 @@ const { expect } = require("chai");
 
 const server = require("../../app");
 const LecturersConstant = require("../../modules/lecturers/lecturers.constant");
+const constants = require('./constants.test');
 
 chai.use(chaiHttp);
 
@@ -81,7 +82,7 @@ const getLecturersList = async () =>
             try {
                 chai
                     .request(server)
-                    .get("/api/lecturers/")
+                    .get(`${constants.BASE_URL}/`)
                     .set({
                         accessToken: "",
                     })
@@ -109,7 +110,7 @@ const getLecturersList = async () =>
             try {
                 chai
                     .request(server)
-                    .get("/api/lecturers/")
+                    .get(`${constants.BASE_URL}/`)
                     .set({
                         accessToken: tokenOfLecturer,
                     })
@@ -137,7 +138,7 @@ const getLecturersList = async () =>
             try {
                 chai
                     .request(server)
-                    .get("/api/lecturers/")
+                    .get(`${constants.BASE_URL}/`)
                     .set({
                         accessToken: tokenOfStudent,
                     })
@@ -165,7 +166,7 @@ const getLecturersList = async () =>
             try {
                 chai
                     .request(server)
-                    .get("/api/lecturers/")
+                    .get(`${constants.BASE_URL}/`)
                     .set({
                         accessToken: tokenOfAdmin,
                     })
@@ -196,7 +197,7 @@ const getLecturersList = async () =>
             try {
                 chai
                     .request(server)
-                    .get("/api/lecturers/")
+                    .get(`${constants.BASE_URL}/`)
                     .query({ limit: 4 })
                     .set({
                         accessToken: tokenOfAdmin,
@@ -228,7 +229,7 @@ const getLecturersList = async () =>
             try {
                 chai
                     .request(server)
-                    .get("/api/lecturers/")
+                    .get(`${constants.BASE_URL}/`)
                     .query({ page: 2 })
                     .set({
                         accessToken: tokenOfAdmin,
@@ -260,7 +261,7 @@ const getLecturersList = async () =>
             try {
                 chai
                     .request(server)
-                    .get("/api/lecturers/")
+                    .get(`${constants.BASE_URL}/`)
                     .query({ page: 1, limit: 8 })
                     .set({
                         accessToken: tokenOfAdmin,
