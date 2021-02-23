@@ -5,6 +5,7 @@ const { expect } = require("chai");
 
 const server = require("../../app");
 const CoursesConstant = require("../../modules/courses/courses.constant");
+const constants = require('./constants.test');
 
 chai.use(chaiHttp);
 
@@ -14,7 +15,7 @@ const getCourseDetail = () =>
             try {
                 chai
                     .request(server)
-                    .get("/api/courses/60223b77f7e4d94848a4eeec")
+                    .get(`${constants.BASE_URL}/60223b77f7e4d94848a4eeec`)
                     .end((err, res) => {
                         if (err) {
                             console.log(err);
@@ -38,7 +39,7 @@ const getCourseDetail = () =>
             try {
                 chai
                     .request(server)
-                    .get("/api/courses/60223b77f7e4d94848a4eee2")
+                    .get(`${constants.BASE_URL}/60223b77f7e4d94848a4eee2`)
                     .end((err, res) => {
                         if (err) {
                             console.log(err);
@@ -63,7 +64,7 @@ const getCourseDetail = () =>
                 try {
                     chai
                         .request(server)
-                        .get("/api/courses/60223b77f7e4d94848a4eeec")
+                        .get(`${constants.BASE_URL}/60223b77f7e4d94848a4eeec`)
                         .end((err, res) => {
                             if (err) {
                                 console.log(err);
