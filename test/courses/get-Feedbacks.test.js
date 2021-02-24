@@ -5,6 +5,7 @@ const { expect } = require("chai");
 
 const server = require("../../app");
 const FeedbacksConstant = require("../../modules/feedbacks/feedbacks.constant");
+const constants = require('./constants.test');
 
 chai.use(chaiHttp);
 
@@ -14,7 +15,7 @@ const getFeedbacksTest = () =>
             try {
                 chai
                     .request(server)
-                    .get("/api/courses/60223b77f7e4d94848a4eeec/feedbacks")
+                    .get(`${constants.BASE_URL}/60223b77f7e4d94848a4eeec/feedbacks`)
                     .end((err, res) => {
                         if (err) {
                             console.log(err);
@@ -39,7 +40,7 @@ const getFeedbacksTest = () =>
             try {
                 chai
                     .request(server)
-                    .get("/api/courses/60223b77f7e4d94848a4eeec/feedbacks")
+                    .get(`${constants.BASE_URL}/60223b77f7e4d94848a4eeec/feedbacks`)
                     .query({ page: 1 })
                     .end((err, res) => {
                         if (err) {
@@ -65,8 +66,8 @@ const getFeedbacksTest = () =>
             try {
                 chai
                     .request(server)
-                    .get("/api/courses/60223b77f7e4d94848a4eeec/feedbacks")
-                    .query({ page: 1, limit: 4 })
+                    .get(`${constants.BASE_URL}/60223b77f7e4d94848a4eeec/feedbacks`)
+                    .query({ limit: 4 })
                     .end((err, res) => {
                         if (err) {
                             console.log(err);
@@ -91,7 +92,7 @@ const getFeedbacksTest = () =>
             try {
                 chai
                     .request(server)
-                    .get("/api/courses/60223b77f7e4d94848a4eeec/feedbacks")
+                    .get(`${constants.BASE_URL}/60223b77f7e4d94848a4eeec/feedbacks`)
                     .query({ page: 1, limit: 4 })
                     .end((err, res) => {
                         if (err) {
@@ -117,7 +118,7 @@ const getFeedbacksTest = () =>
             try {
                 chai
                     .request(server)
-                    .get("/api/courses/60223b77f7e4d94848a4eee2/feedbacks")
+                    .get(`${constants.BASE_URL}/60223b77f7e4d94848a4eee2/feedbacks`)
                     .end((err, res) => {
                         if (err) {
                             console.log(err);

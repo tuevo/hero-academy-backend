@@ -4,18 +4,18 @@ const HttpStatus = require("http-status-codes");
 const { expect } = require("chai");
 
 const server = require("../../app");
-const LecturersConstant = require("../../modules/lecturers/lecturers.constant");
+const ChaptersConstant = require('../../modules/chapters/chapters.constant');
 const constants = require('./constants.test');
 
 chai.use(chaiHttp);
 
-const getLecturerInfoForCoursePage = () =>
-    describe("Courses::Get lecturer info for course page", async () => {
-        it("LecturerInfoForCoursePage test :: Successfully", (done) => {
+const getChaptersTest = () =>
+    describe("Courses::Get chapters", async () => {
+        it("Chapters test :: Get chapters successfully", (done) => {
             try {
                 chai
                     .request(server)
-                    .get(`${constants.BASE_URL}/60223b77f7e4d94848a4eeec/lecturers`)
+                    .get(`${constants.BASE_URL}/60223b77f7e4d94848a4eeec/chapters`)
                     .end((err, res) => {
                         if (err) {
                             console.log(err);
@@ -25,8 +25,7 @@ const getLecturerInfoForCoursePage = () =>
                             expect(res).to.have.status(HttpStatus.OK);
                             expect(res.body.messages)
                                 .to.be.an("array")
-                                .that.includes(LecturersConstant.MESSAGES.GET_LECTURER_INFO_FOR_COURSE_PAGE
-                                    .GET_LECTURER_INFO_FOR_COURSE_PAGE_SUCCESSFULLY);
+                                .that.includes(ChaptersConstant.MESSAGES.GET_CHAPTERS.GET_CHAPTERS_SUCCESSFULLY);
                         }
 
                         done();
@@ -37,11 +36,11 @@ const getLecturerInfoForCoursePage = () =>
             }
         });
 
-        it("LecturerInfoForCoursePage test :: Course not found", (done) => {
+        it("Chapters test :: Course not found", (done) => {
             try {
                 chai
                     .request(server)
-                    .get(`${constants.BASE_URL}/60223b77f7e4d94848a4eee2/lecturers`)
+                    .get(`${constants.BASE_URL}/60223b77f7e4d94848a4eee2/chapters`)
                     .end((err, res) => {
                         if (err) {
                             console.log(err);
@@ -51,7 +50,7 @@ const getLecturerInfoForCoursePage = () =>
                             expect(res).to.have.status(HttpStatus.NOT_FOUND);
                             expect(res.body.messages)
                                 .to.be.an("array")
-                                .that.includes('COURSE_NOT_FOUND');
+                                .that.include('COURSE_NOT_FOUND');;
                         }
 
                         done();
@@ -63,4 +62,4 @@ const getLecturerInfoForCoursePage = () =>
         });
     });
 
-module.exports = getLecturerInfoForCoursePage;
+module.exports = getChaptersTest;
