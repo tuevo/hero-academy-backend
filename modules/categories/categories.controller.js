@@ -229,7 +229,7 @@ const deleteCategory = async (req, res, next) => {
         status: HttpStatus.BAD_REQUEST,
         messages: [
           CategoriesConstant.MESSAGES.DELETE_CATEGORY
-            .THE_CATEGORY_CONTAINS_THE_COURSE,
+            .CATEGORY_ALREADY_EXISTS_REGISTERED_COURSE,
         ],
       };
 
