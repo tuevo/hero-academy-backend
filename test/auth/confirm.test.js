@@ -8,8 +8,8 @@ const AuthConstant = require("../../modules/auth/auth.constant");
 
 chai.use(chaiHttp);
 
-const confirmAccount = async () =>
-  describe("Auth :: Confirm account", () => {
+const confirm = async () =>
+  describe("Auth :: Confirm", () => {
     it("OTP code should be invalid", (done) => {
       try {
         chai
@@ -41,4 +41,4 @@ const confirmAccount = async () =>
     });
   });
 
-module.exports = confirmAccount;
+module.exports = confirm;
