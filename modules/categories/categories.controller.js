@@ -216,21 +216,25 @@ const deleteCategory = async (req, res, next) => {
       return res.status(HttpStatus.NOT_FOUND).json(responseData);
     }
 
-    const course = await CoursesServices.findRegisteredCoursesByCategoryId(
-      categoryId
-    );
+    // const course = await CoursesServices.findRegisteredCoursesByCategoryId(
+    //   categoryId
+    // );
 
-    if (course) {
+    const courses = await CoursesServices.findCoursesHasConditions({
+      categoryId,
+    });
+
+    if (courses.length > 0) {
       responseData = {
         status: HttpStatus.BAD_REQUEST,
         messages: [
           CategoriesConstant.MESSAGES.DELETE_CATEGORY
-            .CATEGORY_ALREADY_EXISTS_REGISTERED_COURSE,
+            .THE_CATEGORY_CONTAINS_THE_COURSE,
         ],
       };
 
       logger.info(
-        `${CategoriesConstant.LOGGER.CONTROLLER}::deleteCategory::category already exists registered course`
+        `${CategoriesConstant.LOGGER.CONTROLLER}::deleteCategory::The category contains the course`
       );
       return res.status(HttpStatus.BAD_REQUEST).json(responseData);
     }
@@ -238,36 +242,36 @@ const deleteCategory = async (req, res, next) => {
     category["isDeleted"] = true;
     await category.save();
 
-    const courses = await CoursesServices.findCoursesHasConditions({
-      categoryId,
-    });
+    // const courses = await CoursesServices.findCoursesHasConditions({
+    //   categoryId,
+    // });
 
-    if (courses.length > 0) {
-      const coursesId = courses.map((course) => course._id);
-      const lecturersId = courses.map((course) => course.lecturerId);
+    // if (courses.length > 0) {
+    //   const coursesId = courses.map((course) => course._id);
+    //   const lecturersId = courses.map((course) => course.lecturerId);
 
-      const favorites = await FavoritesServices.findFavoritesByCoursesId(
-        coursesId
-      );
-      const studentsId = favorites.map((favorite) => favorite.studentId);
+    //   const favorites = await FavoritesServices.findFavoritesByCoursesId(
+    //     coursesId
+    //   );
+    //   const studentsId = favorites.map((favorite) => favorite.studentId);
 
-      studentsId.length > 0 &&
-        (await StudentsServices.updateNumberOfFavoriteCoursesByStudentsId({
-          studentsId,
-          cumulativeValue: -1,
-        }));
+    //   studentsId.length > 0 &&
+    //     (await StudentsServices.updateNumberOfFavoriteCoursesByStudentsId({
+    //       studentsId,
+    //       cumulativeValue: -1,
+    //     }));
 
-      await CoursesServices.removeCoursesByCategoryId({ categoryId });
-      await Promise.all(
-        lecturersId.map(
-          async (lecturerId) =>
-            await LecturersServices.updateNumberOfCoursesPosted({
-              lecturerId,
-              cumulativeValue: -1,
-            })
-        )
-      );
-    }
+    //   await CoursesServices.removeCoursesByCategoryId({ categoryId });
+    //   await Promise.all(
+    //     lecturersId.map(
+    //       async (lecturerId) =>
+    //         await LecturersServices.updateNumberOfCoursesPosted({
+    //           lecturerId,
+    //           cumulativeValue: -1,
+    //         })
+    //     )
+    //   );
+    // }
 
     responseData = {
       status: HttpStatus.OK,
