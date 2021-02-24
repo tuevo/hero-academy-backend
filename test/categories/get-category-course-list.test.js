@@ -9,7 +9,7 @@ chai.use(chaiHttp);
 const constants = require('./constants.test');
 
 const getCategoryCourseList = async () => {
-  describe('Courses :: Get category course list', () => {
+  describe('Categories :: Get category course list', () => {
     it('All courses in list should belong to this category', (done) => {
       const categoryId = '60223325f7e4d94848a4eee5';
 
