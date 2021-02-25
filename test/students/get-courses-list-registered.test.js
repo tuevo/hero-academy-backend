@@ -162,6 +162,36 @@ const getCoursesListRegistered = async () =>
             }
         });
 
+        it("get courses list registered test :: successfully", (done) => {
+            try {
+                chai
+                    .request(server)
+                    .get(`${constants.BASE_URL}/courses/registrations`)
+                    .set({
+                        accessToken: tokenOfStudent,
+                    })
+                    .end((err, res) => {
+                        if (err) {
+                            console.log(err);
+                        }
+
+                        if (res) {
+                            expect(res).to.have.status(HttpStatus.OK);
+                            expect(res.body.messages)
+                                .to.be.an("array")
+                                .that.includes(
+                                    RegistrationsConstant.MESSAGES.GET_COURSES_LIST_REGISTERED
+                                        .GET_COURSES_LIST_REGISTERED_SUCCESSFULLY
+                                );
+                        }
+
+                        done();
+                    });
+            } catch (e) {
+                console.error(e);
+                done(e);
+            }
+        });
     });
 
 module.exports = getCoursesListRegistered;
