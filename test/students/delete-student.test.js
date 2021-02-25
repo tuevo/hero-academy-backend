@@ -4,14 +4,14 @@ const HttpStatus = require("http-status-codes");
 const { expect } = require("chai");
 
 const server = require("../../app");
-const constant = require('./constants.test');
+const studentsConstant = require('../../modules/students/students.constant');
 
 chai.use(chaiHttp);
 
 let accessToken = null;
 
-const deleteCourse = async () =>
-  describe("Courses :: Delete course", () => {
+const deleteStudent = async () =>
+  describe("Students :: Delete student", () => {
     beforeEach((done) => {
       try {
         chai
@@ -37,11 +37,11 @@ const deleteCourse = async () =>
       }
     });
 
-    it("Course not found", (done) => {
+    it("Student not found", (done) => {
       try {
         chai
           .request(server)
-          .delete(`${constant.BASE_URL}/602a0c06e99eaa14a41df641`)
+          .delete(`/api/students/602a0c06e99eaa14a41df641`)
           .set('accessToken', accessToken)
           .end((err, res) => {
             if (err) {
@@ -53,7 +53,7 @@ const deleteCourse = async () =>
               expect(res.body.messages)
                 .to.be.an("array")
                 .that.includes(
-                  'COURSE_NOT_FOUND'
+                  studentsConstant.MESSAGES.DELETE_STUDENT.STUDENT_NOT_FOUND
                 );
             }
 
@@ -66,4 +66,4 @@ const deleteCourse = async () =>
     });
   });
 
-module.exports = deleteCourse;
+module.exports = deleteStudent;

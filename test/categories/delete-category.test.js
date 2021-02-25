@@ -37,7 +37,7 @@ const deleteCategory = async () =>
       }
     });
 
-    it("Cannot delete non-existent category", (done) => {
+    it("Category not found", (done) => {
       try {
         chai
           .request(server)
