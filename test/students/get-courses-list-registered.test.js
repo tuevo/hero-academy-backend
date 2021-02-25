@@ -5,6 +5,7 @@ const { expect } = require("chai");
 
 const server = require("../../app");
 const RegistrationsConstant = require("../../modules/registrations/registrations.constant");
+const constants = require('./constants.test');
 
 chai.use(chaiHttp);
 
@@ -81,7 +82,7 @@ const getCoursesListRegistered = async () =>
             try {
                 chai
                     .request(server)
-                    .get(`/api/students/courses/registrations`)
+                    .get(`${constants.BASE_URL}/courses/registrations`)
                     .set({
                         accessToken: "",
                     })
@@ -109,7 +110,7 @@ const getCoursesListRegistered = async () =>
             try {
                 chai
                     .request(server)
-                    .get(`/api/students/courses/registrations`)
+                    .get(`${constants.BASE_URL}/courses/registrations`)
                     .set({
                         accessToken: tokenOfAdmin,
                     })
@@ -137,7 +138,7 @@ const getCoursesListRegistered = async () =>
             try {
                 chai
                     .request(server)
-                    .get(`/api/students/courses/registrations`)
+                    .get(`${constants.BASE_URL}/courses/registrations`)
                     .set({
                         accessToken: tokenOfLecturer,
                     })
