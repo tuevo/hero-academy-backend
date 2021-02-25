@@ -231,6 +231,29 @@ const findFavoritesByCoursesId = async (coursesId) => {
   }
 };
 
+const removeFavoritesByCoursesId = async (coursesId) => {
+  logger.info(
+    `${FavoritesConstant.LOGGER.SERVICE}::removeFavoritesByCoursesId::is called`
+  );
+  try {
+    await FavoritesModel.updateMany(
+      { courseId: { $in: coursesId } },
+      { $set: { isDeleted: true } }
+    );
+
+    logger.info(
+      `${FavoritesConstant.LOGGER.SERVICE}::removeFavoritesByCoursesId::success`
+    );
+    return;
+  } catch (e) {
+    logger.error(
+      `${FavoritesConstant.LOGGER.SERVICE}::removeFavoritesByCoursesId::error`,
+      e
+    );
+    throw new Error(e);
+  }
+};
+
 module.exports = {
   getFavoritesByConditionsHasPagination,
   findFavoriteHasConditions,
@@ -239,4 +262,5 @@ module.exports = {
   findFavoritesHasConditions,
   updateIsDeletedByCourseId,
   findFavoritesByCoursesId,
+  removeFavoritesByCoursesId,
 };

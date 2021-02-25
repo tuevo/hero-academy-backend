@@ -616,6 +616,27 @@ const removeCoursesByCategoryId = async ({ categoryId }) => {
   }
 };
 
+const removeCoursesByCoursesId = async ({ coursesId }) => {
+  logger.info(
+    `${CoursesConstant.LOGGER.SERVICE}::removeCoursesByCoursesId::is called`
+  );
+  try {
+    logger.info(
+      `${CoursesConstant.LOGGER.SERVICE}::removeCoursesByCoursesId::success`
+    );
+    return await CoursesModel.updateMany(
+      { _id: { $in: coursesId } },
+      { $set: { isDeleted: true } }
+    );
+  } catch (e) {
+    logger.error(
+      `${CoursesConstant.LOGGER.SERVICE}::removeCoursesByCoursesId::error`,
+      e
+    );
+    throw new Error(e);
+  }
+};
+
 module.exports = {
   findCourseHasConditions,
   createCourse,
@@ -630,4 +651,5 @@ module.exports = {
   mapIsRegisteredFieldIntoCourses,
   findRegisteredCoursesByCategoryId,
   removeCoursesByCategoryId,
+  removeCoursesByCoursesId,
 };

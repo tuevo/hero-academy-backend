@@ -149,6 +149,29 @@ const updateIsDeletedRegistrationsByCourse = async (courseId) => {
   }
 };
 
+const removeRegistrationsByCoursesId = async (coursesId) => {
+  logger.info(
+    `${RegistrationsConstant.LOGGER.SERVICE}::removeRegistrationsByCoursesId::is called`
+  );
+  try {
+    await RegistrationsModel.updateMany(
+      { courseId: { $in: coursesId } },
+      { $set: { isDeleted: true } }
+    );
+    logger.info(
+      `${RegistrationsConstant.LOGGER.SERVICE}::removeRegistrationsByCoursesId::success`
+    );
+
+    return;
+  } catch (e) {
+    logger.error(
+      `${RegistrationsConstant.LOGGER.SERVICE}::removeRegistrationsByCoursesId::error`,
+      e
+    );
+    throw new Error(e);
+  }
+};
+
 const findRegistrationsHasConditions = async ({ studentId, courseId }) => {
   logger.info(
     `${RegistrationsConstant.LOGGER.SERVICE}::findRegistrationsHasConditions::is called`
@@ -179,6 +202,31 @@ const findRegistrationsHasConditions = async ({ studentId, courseId }) => {
   }
 };
 
+const findRegistrationsByCoursesId = async (coursesId) => {
+  logger.info(
+    `${RegistrationsConstant.LOGGER.SERVICE}::findRegistrationsByCoursesId::is called`
+  );
+  try {
+    const conditions = {
+      isDeleted: false,
+      courseId: {
+        $in: coursesId,
+      },
+    };
+
+    logger.info(
+      `${RegistrationsConstant.LOGGER.SERVICE}::findRegistrationsByCoursesId::success`
+    );
+    return await RegistrationsModel.find(conditions);
+  } catch (e) {
+    logger.error(
+      `${RegistrationsConstant.LOGGER.SERVICE}::findRegistrationsByCoursesId::error`,
+      e
+    );
+    throw new Error(e);
+  }
+};
+
 module.exports = {
   createRegistration,
   findRegistrationHasConditions,
@@ -186,4 +234,6 @@ module.exports = {
   mapCoursesIntoRegistrations,
   updateIsDeletedRegistrationsByCourse,
   findRegistrationsHasConditions,
+  findRegistrationsByCoursesId,
+  removeRegistrationsByCoursesId,
 };
