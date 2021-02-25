@@ -11,6 +11,10 @@ const PaginationConstant = require("../../constants/pagination.constant");
 const Services = require("../../services/services");
 const SendGrid = require("../../utils/send-grid");
 const AdminsServices = require("../admins/admins.service");
+const CoursesServices = require("../courses/courses.service");
+const RegistrationsServices = require("../registrations/registrations.service");
+const StudentsServices = require("../students/students.service");
+const FavoritesServices = require("../favorites/favorites.service");
 
 const getLecturersList = async (req, res, next) => {
   logger.info(
@@ -146,6 +150,51 @@ const deleteLecturer = async (req, res, next) => {
         `${LecturersConstant.LOGGER.CONTROLLER}::deleteLecturer::student not found`
       );
       return res.status(HttpStatus.NOT_FOUND).json(responseData);
+    }
+
+    const courses = await CoursesServices.findCoursesHasConditions({
+      lecturerId: role._id,
+    });
+
+    if (courses.length > 0) {
+      const coursesId = courses.map((course) => course._id);
+      const registrations = await RegistrationsServices.findRegistrationsByCoursesId(
+        coursesId
+      );
+      const favorites = await FavoritesServices.findFavoritesByCoursesId(
+        coursesId
+      );
+      const studentsIdOfFavorites = favorites.map(
+        (favorite) => favorite.studentId
+      );
+      const studentsIdOfRegistration = registrations.map(
+        (registration) => registration.studentId
+      );
+
+      await CoursesServices.removeCoursesByCoursesId(coursesId);
+      await AdminsServices.updateNumberOfCourses(0 - courses.length);
+      studentsIdOfRegistration.length > 0 &&
+        (await RegistrationsServices.removeRegistrationsByCoursesId(coursesId));
+      studentsIdOfRegistration.length > 0 &&
+        (await Promise.all(
+          studentsIdOfRegistration.map(async (studentId) => {
+            await StudentsServices.updateNumberOfCoursesRegistered({
+              studentId,
+              cumulativeValue: -1,
+            });
+          })
+        ));
+      studentsIdOfFavorites.length > 0 &&
+        (await FavoritesServices.removeFavoritesByCoursesId(coursesId));
+      studentsIdOfFavorites.length > 0 &&
+        (await Promise.all(
+          studentsIdOfFavorites.map(async (studentId) => {
+            await StudentsServices.updateNumberOfFavoriteCourses({
+              studentId,
+              cumulativeValue: -1,
+            });
+          })
+        ));
     }
 
     user["isDeleted"] = true;
