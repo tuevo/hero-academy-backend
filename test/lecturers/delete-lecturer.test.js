@@ -4,14 +4,15 @@ const HttpStatus = require("http-status-codes");
 const { expect } = require("chai");
 
 const server = require("../../app");
-const CategoriesConstant = require("../../modules/categories/categories.constant");
+const lecturersConstant = require('../../modules/lecturers/lecturers.constant');
+const constant = require('./constants.test');
 
 chai.use(chaiHttp);
 
 let accessToken = null;
 
-const deleteCategory = async () =>
-  describe("Categories :: Delete category", () => {
+const deleteLecturer = async () =>
+  describe("Lecturers :: Delete lecturer", () => {
     beforeEach((done) => {
       try {
         chai
@@ -37,11 +38,11 @@ const deleteCategory = async () =>
       }
     });
 
-    it("Category not found", (done) => {
+    it("Lecturer not found", (done) => {
       try {
         chai
           .request(server)
-          .delete("/api/categories/602a0c06e99eaa14a41df641")
+          .delete(`${constant.BASE_URL}/602a0c06e99eaa14a41df641`)
           .set('accessToken', accessToken)
           .end((err, res) => {
             if (err) {
@@ -53,35 +54,7 @@ const deleteCategory = async () =>
               expect(res.body.messages)
                 .to.be.an("array")
                 .that.includes(
-                  CategoriesConstant.MESSAGES.DELETE_CATEGORY.CATEGORY_NOT_FOUND
-                );
-            }
-
-            done();
-          });
-      } catch (e) {
-        console.error(e);
-        done(e);
-      }
-    });
-
-    it("Cannot delete category having course", (done) => {
-      try {
-        chai
-          .request(server)
-          .delete("/api/categories/60223325f7e4d94848a4eee5")
-          .set('accessToken', accessToken)
-          .end((err, res) => {
-            if (err) {
-              console.log(err);
-            }
-
-            if (res) {
-              expect(res).to.have.status(HttpStatus.BAD_REQUEST);
-              expect(res.body.messages)
-                .to.be.an("array")
-                .that.includes(
-                  CategoriesConstant.MESSAGES.DELETE_CATEGORY.CATEGORY_ALREADY_EXISTS_REGISTERED_COURSE
+                  lecturersConstant.MESSAGES.DELETE_LECTURER.LECTURER_NOT_FOUND
                 );
             }
 
@@ -94,4 +67,4 @@ const deleteCategory = async () =>
     });
   });
 
-module.exports = deleteCategory;
+module.exports = deleteLecturer;
