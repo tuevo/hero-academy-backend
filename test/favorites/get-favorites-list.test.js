@@ -161,6 +161,37 @@ const getFavoritesList = async () =>
             }
         });
 
+        it("get favorites list test :: get favorites list successfully", (done) => {
+            try {
+                chai
+                    .request(server)
+                    .get(`/api/favorites`)
+                    .set({
+                        accessToken: tokenOfStudent,
+                    })
+                    .end((err, res) => {
+                        if (err) {
+                            console.log(err);
+                        }
+
+                        if (res) {
+                            expect(res).to.have.status(HttpStatus.OK);
+                            expect(res.body.messages)
+                                .to.be.an("array")
+                                .that.includes(
+                                    FavoritesConstant.MESSAGES.GET_FAVORITES_LIST
+                                        .GET_FAVORITES_LIST_SUCCESSFULLY
+                                );
+                        }
+
+                        done();
+                    });
+            } catch (e) {
+                console.error(e);
+                done(e);
+            }
+        });
+
     });
 
 module.exports = getFavoritesList;
