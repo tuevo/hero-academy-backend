@@ -192,6 +192,102 @@ const getCoursesListRegistered = async () =>
                 done(e);
             }
         });
+
+        it("get courses list registered test :: get courses list registered successfully with limit", (done) => {
+            try {
+                chai
+                    .request(server)
+                    .get(`${constants.BASE_URL}/courses/registrations`)
+                    .query({ limit: 4 })
+                    .set({
+                        accessToken: tokenOfStudent,
+                    })
+                    .end((err, res) => {
+                        if (err) {
+                            console.log(err);
+                        }
+
+                        if (res) {
+                            expect(res).to.have.status(HttpStatus.OK);
+                            expect(res.body.messages)
+                                .to.be.an("array")
+                                .that.includes(
+                                    RegistrationsConstant.MESSAGES.GET_COURSES_LIST_REGISTERED
+                                        .GET_COURSES_LIST_REGISTERED_SUCCESSFULLY
+                                );
+                        }
+
+                        done();
+                    });
+            } catch (e) {
+                console.error(e);
+                done(e);
+            }
+        });
+
+        it("get courses list registered test :: get courses list registered successfully with page", (done) => {
+            try {
+                chai
+                    .request(server)
+                    .get(`${constants.BASE_URL}/courses/registrations`)
+                    .query({ page: 2 })
+                    .set({
+                        accessToken: tokenOfStudent,
+                    })
+                    .end((err, res) => {
+                        if (err) {
+                            console.log(err);
+                        }
+
+                        if (res) {
+                            expect(res).to.have.status(HttpStatus.OK);
+                            expect(res.body.messages)
+                                .to.be.an("array")
+                                .that.includes(
+                                    RegistrationsConstant.MESSAGES.GET_COURSES_LIST_REGISTERED
+                                        .GET_COURSES_LIST_REGISTERED_SUCCESSFULLY
+                                );
+                        }
+
+                        done();
+                    });
+            } catch (e) {
+                console.error(e);
+                done(e);
+            }
+        });
+
+        it("get courses list registered test :: get courses list registered successfully page, limit", (done) => {
+            try {
+                chai
+                    .request(server)
+                    .get(`${constants.BASE_URL}/courses/registrations`)
+                    .query({ page: 1, limit: 8 })
+                    .set({
+                        accessToken: tokenOfStudent,
+                    })
+                    .end((err, res) => {
+                        if (err) {
+                            console.log(err);
+                        }
+
+                        if (res) {
+                            expect(res).to.have.status(HttpStatus.OK);
+                            expect(res.body.messages)
+                                .to.be.an("array")
+                                .that.includes(
+                                    RegistrationsConstant.MESSAGES.GET_COURSES_LIST_REGISTERED
+                                        .GET_COURSES_LIST_REGISTERED_SUCCESSFULLY
+                                );
+                        }
+
+                        done();
+                    });
+            } catch (e) {
+                console.error(e);
+                done(e);
+            }
+        });
     });
 
 module.exports = getCoursesListRegistered;
