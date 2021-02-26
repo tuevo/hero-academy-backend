@@ -160,6 +160,37 @@ const getCoursesListByLecturer = async () =>
                 done(e);
             }
         });
+
+        it("get courses list by lecturer test :: get courses list by lecturer successfully", (done) => {
+            try {
+                chai
+                    .request(server)
+                    .get(`${constants.BASE_URL}/courses/`)
+                    .set({
+                        accessToken: tokenOfLecturer,
+                    })
+                    .end((err, res) => {
+                        if (err) {
+                            console.log(err);
+                        }
+
+                        if (res) {
+                            expect(res).to.have.status(HttpStatus.OK);
+                            expect(res.body.messages)
+                                .to.be.an("array")
+                                .that.includes(
+                                    CoursesConstant.MESSAGES.GET_COURSES_LIST_BY_LECTURER
+                                        .GET_COURSES_LIST_BY_LECTURER_SUCCESSFULLY
+                                );
+                        }
+
+                        done();
+                    });
+            } catch (e) {
+                console.error(e);
+                done(e);
+            }
+        });
     });
 
 module.exports = getCoursesListByLecturer;
