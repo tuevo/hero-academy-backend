@@ -65,8 +65,8 @@ const addCourse = async (req, res, next) => {
     const newCourse = {
       categoryId,
       title,
-      description,
-      content,
+      description: description || null,
+      content: content || null,
       tuition: tuition || 0,
       discountPercent: discountPercent || 0,
       lecturerId: roleInfo._id,
@@ -304,13 +304,14 @@ const updateCourse = async (req, res, next) => {
     const discountPercent =
       Number(req.body.discountPercent) || course.discountPercent;
     let responseData = null;
+    let category = null;
 
     if (files && Object.keys(files).length !== 0) {
       thumbnail = files["thumbnail"][0];
     }
 
     if (categoryId) {
-      const category = await CategoriesServices.getCategoryById(categoryId);
+      category = await CategoriesServices.getCategoryById(categoryId);
 
       if (!category) {
         responseData = {
@@ -323,6 +324,8 @@ const updateCourse = async (req, res, next) => {
         );
         return res.status(HttpStatus.NOT_FOUND).json(responseData);
       }
+    } else {
+      category = await CategoriesServices.getCategoryById(course.categoryId);
     }
 
     const updateInfo = {
@@ -336,28 +339,26 @@ const updateCourse = async (req, res, next) => {
       tuitionAfterDiscount:
         tuition - Services.rounding(tuition * discountPercent),
       isFinished,
+      slug: title
+        ? slug(title + " " + category.name)
+        : slug(course.title + " " + category.name),
     };
 
     course = await CoursesServices.updateCourse({ course, updateInfo });
-    const category = await CategoriesServices.getCategoryById(
-      course.categoryId
-    );
 
     course = JSON.parse(JSON.stringify(course));
     course["categoryCluster"] = null;
 
-    if (category) {
-      const categoryCluster = await CategoryClusterServices.findCategoryClusterById(
-        category.categoryClusterId
-      );
+    const categoryCluster = await CategoryClusterServices.findCategoryClusterById(
+      category.categoryClusterId
+    );
 
-      course["categoryCluster"] = categoryCluster
-        ? {
+    course["categoryCluster"] = categoryCluster
+      ? {
           ...JSON.parse(JSON.stringify(categoryCluster)),
           categories: category ? [category] : [],
         }
-        : null;
-    }
+      : null;
 
     responseData = {
       status: HttpStatus.OK,
@@ -535,9 +536,9 @@ const getCoursesListByLecturer = async (req, res, next) => {
       courses[0].meta.length > 0
         ? courses[0].meta[0]
         : {
-          _id: null,
-          totalItems: 0,
-        };
+            _id: null,
+            totalItems: 0,
+          };
 
     if (entries.length > 0) {
       const categoriesId = entries.map((course) => course.categoryId);
@@ -641,9 +642,9 @@ const getCoursesListByCategory = async (req, res, next) => {
       courses[0].meta.length > 0
         ? courses[0].meta[0]
         : {
-          _id: null,
-          totalItems: 0,
-        };
+            _id: null,
+            totalItems: 0,
+          };
 
     let categoryClusters = await CategoryClusterServices.findCategoryClustersByIds(
       [category.categoryClusterId]
@@ -731,9 +732,9 @@ const getCoursesListByCriteria = async (req, res, next) => {
       courses[0].meta.length > 0
         ? courses[0].meta[0]
         : {
-          _id: null,
-          totalItems: 0,
-        };
+            _id: null,
+            totalItems: 0,
+          };
 
     if (entries.length > 0) {
       const categoriesId = entries.map((course) => course.categoryId);
