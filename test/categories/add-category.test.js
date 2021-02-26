@@ -4,15 +4,15 @@ const HttpStatus = require("http-status-codes");
 const { expect } = require("chai");
 
 const server = require("../../app");
-const categoryClustersConstant = require("../../modules/category-clusters/category-clusters.constant");
+const categoryConstant = require("../../modules/categories/categories.constant");
 const constants = require('./constants.test');
 
 chai.use(chaiHttp);
 
 let accessToken = null;
 
-const addCategoryCluster = async () =>
-  describe("CategoryClusters :: Add category cluster", () => {
+const addCategory = async () =>
+  describe("Categories :: Add category", () => {
     beforeEach((done) => {
       try {
         chai
@@ -38,13 +38,46 @@ const addCategoryCluster = async () =>
       }
     });
 
-    it("Category cluster should be duplicated", (done) => {
+    it("Category cluster should be not found", (done) => {
       try {
         chai
           .request(server)
           .post(constants.BASE_URL)
           .send({
-            name: 'Tôn giáo học'
+            name: 'Lập trình game',
+            categoryClusterId: '602a0c06e99eaa14a41df641'
+          })
+          .set('accessToken', accessToken)
+          .end((err, res) => {
+            if (err) {
+              console.log(err);
+            }
+
+            if (res) {
+              expect(res).to.have.status(HttpStatus.NOT_FOUND);
+              expect(res.body.messages)
+                .to.be.an("array")
+                .that.includes(
+                  categoryConstant.MESSAGES.ADD_CATEGORY.CATEGORY_CLUSTER_NOT_FOUND
+                );
+            }
+
+            done();
+          });
+      } catch (e) {
+        console.error(e);
+        done(e);
+      }
+    });
+
+    it("Category should be duplicated", (done) => {
+      try {
+        chai
+          .request(server)
+          .post(constants.BASE_URL)
+          .send({
+            name: 'Phật giáo',
+            categoryClusterId: '602a0bfde99eaa14a41df640'
           })
           .set('accessToken', accessToken)
           .end((err, res) => {
@@ -57,7 +90,7 @@ const addCategoryCluster = async () =>
               expect(res.body.messages)
                 .to.be.an("array")
                 .that.includes(
-                  categoryClustersConstant.MESSAGES.ADD_CATEGORY_CLUSTER.CATEGORY_CLUSTER_ALREADY_EXISTS
+                  categoryConstant.MESSAGES.ADD_CATEGORY.CATEGORY_ALREADY_EXISTS
                 );
             }
 
@@ -70,4 +103,4 @@ const addCategoryCluster = async () =>
     });
   });
 
-module.exports = addCategoryCluster;
+module.exports = addCategory;
