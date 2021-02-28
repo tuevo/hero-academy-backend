@@ -161,6 +161,67 @@ const getStudentDetail = async () =>
                 done(e);
             }
         });
+
+        it("get student detail test :: get student detail test successfully", (done) => {
+            try {
+                chai
+                    .request(server)
+                    .get(`${constants.BASE_URL}/6022cea755394d25003dadd5`)
+                    .set({
+                        accessToken: tokenOfAdmin,
+                    })
+                    .end((err, res) => {
+                        if (err) {
+                            console.log(err);
+                        }
+
+                        if (res) {
+                            expect(res).to.have.status(HttpStatus.OK);
+                            expect(res.body.messages)
+                                .to.be.an("array")
+                                .that.includes(
+                                    StudentsConstant.MESSAGES.GET_STUDENT_DETAIL
+                                        .GET_STUDENT_DETAIL_SUCCESSFULLY
+                                );
+                        }
+
+                        done();
+                    });
+            } catch (e) {
+                console.error(e);
+                done(e);
+            }
+        });
+
+        it("get student detail test :: student not found", (done) => {
+            try {
+                chai
+                    .request(server)
+                    .get(`${constants.BASE_URL}/602a3615dcbc331805515017`)
+                    .set({
+                        accessToken: tokenOfAdmin,
+                    })
+                    .end((err, res) => {
+                        if (err) {
+                            console.log(err);
+                        }
+
+                        if (res) {
+                            expect(res).to.have.status(HttpStatus.NOT_FOUND);
+                            expect(res.body.messages)
+                                .to.be.an("array")
+                                .that.includes(
+                                    StudentsConstant.MESSAGES.GET_STUDENT_DETAIL.STUDENT_NOT_FOUND
+                                );
+                        }
+
+                        done();
+                    });
+            } catch (e) {
+                console.error(e);
+                done(e);
+            }
+        });
     });
 
 module.exports = getStudentDetail;
