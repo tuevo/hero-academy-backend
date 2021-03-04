@@ -418,6 +418,8 @@ const deleteCourse = async (req, res, next) => {
       categoryId: course.categoryId,
       cumulativeValue: -1,
     });
+    await FeedbacksServices.removeFeedbacksByCourseId(course._id);
+
     const favorites = await FavoritesServices.findFavoritesHasConditions({
       courseId: course._id,
     });

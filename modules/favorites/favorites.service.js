@@ -254,6 +254,29 @@ const removeFavoritesByCoursesId = async (coursesId) => {
   }
 };
 
+const removeFavoritesByStudentId = async (studentId) => {
+  logger.info(
+    `${FavoritesConstant.LOGGER.SERVICE}::removeFavoritesByStudentId::is called`
+  );
+  try {
+    await FavoritesModel.updateMany(
+      { studentId: mongoose.Types.ObjectId(studentId) },
+      { $set: { isDeleted: true } }
+    );
+
+    logger.info(
+      `${FavoritesConstant.LOGGER.SERVICE}::removeFavoritesByStudentId::success`
+    );
+    return;
+  } catch (e) {
+    logger.error(
+      `${FavoritesConstant.LOGGER.SERVICE}::removeFavoritesByStudentId::error`,
+      e
+    );
+    throw new Error(e);
+  }
+};
+
 module.exports = {
   getFavoritesByConditionsHasPagination,
   findFavoriteHasConditions,
@@ -263,4 +286,5 @@ module.exports = {
   updateIsDeletedByCourseId,
   findFavoritesByCoursesId,
   removeFavoritesByCoursesId,
+  removeFavoritesByStudentId,
 };

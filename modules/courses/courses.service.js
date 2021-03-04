@@ -645,6 +645,29 @@ const removeCoursesByCoursesId = async ({ coursesId }) => {
   }
 };
 
+const findCoursesByCoursesId = async (coursesId) => {
+  logger.info(
+    `${CoursesConstant.LOGGER.SERVICE}::findCoursesByCoursesId::is called`
+  );
+  try {
+    const courses = await CoursesModel.find({
+      isDeleted: false,
+      _id: { $in: coursesId },
+    });
+
+    logger.info(
+      `${CoursesConstant.LOGGER.SERVICE}::findCoursesByCoursesId::success`
+    );
+    return courses;
+  } catch (e) {
+    logger.error(
+      `${CoursesConstant.LOGGER.SERVICE}::findCoursesByCoursesId::error`,
+      e
+    );
+    throw new Error(e);
+  }
+};
+
 module.exports = {
   findCourseHasConditions,
   createCourse,
@@ -660,4 +683,5 @@ module.exports = {
   findRegisteredCoursesByCategoryId,
   removeCoursesByCategoryId,
   removeCoursesByCoursesId,
+  findCoursesByCoursesId,
 };

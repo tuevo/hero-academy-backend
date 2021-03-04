@@ -1,10 +1,10 @@
-const log4js = require('log4js');
-const logger = log4js.getLogger('Services');
-const mongoose = require('mongoose');
+const log4js = require("log4js");
+const logger = log4js.getLogger("Services");
+const mongoose = require("mongoose");
 
-const LecturersModel = require('./lecturers.model');
-const LecturersConstant = require('./lecturers.constant');
-const Services = require('../../services/services');
+const LecturersModel = require("./lecturers.model");
+const LecturersConstant = require("./lecturers.constant");
+const Services = require("../../services/services");
 
 const findLecturerByUserId = async (userId) => {
   logger.info(
@@ -174,8 +174,8 @@ const updateLecturerInfo = async ({ lecturer, introduction }) => {
       logger.info(
         `${LecturersConstant.LOGGER.SERVICE}::updateLecturerInfo::update introduction`
       );
-      query.$set['introduction'] = introduction;
-      lecturer['introduction'] = introduction;
+      query.$set["introduction"] = introduction;
+      lecturer["introduction"] = introduction;
       isChange = true;
     }
 
