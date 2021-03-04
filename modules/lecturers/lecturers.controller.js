@@ -173,28 +173,28 @@ const deleteLecturer = async (req, res, next) => {
 
       await CoursesServices.removeCoursesByCoursesId(coursesId);
       await AdminsServices.updateNumberOfCourses(0 - courses.length);
-      studentsIdOfRegistration.length > 0 &&
-        (await RegistrationsServices.removeRegistrationsByCoursesId(coursesId));
-      studentsIdOfRegistration.length > 0 &&
-        (await Promise.all(
-          studentsIdOfRegistration.map(async (studentId) => {
-            await StudentsServices.updateNumberOfCoursesRegistered({
-              studentId,
-              cumulativeValue: -1,
-            });
-          })
-        ));
-      studentsIdOfFavorites.length > 0 &&
-        (await FavoritesServices.removeFavoritesByCoursesId(coursesId));
-      studentsIdOfFavorites.length > 0 &&
-        (await Promise.all(
-          studentsIdOfFavorites.map(async (studentId) => {
-            await StudentsServices.updateNumberOfFavoriteCourses({
-              studentId,
-              cumulativeValue: -1,
-            });
-          })
-        ));
+
+      if (studentsIdOfRegistration.length > 0) {
+        await RegistrationsServices.removeRegistrationsByCoursesId(coursesId);
+
+        for (const studentId of studentsIdOfRegistration) {
+          await StudentsServices.updateNumberOfCoursesRegistered({
+            studentId,
+            cumulativeValue: -1,
+          });
+        }
+      }
+
+      if (studentsIdOfFavorites.length > 0) {
+        await FavoritesServices.removeFavoritesByCoursesId(coursesId);
+
+        for (const studentId of studentsIdOfFavorites) {
+          await StudentsServices.updateNumberOfFavoriteCourses({
+            studentId,
+            cumulativeValue: -1,
+          });
+        }
+      }
     }
 
     user["isDeleted"] = true;

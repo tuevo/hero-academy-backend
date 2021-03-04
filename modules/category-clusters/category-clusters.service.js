@@ -52,7 +52,7 @@ const mapCategoryClusterDataWithCategoriesData = async (entries) => {
   try {
     let mapData = [];
 
-    for (categoryCluster of entries) {
+    for (const categoryCluster of entries) {
       const categories = await CategoriesService.getCategoriesByCategoryClusterId(
         categoryCluster._id
       );

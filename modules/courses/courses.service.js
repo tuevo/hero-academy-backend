@@ -547,24 +547,23 @@ const mapIsRegisteredFieldIntoCourses = async ({ roleId, courses }) => {
   try {
     let result = [];
 
-    await Promise.all(
-      courses.map(async (course) => {
-        const courseJsonParse = JSON.parse(JSON.stringify(course));
-        if (roleId) {
-          const registration = await RegistrationsServices.findRegistrationHasConditions(
-            { studentId: roleId, courseId: course._id }
-          );
+    for (const course of courses) {
+      const courseJsonParse = JSON.parse(JSON.stringify(course));
 
-          if (registration) {
-            result.push({ ...courseJsonParse, isRegistered: true });
-          } else {
-            result.push({ ...courseJsonParse, isRegistered: false });
-          }
+      if (roleId) {
+        const registration = await RegistrationsServices.findRegistrationHasConditions(
+          { studentId: roleId, courseId: course._id }
+        );
+
+        if (registration) {
+          result.push({ ...courseJsonParse, isRegistered: true });
         } else {
           result.push({ ...courseJsonParse, isRegistered: false });
         }
-      })
-    );
+      } else {
+        result.push({ ...courseJsonParse, isRegistered: false });
+      }
+    }
 
     logger.info(
       `${CoursesConstant.LOGGER.SERVICE}::mapIsRegisteredFieldIntoCourses::success`

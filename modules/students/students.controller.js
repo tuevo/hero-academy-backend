@@ -170,7 +170,7 @@ const deleteStudent = async (req, res, next) => {
     if (registrations.length > 0) {
       await RegistrationsServices.removeRegistrationsByStudentId(role._id);
 
-      for (registration of registrations) {
+      for (const registration of registrations) {
         let course = await CoursesServices.findCourseHasConditions({
           courseId: registration.courseId,
         });
