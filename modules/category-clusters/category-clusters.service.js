@@ -1,10 +1,10 @@
-const log4js = require('log4js');
-const logger = log4js.getLogger('Services');
-const mongoose = require('mongoose');
+const log4js = require("log4js");
+const logger = log4js.getLogger("Services");
+const mongoose = require("mongoose");
 
-const CategoryClusterModel = require('./category-clusters.model');
-const CategoryClusterConstant = require('./category-clusters.constant');
-const CategoriesService = require('../categories/categories.service');
+const CategoryClusterModel = require("./category-clusters.model");
+const CategoryClusterConstant = require("./category-clusters.constant");
+const CategoriesService = require("../categories/categories.service");
 
 const getCategoryClustersInfoHasPagination = async ({ page, limit }) => {
   logger.info(
@@ -52,23 +52,13 @@ const mapCategoryClusterDataWithCategoriesData = async (entries) => {
   try {
     let mapData = [];
 
-    await Promise.all(
-      entries.map(async (categoryCluster) => {
-        const categories = await CategoriesService.getCategoriesByCategoryClusterId(
-          categoryCluster._id
-        );
-
-        mapData.push({ ...categoryCluster, categories });
-        return;
-      })
-    );
-
-    mapData.sort((categoryClusterA, categoryClusterB) => {
-      return (
-        new Date(categoryClusterB.createdAt) -
-        new Date(categoryClusterA.createdAt)
+    for (categoryCluster of entries) {
+      const categories = await CategoriesService.getCategoriesByCategoryClusterId(
+        categoryCluster._id
       );
-    });
+
+      mapData.push({ ...categoryCluster, categories });
+    }
 
     logger.info(
       `${CategoryClusterConstant.LOGGER.SERVICE}::mapCategoryClusterDataWithCategoriesData::success`
@@ -94,7 +84,7 @@ const findCategoryClusterByName = async (name) => {
     return await CategoryClusterModel.findOne({
       name: {
         $regex: name,
-        $options: 'i',
+        $options: "i",
       },
     });
   } catch (e) {
