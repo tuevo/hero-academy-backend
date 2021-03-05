@@ -38,7 +38,7 @@ const getCategoryClustersInfo = async () =>
             }
         });
 
-        it("CategoryClusters :: Get category cluster info with access token", (done) => {
+        it("CategoryClusters :: Get category cluster info with access token successfully", (done) => {
             try {
                 chai
                     .request(server)
@@ -66,7 +66,7 @@ const getCategoryClustersInfo = async () =>
             }
         });
 
-        it("CategoryClusters :: Get category cluster info", (done) => {
+        it("CategoryClusters :: Get category cluster info successfully", (done) => {
             try {
                 chai
                     .request(server)
@@ -83,6 +83,84 @@ const getCategoryClustersInfo = async () =>
                                 .that.includes(
                                     categoryClustersConstant.MESSAGES.GET_CATEGORY_CLUSTERS_INFO.GET_CATEGORY_CLUSTERS_INFO_SUCCESSFULLY
                                 );
+                        }
+
+                        done();
+                    });
+            } catch (e) {
+                console.error(e);
+                done(e);
+            }
+        });
+
+        it("CategoryClusters :: Get category cluster info successfully with page", (done) => {
+            try {
+                chai
+                    .request(server)
+                    .get(constants.BASE_URL)
+                    .query({ page: 1 })
+                    .end((err, res) => {
+                        if (err) {
+                            console.log(err);
+                        }
+
+                        if (res) {
+                            expect(res).to.have.status(HttpStatus.OK);
+                            expect(res.body.messages)
+                                .to.be.an("array")
+                                .that.includes(categoryClustersConstant.MESSAGES.GET_CATEGORY_CLUSTERS_INFO.GET_CATEGORY_CLUSTERS_INFO_SUCCESSFULLY);
+                        }
+
+                        done();
+                    });
+            } catch (e) {
+                console.error(e);
+                done(e);
+            }
+        });
+
+        it("CategoryClusters :: Get category cluster info successfully with limit", (done) => {
+            try {
+                chai
+                    .request(server)
+                    .get(constants.BASE_URL)
+                    .query({ limit: 4 })
+                    .end((err, res) => {
+                        if (err) {
+                            console.log(err);
+                        }
+
+                        if (res) {
+                            expect(res).to.have.status(HttpStatus.OK);
+                            expect(res.body.messages)
+                                .to.be.an("array")
+                                .that.includes(categoryClustersConstant.MESSAGES.GET_CATEGORY_CLUSTERS_INFO.GET_CATEGORY_CLUSTERS_INFO_SUCCESSFULLY);
+                        }
+
+                        done();
+                    });
+            } catch (e) {
+                console.error(e);
+                done(e);
+            }
+        });
+
+        it("CategoryClusters :: Get category cluster info successfully with page, limit", (done) => {
+            try {
+                chai
+                    .request(server)
+                    .get(constants.BASE_URL)
+                    .query({ page: 1, limit: 4 })
+                    .end((err, res) => {
+                        if (err) {
+                            console.log(err);
+                        }
+
+                        if (res) {
+                            expect(res).to.have.status(HttpStatus.OK);
+                            expect(res.body.messages)
+                                .to.be.an("array")
+                                .that.includes(categoryClustersConstant.MESSAGES.GET_CATEGORY_CLUSTERS_INFO.GET_CATEGORY_CLUSTERS_INFO_SUCCESSFULLY);
                         }
 
                         done();
