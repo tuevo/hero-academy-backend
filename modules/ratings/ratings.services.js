@@ -57,6 +57,42 @@ const getRatingHasConditions = async ({ courseId, studentId }) => {
   }
 };
 
+const getRatingsHasConditions = async ({ courseId, studentId }) => {
+  logger.info(
+    `${RatingsConstant.LOGGER.SERVICE}::getRatingsHasConditions::is called`
+  );
+  try {
+    let conditions = {
+      isDeleted: false,
+    };
+
+    if (courseId) {
+      conditions["courseId"] = courseId;
+    }
+
+    if (studentId) {
+      conditions["studentId"] = studentId;
+    }
+
+    logger.info(
+      `${RatingsConstant.LOGGER.SERVICE}::getRatingsHasConditions::query`,
+      JSON.stringify(conditions)
+    );
+    const rating = await RatingsModel.find(conditions);
+
+    logger.info(
+      `${RatingsConstant.LOGGER.SERVICE}::getRatingsHasConditions::success`
+    );
+    return rating;
+  } catch (e) {
+    logger.error(
+      `${RatingsConstant.LOGGER.SERVICE}::getRatingsHasConditions::error`,
+      e
+    );
+    throw new Error(e);
+  }
+};
+
 const getRatingsByCoursesId = async (coursesId) => {
   logger.info(
     `${RatingsConstant.LOGGER.SERVICE}::getRatingsByCoursesId::is called`
@@ -105,9 +141,36 @@ const removeRatingByCourse = async (courseId) => {
   }
 };
 
+const removeRatingByStudentId = async (studentId) => {
+  logger.info(
+    `${RatingsConstant.LOGGER.SERVICE}::removeRatingByStudentId::is called`
+  );
+  try {
+    await RatingsModel.updateMany(
+      {
+        studentId: mongoose.Types.ObjectId(studentId),
+      },
+      { $set: { isDeleted: true } }
+    );
+
+    logger.info(
+      `${RatingsConstant.LOGGER.SERVICE}::removeRatingByStudentId::success`
+    );
+    return;
+  } catch (e) {
+    logger.error(
+      `${RatingsConstant.LOGGER.SERVICE}::removeRatingByStudentId::error`,
+      e
+    );
+    throw new Error(e);
+  }
+};
+
 module.exports = {
   createRating,
   getRatingHasConditions,
   getRatingsByCoursesId,
   removeRatingByCourse,
+  getRatingsHasConditions,
+  removeRatingByStudentId,
 };

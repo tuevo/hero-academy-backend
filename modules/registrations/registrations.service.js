@@ -227,6 +227,29 @@ const findRegistrationsByCoursesId = async (coursesId) => {
   }
 };
 
+const removeRegistrationsByStudentId = async (studentId) => {
+  logger.info(
+    `${RegistrationsConstant.LOGGER.SERVICE}::removeRegistrationsByStudentId::is called`
+  );
+  try {
+    await RegistrationsModel.updateMany(
+      { studentId: mongoose.Types.ObjectId(studentId) },
+      { $set: { isDeleted: true } }
+    );
+    logger.info(
+      `${RegistrationsConstant.LOGGER.SERVICE}::removeRegistrationsByStudentId::success`
+    );
+
+    return;
+  } catch (e) {
+    logger.error(
+      `${RegistrationsConstant.LOGGER.SERVICE}::removeRegistrationsByStudentId::error`,
+      e
+    );
+    throw new Error(e);
+  }
+};
+
 module.exports = {
   createRegistration,
   findRegistrationHasConditions,
@@ -236,4 +259,5 @@ module.exports = {
   findRegistrationsHasConditions,
   findRegistrationsByCoursesId,
   removeRegistrationsByCoursesId,
+  removeRegistrationsByStudentId,
 };

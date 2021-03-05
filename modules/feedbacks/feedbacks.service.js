@@ -173,7 +173,9 @@ const getFeedbacksByConditionsHasPagination = async ({
   );
   try {
     let matchStage = {
-      $match: {},
+      $match: {
+        isDeleted: false,
+      },
     };
     let sortStage = {
       $sort: {},
@@ -294,7 +296,9 @@ const getFeedbacksHasConditions = async ({ studentId, courseId }) => {
     `${FeedbacksConstant.LOGGER.SERVICE}::getFeedbacksHasConditions::is called`
   );
   try {
-    let conditions = {};
+    let conditions = {
+      isDeleted: false,
+    };
 
     if (studentId) {
       conditions["studentId"] = mongoose.Types.ObjectId(studentId);
@@ -321,6 +325,52 @@ const getFeedbacksHasConditions = async ({ studentId, courseId }) => {
   }
 };
 
+const removeFeedbacksByCourseId = async (courseId) => {
+  logger.info(
+    `${FeedbacksConstant.LOGGER.SERVICE}::removeFeedbacksByCourseId::is called`
+  );
+  try {
+    await FeedbacksModel.updateMany(
+      { courseId: mongoose.Types.ObjectId(courseId) },
+      { $set: { isDeleted: true } }
+    );
+    logger.info(
+      `${FeedbacksConstant.LOGGER.SERVICE}::removeFeedbacksByCourseId::success`
+    );
+
+    return;
+  } catch (e) {
+    logger.error(
+      `${FeedbacksConstant.LOGGER.SERVICE}::removeFeedbacksByCourseId::error`,
+      e
+    );
+    throw new Error(e);
+  }
+};
+
+const removeFeedbacksByStudentId = async (studentId) => {
+  logger.info(
+    `${FeedbacksConstant.LOGGER.SERVICE}::removeFeedbacksByStudentId::is called`
+  );
+  try {
+    await FeedbacksModel.updateMany(
+      { studentId: mongoose.Types.ObjectId(studentId) },
+      { $set: { isDeleted: true } }
+    );
+    logger.info(
+      `${FeedbacksConstant.LOGGER.SERVICE}::removeFeedbacksByStudentId::success`
+    );
+
+    return;
+  } catch (e) {
+    logger.error(
+      `${FeedbacksConstant.LOGGER.SERVICE}::removeFeedbacksByStudentId::error`,
+      e
+    );
+    throw new Error(e);
+  }
+};
+
 module.exports = {
   createFeedback,
   createRating,
@@ -328,4 +378,6 @@ module.exports = {
   mapRatingsIntoFeedbacks,
   mapUsersIntoFeedbacks,
   getFeedbacksHasConditions,
+  removeFeedbacksByCourseId,
+  removeFeedbacksByStudentId,
 };
