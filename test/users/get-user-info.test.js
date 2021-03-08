@@ -68,6 +68,34 @@ const getUserInfo = async () =>
                 done(e);
             }
         });
+
+        it("get user info test :: token is not exists", (done) => {
+            try {
+                chai
+                    .request(server)
+                    .get(`/api/users`)
+                    .set({
+                        accessToken: "",
+                    })
+                    .end((err, res) => {
+                        if (err) {
+                            console.log(err);
+                        }
+
+                        if (res) {
+                            expect(res).to.have.status(HttpStatus.UNAUTHORIZED);
+                            expect(res.body.messages)
+                                .to.be.an("array")
+                                .that.includes("INVALID_TOKEN");
+                        }
+
+                        done();
+                    });
+            } catch (e) {
+                console.error(e);
+                done(e);
+            }
+        });
     });
 
 module.exports = getUserInfo;
