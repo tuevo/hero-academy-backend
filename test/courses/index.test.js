@@ -5,6 +5,7 @@ const getCourseList = require('./get-course-list.test');
 const getChaptersTest = require("./get-chapters.test");
 const deleteCourse = require('./delete-course.test');
 const updateCourse = require('./update-course.test');
+const registerCourse = require('./register-course.test');
 
 module.exports = () => {
   getCourseList();
@@ -14,4 +15,5 @@ module.exports = () => {
   getChaptersTest();
   deleteCourse();
   updateCourse();
+  registerCourse();
 };
