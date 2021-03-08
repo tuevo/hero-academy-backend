@@ -7,6 +7,7 @@ const deleteCourse = require('./delete-course.test');
 const updateCourse = require('./update-course.test');
 const registerCourse = require('./register-course.test');
 const addCourseChapter = require('./add-course-chapter.test');
+const getCourseChapterVideoList = require('./get-course-chapter-video-list.test');
 
 module.exports = () => {
   getCourseList();
@@ -18,4 +19,5 @@ module.exports = () => {
   updateCourse();
   registerCourse();
   addCourseChapter();
+  getCourseChapterVideoList();
 };
