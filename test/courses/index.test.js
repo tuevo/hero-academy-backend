@@ -10,6 +10,7 @@ const addCourseChapter = require('./add-course-chapter.test');
 const getCourseChapterVideoList = require('./get-course-chapter-video-list.test');
 const getCourseVideoWatchingList = require('./get-course-video-watching-list.test');
 const addCourseFeedback = require('./add-course-feedback.test');
+const addVideoWatching = require('./add-course-video-watching.test');
 
 module.exports = () => {
   getCourseList();
@@ -24,4 +25,5 @@ module.exports = () => {
   getCourseChapterVideoList();
   getCourseVideoWatchingList();
   addCourseFeedback();
+  addVideoWatching();
 };
