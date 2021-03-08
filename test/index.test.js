@@ -6,6 +6,7 @@ const categoriesTest = require('./categories/index.test');
 const lecturerTest = require('./lecturers/index.test');
 const favoritesTest = require('./favorites/index.test');
 const categoryClustersTest = require('./category-clusters/index.test');
+const getUserInfo = require('./users/index.test');
 
 authTest();
 coursesTest();
@@ -15,3 +16,4 @@ categoriesTest();
 lecturerTest();
 favoritesTest();
 categoryClustersTest();
+getUserInfo();
