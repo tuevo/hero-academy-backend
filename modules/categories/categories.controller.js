@@ -262,15 +262,13 @@ const deleteCategory = async (req, res, next) => {
     //     }));
 
     //   await CoursesServices.removeCoursesByCategoryId({ categoryId });
-    //   await Promise.all(
-    //     lecturersId.map(
-    //       async (lecturerId) =>
-    //         await LecturersServices.updateNumberOfCoursesPosted({
-    //           lecturerId,
-    //           cumulativeValue: -1,
-    //         })
-    //     )
-    //   );
+
+    //   for (lecturerId of lecturersId) {
+    //     await LecturersServices.updateNumberOfCoursesPosted({
+    //       lecturerId,
+    //       cumulativeValue: -1,
+    //     });
+    //   }
     // }
 
     responseData = {
