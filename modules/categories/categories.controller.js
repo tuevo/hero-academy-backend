@@ -168,6 +168,31 @@ const updateCategory = async (req, res, next) => {
       }
     }
 
+    if (name) {
+      const categories = await CategoriesServices.findCategoriesByName(name);
+
+      if (categories.length > 0) {
+        const categoryResult = categories.find(
+          (category) =>
+            category.name.toLocaleLowerCase() === name.toLocaleLowerCase()
+        );
+
+        if (categoryResult) {
+          responseData = {
+            status: HttpStatus.BAD_REQUEST,
+            messages: [
+              CategoriesConstant.MESSAGES.ADD_CATEGORY.CATEGORY_ALREADY_EXISTS,
+            ],
+          };
+
+          logger.info(
+            `${CategoriesConstant.LOGGER.CONTROLLER}::updateCategory::category already exists`
+          );
+          return res.status(HttpStatus.BAD_REQUEST).json(responseData);
+        }
+      }
+    }
+
     category = await CategoriesServices.updateCategory({
       name,
       categoryClusterId,
