@@ -256,18 +256,34 @@ const deleteCategory = async (req, res, next) => {
     });
 
     if (courses.length > 0) {
-      responseData = {
-        status: HttpStatus.BAD_REQUEST,
-        messages: [
-          CategoriesConstant.MESSAGES.DELETE_CATEGORY
-            .CATEGORY_ALREADY_EXISTS_REGISTERED_COURSE,
-        ],
-      };
-
-      logger.info(
-        `${CategoriesConstant.LOGGER.CONTROLLER}::deleteCategory::The category contains the course`
+      const coursesId = courses.map((course) => course._id);
+      const registeredCourse = courses.find(
+        (course) => course.numberOfRegistrations > 0
       );
-      return res.status(HttpStatus.BAD_REQUEST).json(responseData);
+
+      if (registeredCourse) {
+        responseData = {
+          status: HttpStatus.BAD_REQUEST,
+          messages: [
+            CategoriesConstant.MESSAGES.DELETE_CATEGORY
+              .CATEGORY_ALREADY_EXISTS_REGISTERED_COURSE,
+          ],
+        };
+
+        logger.info(
+          `${CategoriesConstant.LOGGER.CONTROLLER}::deleteCategory::The category contains the course`
+        );
+        return res.status(HttpStatus.BAD_REQUEST).json(responseData);
+      }
+
+      await CoursesServices.removeCoursesByCoursesId(coursesId);
+
+      for (const course of courses) {
+        await LecturersServices.updateNumberOfCoursesPosted({
+          lecturerId: course.lecturerId,
+          cumulativeValue: -1,
+        });
+      }
     }
 
     category["isDeleted"] = true;
