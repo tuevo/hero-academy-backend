@@ -14,6 +14,9 @@ const {
 const {
   AddCategoryClustersValidationSchema,
 } = require("./validations/add-category-clusters.schema");
+const {
+  UpdateCategoryClustersValidationSchema,
+} = require("./validations/update-category-cluster.schema");
 
 router.get(
   "/",
@@ -30,6 +33,16 @@ router.post(
   CheckAccessTokenMiddleware({ isRequired: true }),
   CheckRoleMiddleware([UsersConstant.ROLE.ADMIN]),
   CategoryClustersController.addCategoryCLuster
+);
+router.put(
+  "/:categoryClusterId",
+  ValidateMiddleware(UpdateCategoryClustersValidationSchema, [
+    ParametersConstant.BODY,
+    ParametersConstant.PARAMS,
+  ]),
+  CheckAccessTokenMiddleware({ isRequired: true }),
+  CheckRoleMiddleware([UsersConstant.ROLE.ADMIN]),
+  CategoryClustersController.updateCategoryCluster
 );
 
 module.exports = router;

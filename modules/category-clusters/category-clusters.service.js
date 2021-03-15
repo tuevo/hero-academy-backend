@@ -11,12 +11,16 @@ const getCategoryClustersInfoHasPagination = async ({ page, limit }) => {
     `${CategoryClusterConstant.LOGGER.SERVICE}::getCategoryClustersInfoHasPagination::is called`
   );
   try {
+    const mathStage = {
+      $match: {
+        isDeleted: false,
+      },
+    };
     const sortStage = {
       $sort: {
         createdAt: -1,
       },
     };
-
     const facetStage = {
       $facet: {
         entries: [{ $skip: (page - 1) * limit }, { $limit: limit }],
@@ -24,7 +28,7 @@ const getCategoryClustersInfoHasPagination = async ({ page, limit }) => {
       },
     };
 
-    const query = [sortStage, facetStage];
+    const query = [mathStage, sortStage, facetStage];
 
     logger.info(
       `${CategoryClusterConstant.LOGGER.SERVICE}::getCategoryClustersInfoHasPagination::query`,
@@ -86,6 +90,7 @@ const findCategoryClustersByName = async (name) => {
         $regex: name,
         $options: "i",
       },
+      isDeleted: false,
     });
   } catch (e) {
     logger.error(
@@ -128,6 +133,7 @@ const findCategoryClusterById = async (categoryClusterId) => {
     );
     return await CategoryClusterModel.findOne({
       _id: mongoose.Types.ObjectId(categoryClusterId),
+      isDeleted: false,
     });
   } catch (e) {
     logger.error(
@@ -145,6 +151,7 @@ const findCategoryClustersByIds = async (categoryClustersId) => {
   try {
     const categoryClusters = await CategoryClusterModel.find({
       _id: { $in: categoryClustersId },
+      isDeleted: false,
     });
 
     logger.info(

@@ -122,7 +122,92 @@ const addCategoryCLuster = async (req, res, next) => {
   }
 };
 
+const updateCategoryCluster = async (req, res, next) => {
+  logger.info(
+    `${CategoryClustersConstant.LOGGER.CONTROLLER}::updateCategoryCluster::is called`
+  );
+  try {
+    const { categoryClusterId } = req.params;
+    const { name } = req.body;
+    let responseData = null;
+
+    let categoryCluster = await CategoryClustersServices.findCategoryClusterById(
+      categoryClusterId
+    );
+
+    if (!categoryCluster) {
+      responseData = {
+        status: HttpStatus.NOT_FOUND,
+        messages: [
+          CategoryClustersConstant.MESSAGES.UPDATE_CATEGORY_CLUSTER
+            .CATEGORY_CLUSTER_NOT_FOUND,
+        ],
+      };
+
+      logger.info(
+        `${CategoryClustersConstant.LOGGER.CONTROLLER}::updateCategoryCluster::category cluster not found`
+      );
+      return res.status(HttpStatus.NOT_FOUND).json(responseData);
+    }
+
+    if (name) {
+      const categoryClusters = await CategoryClustersServices.findCategoryClustersByName(
+        name
+      );
+
+      if (categoryClusters.length > 0) {
+        const categoryClusterInfo = categoryClusters.find(
+          (categoryCluster) =>
+            categoryCluster.name.toLocaleLowerCase() ===
+            name.toLocaleLowerCase()
+        );
+
+        if (categoryClusterInfo) {
+          responseData = {
+            status: HttpStatus.BAD_REQUEST,
+            messages: [
+              CategoryClustersConstant.MESSAGES.UPDATE_CATEGORY_CLUSTER
+                .CATEGORY_CLUSTER_ALREADY_EXISTS,
+            ],
+          };
+
+          logger.info(
+            `${CategoryClustersConstant.LOGGER.CONTROLLER}::updateCategoryCluster::name already exists`
+          );
+          return res.status(HttpStatus.BAD_REQUEST).json(responseData);
+        }
+      }
+
+      categoryCluster.name = name;
+      await categoryCluster.save();
+    }
+
+    responseData = {
+      status: HttpStatus.OK,
+      messages: [
+        CategoryClustersConstant.MESSAGES.UPDATE_CATEGORY_CLUSTER
+          .UPDATE_CATEGORY_CLUSTER_SUCCESSFULLY,
+      ],
+      data: {
+        categoryCluster,
+      },
+    };
+
+    logger.info(
+      `${CategoryClustersConstant.LOGGER.CONTROLLER}::updateCategoryCluster::success`
+    );
+    return res.status(HttpStatus.OK).json(responseData);
+  } catch (e) {
+    logger.error(
+      `${CategoryClustersConstant.LOGGER.CONTROLLER}::updateCategoryCluster::error`,
+      e
+    );
+    return next(e);
+  }
+};
+
 module.exports = {
   getCategoryClustersInfo,
   addCategoryCLuster,
+  updateCategoryCluster,
 };
