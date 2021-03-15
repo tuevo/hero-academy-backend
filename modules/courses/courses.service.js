@@ -667,6 +667,28 @@ const findCoursesByCoursesId = async (coursesId) => {
   }
 };
 
+const findCoursesByCategoriesId = async (categoriesId) => {
+  logger.info(
+    `${CoursesConstant.LOGGER.SERVICE}::findCoursesByCategoriesId::is called`
+  );
+  try {
+    const courses = await CoursesModel.find({
+      categoryId: { $in: categoriesId },
+    });
+
+    logger.info(
+      `${CoursesConstant.LOGGER.SERVICE}::findCoursesByCategoriesId::success`
+    );
+    return courses;
+  } catch (e) {
+    logger.error(
+      `${CoursesConstant.LOGGER.SERVICE}::findCoursesByCategoriesId::error`,
+      e
+    );
+    throw new Error(e);
+  }
+};
+
 module.exports = {
   findCourseHasConditions,
   createCourse,
@@ -683,4 +705,5 @@ module.exports = {
   removeCoursesByCategoryId,
   removeCoursesByCoursesId,
   findCoursesByCoursesId,
+  findCoursesByCategoriesId,
 };

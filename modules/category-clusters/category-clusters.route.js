@@ -17,6 +17,9 @@ const {
 const {
   UpdateCategoryClustersValidationSchema,
 } = require("./validations/update-category-cluster.schema");
+const {
+  DeleteCategoryClustersValidationSchema,
+} = require("./validations/delete-category-cluster.schema");
 
 router.get(
   "/",
@@ -43,6 +46,15 @@ router.put(
   CheckAccessTokenMiddleware({ isRequired: true }),
   CheckRoleMiddleware([UsersConstant.ROLE.ADMIN]),
   CategoryClustersController.updateCategoryCluster
+);
+router.delete(
+  "/:categoryClusterId",
+  ValidateMiddleware(DeleteCategoryClustersValidationSchema, [
+    ParametersConstant.PARAMS,
+  ]),
+  CheckAccessTokenMiddleware({ isRequired: true }),
+  CheckRoleMiddleware([UsersConstant.ROLE.ADMIN]),
+  CategoryClustersController.deleteCategoryCluster
 );
 
 module.exports = router;

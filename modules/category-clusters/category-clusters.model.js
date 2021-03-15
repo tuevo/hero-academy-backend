@@ -5,7 +5,7 @@ const Schema = mongoose.Schema;
 const categoryClusterSchema = new Schema(
   {
     name: { type: String, default: null },
-    isDeleted: { type: String, default: false },
+    isDeleted: { type: Boolean, default: false },
   },
   { timestamps: true, paranoid: true }
 );

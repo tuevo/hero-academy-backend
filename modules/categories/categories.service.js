@@ -168,6 +168,29 @@ const getCategoriesByIds = async (categoriesId) => {
   }
 };
 
+const removeCategoriesByIds = async (ids) => {
+  logger.info(
+    `${CategoryConstant.LOGGER.SERVICE}::getCategoriesByIds::is called`
+  );
+  try {
+    await CategoryModel.updateMany(
+      { _id: { $in: ids } },
+      { $set: { isDeleted: true } }
+    );
+
+    logger.info(
+      `${CategoryConstant.LOGGER.SERVICE}::getCategoriesByIds::success`
+    );
+    return;
+  } catch (e) {
+    logger.error(
+      `${CategoryConstant.LOGGER.SERVICE}::removeCategoriesByIds::error`,
+      e
+    );
+    throw new Error(e);
+  }
+};
+
 module.exports = {
   getCategoriesByCategoryClusterId,
   updateNumberOfCourses,
@@ -176,4 +199,5 @@ module.exports = {
   getCategoryById,
   updateCategory,
   getCategoriesByIds,
+  removeCategoriesByIds,
 };
