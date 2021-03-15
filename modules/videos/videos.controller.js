@@ -90,9 +90,19 @@ const getVideosByChapter = async (req, res, next) => {
       sortBy: "createdAt",
       isSortUpAscending: true,
     });
+    const chapters = await ChaptersServices.findChaptersHasConditions({
+      courseId: course._id,
+    });
+
+    const index = chapters.findIndex(
+      (chapter) => chapter._id.toString() === chapterId.toString()
+    );
 
     if (videos.length > 0 && !isRegistered) {
-      videos = VideosServices.removePublicIdFieldInVideosData({ videos });
+      videos = VideosServices.removePublicIdFieldInVideosData({
+        videos,
+        index,
+      });
     }
 
     responseData = {
