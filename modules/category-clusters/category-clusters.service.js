@@ -73,15 +73,15 @@ const mapCategoryClusterDataWithCategoriesData = async (entries) => {
   }
 };
 
-const findCategoryClusterByName = async (name) => {
+const findCategoryClustersByName = async (name) => {
   logger.info(
-    `${CategoryClusterConstant.LOGGER.SERVICE}::findCategoryClusterByName::is called`
+    `${CategoryClusterConstant.LOGGER.SERVICE}::findCategoryClustersByName::is called`
   );
   try {
     logger.info(
-      `${CategoryClusterConstant.LOGGER.SERVICE}::findCategoryClusterByName::success`
+      `${CategoryClusterConstant.LOGGER.SERVICE}::findCategoryClustersByName::success`
     );
-    return await CategoryClusterModel.findOne({
+    return await CategoryClusterModel.find({
       name: {
         $regex: name,
         $options: "i",
@@ -89,7 +89,7 @@ const findCategoryClusterByName = async (name) => {
     });
   } catch (e) {
     logger.error(
-      `${CategoryClusterConstant.LOGGER.SERVICE}::findCategoryClusterByName::error`,
+      `${CategoryClusterConstant.LOGGER.SERVICE}::findCategoryClustersByName::error`,
       e
     );
     throw new Error(e);
@@ -163,7 +163,7 @@ const findCategoryClustersByIds = async (categoryClustersId) => {
 module.exports = {
   getCategoryClustersInfoHasPagination,
   mapCategoryClusterDataWithCategoriesData,
-  findCategoryClusterByName,
+  findCategoryClustersByName,
   createCategoryCluster,
   findCategoryClusterById,
   findCategoryClustersByIds,

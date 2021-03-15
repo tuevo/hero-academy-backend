@@ -66,15 +66,19 @@ const addCategoryCLuster = async (req, res, next) => {
   try {
     const { name } = req.body;
     let responseData = null;
+    let categoryCluster = null;
 
-    let categoryCluster = await CategoryClustersServices.findCategoryClusterByName(
+    let categoryClusters = await CategoryClustersServices.findCategoryClustersByName(
       name
     );
 
-    if (categoryCluster) {
-      if (
-        categoryCluster.name.toLocaleLowerCase() === name.toLocaleLowerCase()
-      ) {
+    if (categoryClusters.length > 0) {
+      categoryCluster = categoryClusters.find(
+        (categoryCluster) =>
+          categoryCluster.name.toLocaleLowerCase() === name.toLocaleLowerCase()
+      );
+
+      if (categoryCluster) {
         responseData = {
           status: HttpStatus.BAD_REQUEST,
           messages: [
