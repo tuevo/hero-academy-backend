@@ -708,7 +708,7 @@ const getCoursesListByCriteria = async (req, res, next) => {
     `${CoursesConstant.LOGGER.CONTROLLER}::getCoursesListByCriteria::is called`
   );
   try {
-    const { keyword, isSortUpAscending, sortBy } = req.query;
+    const { keyword, isSortUpAscending, sortBy, categoryId } = req.query;
     const { user } = req;
     const page = Number(req.query.page) || PaginationConstant.PAGE;
     const limit = Number(req.query.limit) || PaginationConstant.LIMIT;
@@ -726,6 +726,7 @@ const getCoursesListByCriteria = async (req, res, next) => {
       keyword,
       isSortUpAscending,
       sortBy,
+      categoryId,
     });
 
     let { entries } = courses[0];
