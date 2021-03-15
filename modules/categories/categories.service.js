@@ -67,15 +67,15 @@ const createCategory = async (categoryInfo) => {
   }
 };
 
-const findCategoryByName = async (name) => {
+const findCategoriesByName = async (name) => {
   logger.info(
-    `${CategoryConstant.LOGGER.SERVICE}::findCategoryByName::is called`
+    `${CategoryConstant.LOGGER.SERVICE}::findCategoriesByName::is called`
   );
   try {
     logger.info(
-      `${CategoryConstant.LOGGER.SERVICE}::findCategoryByName::success`
+      `${CategoryConstant.LOGGER.SERVICE}::findCategoriesByName::success`
     );
-    return await CategoryModel.findOne({
+    return await CategoryModel.find({
       name: {
         $regex: name,
         $options: "i",
@@ -84,7 +84,7 @@ const findCategoryByName = async (name) => {
     });
   } catch (e) {
     logger.error(
-      `${CategoryConstant.LOGGER.SERVICE}::findCategoryByName::error`,
+      `${CategoryConstant.LOGGER.SERVICE}::findCategoriesByName::error`,
       e
     );
     throw new Error(e);
@@ -172,7 +172,7 @@ module.exports = {
   getCategoriesByCategoryClusterId,
   updateNumberOfCourses,
   createCategory,
-  findCategoryByName,
+  findCategoriesByName,
   getCategoryById,
   updateCategory,
   getCategoriesByIds,

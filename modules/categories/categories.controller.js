@@ -17,6 +17,7 @@ const addCategory = async (req, res, next) => {
   try {
     const { categoryClusterId, name } = req.body;
     let responseData = null;
+    let category = null;
 
     const categoryCluster = await CategoryClusterServices.findCategoryClusterById(
       categoryClusterId
@@ -36,10 +37,15 @@ const addCategory = async (req, res, next) => {
       return res.status(HttpStatus.NOT_FOUND).json(responseData);
     }
 
-    let category = await CategoriesServices.findCategoryByName(name);
+    const categories = await CategoriesServices.findCategoriesByName(name);
 
-    if (category) {
-      if (category.name.toLocaleLowerCase() === name.toLocaleLowerCase()) {
+    if (categories.length > 0) {
+      category = categories.find(
+        (category) =>
+          category.name.toLocaleLowerCase() === name.toLocaleLowerCase()
+      );
+
+      if (category) {
         responseData = {
           status: HttpStatus.BAD_REQUEST,
           messages: [
