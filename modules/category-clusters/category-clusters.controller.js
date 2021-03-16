@@ -250,46 +250,59 @@ const deleteCategoryCluster = async (req, res, next) => {
       );
 
       if (courses.length > 0) {
-        const coursesId = courses.map((course) => course._id);
-        const registeredCourse = courses.find(
-          (course) => course.numberOfRegistrations > 0
+        responseData = {
+          status: HttpStatus.BAD_REQUEST,
+          messages: [
+            CategoryClustersConstant.MESSAGES.DELETE_CATEGORY_CLUSTER
+              .CATEGORY_CLUSTER_ALREADY_EXISTS_REGISTERED_COURSE,
+          ],
+        };
+
+        logger.info(
+          `${CategoryClustersConstant.LOGGER.CONTROLLER}::updateCategoryCluster::category cluster already exists registered course`
         );
+        return res.status(HttpStatus.BAD_REQUEST).json(responseData);
 
-        if (registeredCourse) {
-          responseData = {
-            status: HttpStatus.BAD_REQUEST,
-            messages: [
-              CategoryClustersConstant.MESSAGES.DELETE_CATEGORY_CLUSTER
-                .CATEGORY_CLUSTER_ALREADY_EXISTS_REGISTERED_COURSE,
-            ],
-          };
+        // const coursesId = courses.map((course) => course._id);
+        // const registeredCourse = courses.find(
+        //   (course) => course.numberOfRegistrations > 0
+        // );
 
-          logger.info(
-            `${CategoryClustersConstant.LOGGER.CONTROLLER}::updateCategoryCluster::category cluster already exists registered course`
-          );
-          return res.status(HttpStatus.BAD_REQUEST).json(responseData);
-        }
+        // if (registeredCourse) {
+        //   responseData = {
+        //     status: HttpStatus.BAD_REQUEST,
+        //     messages: [
+        //       CategoryClustersConstant.MESSAGES.DELETE_CATEGORY_CLUSTER
+        //         .CATEGORY_CLUSTER_ALREADY_EXISTS_REGISTERED_COURSE,
+        //     ],
+        //   };
 
-        const favorites = await FavoritesServices.findFavoritesByCoursesIdGroupByStudentId(
-          coursesId
-        );
-        await CoursesServices.removeCoursesByCoursesId(coursesId);
-        await AdminServices.updateNumberOfCourses(0 - courses.length);
-        await FavoritesServices.removeFavoritesByCoursesId(coursesId);
+        //   logger.info(
+        //     `${CategoryClustersConstant.LOGGER.CONTROLLER}::updateCategoryCluster::category cluster already exists registered course`
+        //   );
+        //   return res.status(HttpStatus.BAD_REQUEST).json(responseData);
+        // }
 
-        for (const course of courses) {
-          await LecturersServices.updateNumberOfCoursesPosted({
-            lecturerId: course.lecturerId,
-            cumulativeValue: -1,
-          });
-        }
+        // const favorites = await FavoritesServices.findFavoritesByCoursesIdGroupByStudentId(
+        //   coursesId
+        // );
+        // await CoursesServices.removeCoursesByCoursesId(coursesId);
+        // await AdminServices.updateNumberOfCourses(0 - courses.length);
+        // await FavoritesServices.removeFavoritesByCoursesId(coursesId);
 
-        for (const favorite of favorites) {
-          await StudentsServices.updateNumberOfFavoriteCourses({
-            studentId: favorite._id,
-            cumulativeValue: 0 - favorite.totalCourses,
-          });
-        }
+        // for (const course of courses) {
+        //   await LecturersServices.updateNumberOfCoursesPosted({
+        //     lecturerId: course.lecturerId,
+        //     cumulativeValue: -1,
+        //   });
+        // }
+
+        // for (const favorite of favorites) {
+        //   await StudentsServices.updateNumberOfFavoriteCourses({
+        //     studentId: favorite._id,
+        //     cumulativeValue: 0 - favorite.totalCourses,
+        //   });
+        // }
       }
 
       await CategoriesServices.removeCategoriesByIds(categoriesId);
