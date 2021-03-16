@@ -277,6 +277,64 @@ const removeFavoritesByStudentId = async (studentId) => {
   }
 };
 
+const findFavoritesByCoursesIdGroupByStudentId = async (coursesId) => {
+  logger.info(
+    `${FavoritesConstant.LOGGER.SERVICE}::findFavoritesByCoursesIdGroupByStudentId::is called`
+  );
+  try {
+    const matchStage = {
+      $match: {
+        isDeleted: false,
+        courseId: {
+          $in: coursesId,
+        },
+      },
+    };
+
+    const projectStage = {
+      $project: {
+        _id: 1,
+        studentId: 1,
+        createdAt: 1,
+      },
+    };
+
+    const sortStage = {
+      $sort: {
+        createdAt: -1,
+      },
+    };
+
+    const groupStage = {
+      $group: {
+        _id: "$studentId",
+        totalCourses: {
+          $sum: 1,
+        },
+      },
+    };
+
+    const query = [matchStage, projectStage, sortStage, groupStage];
+
+    logger.info(
+      `${FavoritesConstant.LOGGER.SERVICE}::getFavoritesByConditionsHasPagination::query`,
+      JSON.stringify(query)
+    );
+    const favorites = await FavoritesModel.aggregate(query);
+
+    logger.info(
+      `${FavoritesConstant.LOGGER.SERVICE}::findFavoritesByCoursesIdGroupByStudentId::success`
+    );
+    return favorites;
+  } catch (e) {
+    logger.error(
+      `${FavoritesConstant.LOGGER.SERVICE}::findFavoritesByCoursesIdGroupByStudentId::error`,
+      e
+    );
+    throw new Error(e);
+  }
+};
+
 module.exports = {
   getFavoritesByConditionsHasPagination,
   findFavoriteHasConditions,
@@ -287,4 +345,5 @@ module.exports = {
   findFavoritesByCoursesId,
   removeFavoritesByCoursesId,
   removeFavoritesByStudentId,
+  findFavoritesByCoursesIdGroupByStudentId,
 };

@@ -276,12 +276,23 @@ const deleteCategory = async (req, res, next) => {
         return res.status(HttpStatus.BAD_REQUEST).json(responseData);
       }
 
+      const favorites = await FavoritesServices.findFavoritesByCoursesIdGroupByStudentId(
+        coursesId
+      );
       await CoursesServices.removeCoursesByCoursesId(coursesId);
+      await FavoritesServices.removeFavoritesByCoursesId(coursesId);
 
       for (const course of courses) {
         await LecturersServices.updateNumberOfCoursesPosted({
           lecturerId: course.lecturerId,
           cumulativeValue: -1,
+        });
+      }
+
+      for (const favorite of favorites) {
+        await StudentsServices.updateNumberOfFavoriteCourses({
+          studentId: favorite._id,
+          cumulativeValue: 0 - favorite.totalCourses,
         });
       }
     }

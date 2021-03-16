@@ -9,6 +9,8 @@ const CategoriesServices = require("../categories/categories.service");
 const CoursesServices = require("../courses/courses.service");
 const AdminServices = require("../admins/admins.service");
 const LecturersServices = require("../lecturers/lecturers.service");
+const FavoritesServices = require("../favorites/favorites.service");
+const StudentsServices = require("../students/students.service");
 
 const getCategoryClustersInfo = async (req, res, next) => {
   logger.info(
@@ -268,13 +270,24 @@ const deleteCategoryCluster = async (req, res, next) => {
           return res.status(HttpStatus.BAD_REQUEST).json(responseData);
         }
 
+        const favorites = await FavoritesServices.findFavoritesByCoursesIdGroupByStudentId(
+          coursesId
+        );
         await CoursesServices.removeCoursesByCoursesId(coursesId);
         await AdminServices.updateNumberOfCourses(0 - courses.length);
+        await FavoritesServices.removeFavoritesByCoursesId(coursesId);
 
         for (const course of courses) {
           await LecturersServices.updateNumberOfCoursesPosted({
             lecturerId: course.lecturerId,
             cumulativeValue: -1,
+          });
+        }
+
+        for (const favorite of favorites) {
+          await StudentsServices.updateNumberOfFavoriteCourses({
+            studentId: favorite._id,
+            cumulativeValue: 0 - favorite.totalCourses,
           });
         }
       }
