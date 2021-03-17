@@ -340,6 +340,7 @@ const getCoursesListForHomePage = async ({
   isSortUpAscending,
   isSortCreatedAt,
   isCreatedAtSortUpAscending,
+  coursesId,
 }) => {
   logger.info(
     `${CoursesConstant.LOGGER.SERVICE}::getCoursesListForHomePage::is called`
@@ -351,6 +352,11 @@ const getCoursesListForHomePage = async ({
     };
 
     if (findBy) {
+      if (findBy === "averageRating") {
+        sortStage["numberOfRatings"] =
+          isSortUpAscending === true || isSortUpAscending === "true" ? 1 : -1;
+      }
+
       sortStage[findBy] =
         isSortUpAscending === true || isSortUpAscending === "true" ? 1 : -1;
     }
@@ -364,6 +370,12 @@ const getCoursesListForHomePage = async ({
       conditions["createdAt"] = {
         $gte: new Date(startDate),
         $lte: new Date(endDate),
+      };
+    }
+
+    if (coursesId && coursesId.length > 0) {
+      conditions["_id"] = {
+        $in: coursesId,
       };
     }
 
