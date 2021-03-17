@@ -285,7 +285,7 @@ const createUserHasLecturerRole = async ({ email, password, fullName }) => {
   }
 };
 
-const updateUserInfo = async ({ fullName, avatar, user }) => {
+const updateUserInfo = async ({ fullName, avatar, user, isBlocked }) => {
   logger.info(`${UserConstant.LOGGER.SERVICE}::updateUserInfo::is called`);
   try {
     let isChange = false;
@@ -295,6 +295,14 @@ const updateUserInfo = async ({ fullName, avatar, user }) => {
         `${UserConstant.LOGGER.SERVICE}::updateUserInfo::update full name`
       );
       user["fullName"] = fullName;
+      isChange = true;
+    }
+
+    if (isBlocked !== undefined) {
+      logger.info(
+        `${UserConstant.LOGGER.SERVICE}::updateUserInfo::update isBlocked`
+      );
+      user["isBlocked"] = isBlocked;
       isChange = true;
     }
 

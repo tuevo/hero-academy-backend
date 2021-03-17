@@ -53,7 +53,7 @@ const getUserInfo = async (req, res, next) => {
 const updateUserInfo = async (req, res, next) => {
   logger.info(`${UserConstant.LOGGER.CONTROLLER}::updateUserInfo::is called`);
   try {
-    const { fullName, introduction } = req.body;
+    const { fullName, introduction, isBlocked } = req.body;
     const { files } = req;
     const { _id } = req.user;
     let { roleInfo } = req.user;
@@ -85,7 +85,7 @@ const updateUserInfo = async (req, res, next) => {
       });
     }
 
-    user = await UserServices.updateUserInfo({ fullName, avatar, user });
+    user = await UserServices.updateUserInfo({ fullName, avatar, user, isBlocked });
 
     responseData = {
       status: HttpStatus.OK,
