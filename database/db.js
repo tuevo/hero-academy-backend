@@ -3,11 +3,11 @@ const log4js = require("log4js");
 const logger = log4js.getLogger("app");
 
 let url =
-  "mongodb+srv://online-academy:PPsLwAKrfxdQbiPV@online-academy.bg0ws.mongodb.net/online-academy?retryWrites=true&w=majority";
+  "mongodb+srv://online-academy:abcd-12345@cluster0.dgeox.mongodb.net/test?retryWrites=true&w=majority";
 
-if (process.env.NODE_ENV === "production") {
+if (process.env.NODE_ENV === "test") {
   url =
-    "mongodb+srv://online-academy:abcd-12345@cluster0.dgeox.mongodb.net/test?retryWrites=true&w=majority";
+    "mongodb+srv://online-academy:PPsLwAKrfxdQbiPV@online-academy.bg0ws.mongodb.net/online-academy?retryWrites=true&w=majority";
 }
 
 module.exports = (callback) => {
