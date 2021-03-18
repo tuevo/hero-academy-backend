@@ -18,7 +18,7 @@ const updateCourse = async () =>
           .request(server)
           .post("/api/auth/login")
           .send({
-            email: "admin2020@gmail.com",
+            email: "lecturer2020@gmail.com",
             password: "123456789",
           })
           .end((err, res) => {

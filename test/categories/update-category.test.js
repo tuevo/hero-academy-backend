@@ -42,7 +42,7 @@ const addCategory = async () =>
       try {
         chai
           .request(server)
-          .put(`${constants.BASE_URL}/6037fe19a4668e4136a09cc0`)
+          .put(`${constants.BASE_URL}/6052fad19330164ac1dd731f`)
           .send({
             name: 'Lập trình game',
             categoryClusterId: '602a0c06e99eaa14a41df641'
@@ -74,9 +74,9 @@ const addCategory = async () =>
       try {
         chai
           .request(server)
-          .put(`${constants.BASE_URL}/602a0c06e99eaa14a41df641`)
+          .put(`${constants.BASE_URL}/60530d92f711ac2e0c4847d4`)
           .send({
-            name: 'Thần học',
+            name: 'Triết học',
             categoryClusterId: '602a0bfde99eaa14a41df640'
           })
           .set('accessToken', accessToken)
@@ -91,6 +91,38 @@ const addCategory = async () =>
                 .to.be.an("array")
                 .that.includes(
                   categoryConstant.MESSAGES.UPDATE_CATEGORY.CATEGORY_NOT_FOUND
+                );
+            }
+
+            done();
+          });
+      } catch (e) {
+        console.error(e);
+        done(e);
+      }
+    });
+
+    it("Category should be duplicated", (done) => {
+      try {
+        chai
+          .request(server)
+          .put(`${constants.BASE_URL}/6052fad19330164ac1dd731f`)
+          .send({
+            name: 'Phật giáo',
+            categoryClusterId: '602a0bfde99eaa14a41df640'
+          })
+          .set('accessToken', accessToken)
+          .end((err, res) => {
+            if (err) {
+              console.log(err);
+            }
+
+            if (res) {
+              expect(res).to.have.status(HttpStatus.BAD_REQUEST);
+              expect(res.body.messages)
+                .to.be.an("array")
+                .that.includes(
+                  categoryConstant.MESSAGES.ADD_CATEGORY.CATEGORY_ALREADY_EXISTS
                 );
             }
 

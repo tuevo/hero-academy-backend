@@ -4,14 +4,15 @@ const HttpStatus = require("http-status-codes");
 const { expect } = require("chai");
 
 const server = require("../../app");
-const CategoriesConstant = require("../../modules/categories/categories.constant");
+const categoryClustersConstant = require("../../modules/category-clusters/category-clusters.constant");
+const constants = require('./constants.test');
 
 chai.use(chaiHttp);
 
 let accessToken = null;
 
-const deleteCategory = async () =>
-  describe("Categories :: Delete category", () => {
+const updateCategoryCluster = async () =>
+  describe("CategoryClusters :: Update category cluster", () => {
     beforeEach((done) => {
       try {
         chai
@@ -37,11 +38,14 @@ const deleteCategory = async () =>
       }
     });
 
-    it("Category not found", (done) => {
+    it("Category cluster should not be found", (done) => {
       try {
         chai
           .request(server)
-          .delete("/api/categories/60530d92f711ac2e0c4847d4")
+          .put(`${constants.BASE_URL}/602a0c06e99eaa14a41df641`)
+          .send({
+            name: 'Tôn giáo học'
+          })
           .set('accessToken', accessToken)
           .end((err, res) => {
             if (err) {
@@ -53,7 +57,7 @@ const deleteCategory = async () =>
               expect(res.body.messages)
                 .to.be.an("array")
                 .that.includes(
-                  CategoriesConstant.MESSAGES.DELETE_CATEGORY.CATEGORY_NOT_FOUND
+                  categoryClustersConstant.MESSAGES.UPDATE_CATEGORY_CLUSTER.CATEGORY_CLUSTER_NOT_FOUND
                 );
             }
 
@@ -65,11 +69,14 @@ const deleteCategory = async () =>
       }
     });
 
-    it("Cannot delete category having course", (done) => {
+    it("Category cluster should be duplicated", (done) => {
       try {
         chai
           .request(server)
-          .delete("/api/categories/60223325f7e4d94848a4eee5")
+          .put(`${constants.BASE_URL}/602a0bfde99eaa14a41df640`)
+          .send({
+            name: 'Tôn giáo học'
+          })
           .set('accessToken', accessToken)
           .end((err, res) => {
             if (err) {
@@ -81,7 +88,7 @@ const deleteCategory = async () =>
               expect(res.body.messages)
                 .to.be.an("array")
                 .that.includes(
-                  CategoriesConstant.MESSAGES.DELETE_CATEGORY.CATEGORY_ALREADY_EXISTS_REGISTERED_COURSE
+                  categoryClustersConstant.MESSAGES.UPDATE_CATEGORY_CLUSTER.CATEGORY_CLUSTER_ALREADY_EXISTS
                 );
             }
 
@@ -94,4 +101,4 @@ const deleteCategory = async () =>
     });
   });
 
-module.exports = deleteCategory;
+module.exports = updateCategoryCluster;
