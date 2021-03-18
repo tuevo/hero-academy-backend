@@ -3,19 +3,25 @@ const streamifier = require("streamifier");
 const log4js = require("log4js");
 const logger = log4js.getLogger("Services");
 
-if (process.env.NODE_ENV === "production") {
-  cloudinary.config({
-    cloud_name: "dcpiiafc6",
-    api_key: "832357147372524",
-    api_secret: "kAcnXN4HTp-cpr3Ac4xKNeZvi-8",
-  });
-} else {
-  cloudinary.config({
-    cloud_name: "dye8sx2yk",
-    api_key: "666872169352632",
-    api_secret: "QbmcqYuYX_5RddmCZx-k4CEVvHw",
-  });
-}
+// if (process.env.NODE_ENV === "production") {
+//   cloudinary.config({
+//     cloud_name: "dcpiiafc6",
+//     api_key: "832357147372524",
+//     api_secret: "kAcnXN4HTp-cpr3Ac4xKNeZvi-8",
+//   });
+// } else {
+//   cloudinary.config({
+//     cloud_name: "dye8sx2yk",
+//     api_key: "666872169352632",
+//     api_secret: "QbmcqYuYX_5RddmCZx-k4CEVvHw",
+//   });
+// }
+
+cloudinary.config({
+  cloud_name: "dye8sx2yk",
+  api_key: "666872169352632",
+  api_secret: "QbmcqYuYX_5RddmCZx-k4CEVvHw",
+});
 
 const uploadByLink = (link) => {
   logger.info(`Utils::uploadByLink::is called`);
