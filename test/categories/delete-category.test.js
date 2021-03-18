@@ -41,7 +41,7 @@ const deleteCategory = async () =>
       try {
         chai
           .request(server)
-          .delete("/api/categories/602a0c06e99eaa14a41df641")
+          .delete("/api/categories/60530d92f711ac2e0c4847d4")
           .set('accessToken', accessToken)
           .end((err, res) => {
             if (err) {
