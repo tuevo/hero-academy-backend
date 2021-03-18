@@ -73,7 +73,7 @@ const addCourseFeedback = async () =>
       try {
         chai
           .request(server)
-          .post(`${constant.BASE_URL}/60380d5ea4668e4136a09cc9/feedbacks`)
+          .post(`${constant.BASE_URL}/602a29c210fbc9704f3a845a/feedbacks`)
           .send({
             rating: 5
           })
