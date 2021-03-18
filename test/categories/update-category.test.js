@@ -38,38 +38,6 @@ const addCategory = async () =>
       }
     });
 
-    it("Category cluster should be not found", (done) => {
-      try {
-        chai
-          .request(server)
-          .put(`${constants.BASE_URL}/6037fe19a4668e4136a09cc0`)
-          .send({
-            name: 'Lập trình game',
-            categoryClusterId: '602a0c06e99eaa14a41df641'
-          })
-          .set('accessToken', accessToken)
-          .end((err, res) => {
-            if (err) {
-              console.log(err);
-            }
-
-            if (res) {
-              expect(res).to.have.status(HttpStatus.NOT_FOUND);
-              expect(res.body.messages)
-                .to.be.an("array")
-                .that.includes(
-                  categoryConstant.MESSAGES.UPDATE_CATEGORY.CATEGORY_CLUSTER_NOT_FOUND
-                );
-            }
-
-            done();
-          });
-      } catch (e) {
-        console.error(e);
-        done(e);
-      }
-    });
-
     it("Category should be not found", (done) => {
       try {
         chai
