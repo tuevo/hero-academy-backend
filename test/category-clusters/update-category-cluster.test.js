@@ -5,7 +5,6 @@ const { expect } = require("chai");
 
 const server = require("../../app");
 const categoryClustersConstant = require("../../modules/category-clusters/category-clusters.constant");
-const categoryConstant = require('../../modules/categories/categories.constant');
 const constants = require('./constants.test');
 
 chai.use(chaiHttp);
@@ -58,7 +57,7 @@ const updateCategoryCluster = async () =>
               expect(res.body.messages)
                 .to.be.an("array")
                 .that.includes(
-                  categoryConstant.MESSAGES.ADD_CATEGORY.CATEGORY_CLUSTER_NOT_FOUND
+                  categoryClustersConstant.MESSAGES.UPDATE_CATEGORY_CLUSTER.CATEGORY_CLUSTER_NOT_FOUND
                 );
             }
 
@@ -89,7 +88,7 @@ const updateCategoryCluster = async () =>
               expect(res.body.messages)
                 .to.be.an("array")
                 .that.includes(
-                  categoryClustersConstant.MESSAGES.ADD_CATEGORY_CLUSTER.CATEGORY_CLUSTER_ALREADY_EXISTS
+                  categoryClustersConstant.MESSAGES.UPDATE_CATEGORY_CLUSTER.CATEGORY_CLUSTER_ALREADY_EXISTS
                 );
             }
 
