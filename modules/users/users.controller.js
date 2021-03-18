@@ -1,11 +1,11 @@
-const log4js = require('log4js');
-const logger = log4js.getLogger('Controllers');
-const HttpStatus = require('http-status-codes');
+const log4js = require("log4js");
+const logger = log4js.getLogger("Controllers");
+const HttpStatus = require("http-status-codes");
 
-const UserConstant = require('./users.constant');
-const UserServices = require('./users.service');
-const AuthServices = require('../auth/auth.service');
-const LecturersService = require('../lecturers/lecturers.service');
+const UserConstant = require("./users.constant");
+const UserServices = require("./users.service");
+const AuthServices = require("../auth/auth.service");
+const LecturersService = require("../lecturers/lecturers.service");
 
 const getUserInfo = async (req, res, next) => {
   logger.info(`${UserConstant.LOGGER.CONTROLLER}::getUserInfo::is called`);
@@ -53,7 +53,7 @@ const getUserInfo = async (req, res, next) => {
 const updateUserInfo = async (req, res, next) => {
   logger.info(`${UserConstant.LOGGER.CONTROLLER}::updateUserInfo::is called`);
   try {
-    const { fullName, introduction, isBlocked } = req.body;
+    const { fullName, introduction } = req.body;
     const { files } = req;
     const { _id } = req.user;
     let { roleInfo } = req.user;
@@ -61,7 +61,7 @@ const updateUserInfo = async (req, res, next) => {
     let responseData = null;
 
     if (files && Object.keys(files).length !== 0) {
-      avatar = files['avatar'][0];
+      avatar = files["avatar"][0];
     }
 
     let user = await UserServices.findUserById(_id);
@@ -85,7 +85,7 @@ const updateUserInfo = async (req, res, next) => {
       });
     }
 
-    user = await UserServices.updateUserInfo({ fullName, avatar, user, isBlocked });
+    user = await UserServices.updateUserInfo({ fullName, avatar, user });
 
     responseData = {
       status: HttpStatus.OK,
@@ -105,7 +105,57 @@ const updateUserInfo = async (req, res, next) => {
   }
 };
 
+const updateUserInfoByAdminRole = async (req, res, next) => {
+  logger.info(
+    `${UserConstant.LOGGER.CONTROLLER}::updateUserInfoByAdminRole::is called`
+  );
+  try {
+    const { isBlocked } = req.body;
+    const { userId } = req.params;
+    let responseData = null;
+
+    console.log(isBlocked)
+    let user = await UserServices.findUserById(userId);
+
+    if (!user) {
+      responseData = {
+        status: HttpStatus.NOT_FOUND,
+        messages: [
+          UserConstant.MESSAGES.UPDATE_USER_INFO_BY_ADMIN_ROLE.USER_NOT_FOUND,
+        ],
+      };
+
+      logger.info(
+        `${UserConstant.LOGGER.CONTROLLER}::updateUserInfoByAdminRole::user not found`
+      );
+      return res.status(HttpStatus.NOT_FOUND).json(responseData);
+    }
+
+    user = await UserServices.updateUserInfo({ isBlocked, user });
+
+    responseData = {
+      status: HttpStatus.OK,
+      messages: [
+        UserConstant.MESSAGES.UPDATE_USER_INFO_BY_ADMIN_ROLE
+          .UPDATE_USER_INFO_SUCCESSFULLY,
+      ],
+    };
+
+    logger.info(
+      `${UserConstant.LOGGER.CONTROLLER}::updateUserInfoByAdminRole::success`
+    );
+    return res.status(HttpStatus.OK).json(responseData);
+  } catch (e) {
+    logger.error(
+      `${UserConstant.LOGGER.CONTROLLER}::updateUserInfoByAdminRole::error`,
+      e
+    );
+    return next(e);
+  }
+};
+
 module.exports = {
   getUserInfo,
   updateUserInfo,
+  updateUserInfoByAdminRole,
 };

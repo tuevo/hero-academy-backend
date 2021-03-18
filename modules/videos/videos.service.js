@@ -176,19 +176,25 @@ const updateNumberOfViews = async ({ videoId, cumulativeValue }) => {
   }
 };
 
-const removePublicIdFieldInVideosData = ({ videos }) => {
+const removePublicIdFieldInVideosData = ({ videos, index }) => {
   logger.info(
     `${VideosConstant.LOGGER.SERVICE}::removePublicIdFieldInVideosData::is called`
   );
   try {
-    const result = videos.map((video, index) => {
+    const result = videos.map((video, i) => {
       const videoJsonParse = JSON.parse(JSON.stringify(video));
 
-      if (index !== 0) {
-        delete videoJsonParse["publicIdOfVideo"];
-      }
+      if (index === 0) {
+        if (i !== 0) {
+          delete videoJsonParse["publicIdOfVideo"];
+        }
 
-      return videoJsonParse;
+        return videoJsonParse;
+      } else {
+        delete videoJsonParse["publicIdOfVideo"];
+
+        return videoJsonParse;
+      }
     });
 
     logger.info(

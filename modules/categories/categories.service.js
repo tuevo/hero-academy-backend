@@ -67,15 +67,15 @@ const createCategory = async (categoryInfo) => {
   }
 };
 
-const findCategoryByName = async (name) => {
+const findCategoriesByName = async (name) => {
   logger.info(
-    `${CategoryConstant.LOGGER.SERVICE}::findCategoryByName::is called`
+    `${CategoryConstant.LOGGER.SERVICE}::findCategoriesByName::is called`
   );
   try {
     logger.info(
-      `${CategoryConstant.LOGGER.SERVICE}::findCategoryByName::success`
+      `${CategoryConstant.LOGGER.SERVICE}::findCategoriesByName::success`
     );
-    return await CategoryModel.findOne({
+    return await CategoryModel.find({
       name: {
         $regex: name,
         $options: "i",
@@ -84,7 +84,7 @@ const findCategoryByName = async (name) => {
     });
   } catch (e) {
     logger.error(
-      `${CategoryConstant.LOGGER.SERVICE}::findCategoryByName::error`,
+      `${CategoryConstant.LOGGER.SERVICE}::findCategoriesByName::error`,
       e
     );
     throw new Error(e);
@@ -168,12 +168,36 @@ const getCategoriesByIds = async (categoriesId) => {
   }
 };
 
+const removeCategoriesByIds = async (ids) => {
+  logger.info(
+    `${CategoryConstant.LOGGER.SERVICE}::getCategoriesByIds::is called`
+  );
+  try {
+    await CategoryModel.updateMany(
+      { _id: { $in: ids } },
+      { $set: { isDeleted: true } }
+    );
+
+    logger.info(
+      `${CategoryConstant.LOGGER.SERVICE}::getCategoriesByIds::success`
+    );
+    return;
+  } catch (e) {
+    logger.error(
+      `${CategoryConstant.LOGGER.SERVICE}::removeCategoriesByIds::error`,
+      e
+    );
+    throw new Error(e);
+  }
+};
+
 module.exports = {
   getCategoriesByCategoryClusterId,
   updateNumberOfCourses,
   createCategory,
-  findCategoryByName,
+  findCategoriesByName,
   getCategoryById,
   updateCategory,
   getCategoriesByIds,
+  removeCategoriesByIds,
 };

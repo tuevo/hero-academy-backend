@@ -105,10 +105,39 @@ const findChaptersByIds = async (chaptersId) => {
   }
 };
 
+const findChaptersHasConditions = async ({ chapterId, courseId }) => {
+  logger.info(
+    `${ChaptersConstant.LOGGER.SERVICE}::findChaptersHasConditions::is called`
+  );
+  try {
+    let conditions = {};
+
+    if (chapterId) {
+      conditions["_id"] = mongoose.Types.ObjectId(chapterId);
+    }
+
+    if (courseId) {
+      conditions["courseId"] = mongoose.Types.ObjectId(courseId);
+    }
+
+    logger.info(
+      `${ChaptersConstant.LOGGER.SERVICE}::findChaptersHasConditions::success`
+    );
+    return await ChaptersModel.find(conditions).sort({ createdAt: 1 });
+  } catch (e) {
+    logger.error(
+      `${ChaptersConstant.LOGGER.SERVICE}::findChaptersHasConditions::error`,
+      e
+    );
+    throw new Error(e);
+  }
+};
+
 module.exports = {
   findChapterHasCondition,
   updateNumberOfVideos,
   getChapters,
   createChapter,
   findChaptersByIds,
+  findChaptersHasConditions,
 };

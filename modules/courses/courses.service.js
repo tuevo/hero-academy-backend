@@ -340,6 +340,7 @@ const getCoursesListForHomePage = async ({
   isSortUpAscending,
   isSortCreatedAt,
   isCreatedAtSortUpAscending,
+  coursesId,
 }) => {
   logger.info(
     `${CoursesConstant.LOGGER.SERVICE}::getCoursesListForHomePage::is called`
@@ -351,6 +352,11 @@ const getCoursesListForHomePage = async ({
     };
 
     if (findBy) {
+      if (findBy === "averageRating") {
+        sortStage["numberOfRatings"] =
+          isSortUpAscending === true || isSortUpAscending === "true" ? 1 : -1;
+      }
+
       sortStage[findBy] =
         isSortUpAscending === true || isSortUpAscending === "true" ? 1 : -1;
     }
@@ -364,6 +370,12 @@ const getCoursesListForHomePage = async ({
       conditions["createdAt"] = {
         $gte: new Date(startDate),
         $lte: new Date(endDate),
+      };
+    }
+
+    if (coursesId && coursesId.length > 0) {
+      conditions["_id"] = {
+        $in: coursesId,
       };
     }
 
@@ -667,6 +679,28 @@ const findCoursesByCoursesId = async (coursesId) => {
   }
 };
 
+const findCoursesByCategoriesId = async (categoriesId) => {
+  logger.info(
+    `${CoursesConstant.LOGGER.SERVICE}::findCoursesByCategoriesId::is called`
+  );
+  try {
+    const courses = await CoursesModel.find({
+      categoryId: { $in: categoriesId },
+    });
+
+    logger.info(
+      `${CoursesConstant.LOGGER.SERVICE}::findCoursesByCategoriesId::success`
+    );
+    return courses;
+  } catch (e) {
+    logger.error(
+      `${CoursesConstant.LOGGER.SERVICE}::findCoursesByCategoriesId::error`,
+      e
+    );
+    throw new Error(e);
+  }
+};
+
 module.exports = {
   findCourseHasConditions,
   createCourse,
@@ -683,4 +717,5 @@ module.exports = {
   removeCoursesByCategoryId,
   removeCoursesByCoursesId,
   findCoursesByCoursesId,
+  findCoursesByCategoriesId,
 };

@@ -11,6 +11,7 @@ const CategoryClusterServices = require("../category-clusters/category-clusters.
 const LecturersServices = require("../lecturers/lecturers.service");
 const Services = require("../../services/services");
 const UsersServices = require("../users/users.service");
+const Ratings = require("../ratings/ratings.services");
 
 const getCoursesListForHomePage = async (req, res, next) => {
   logger.info(
@@ -51,6 +52,11 @@ const getCoursesListForHomePage = async (req, res, next) => {
       isSortCreatedAt: true,
       isCreatedAtSortUpAscending: false,
     });
+    const ratingsInWeek = await Ratings.getRatingsByDate({
+      startDate,
+      endDate,
+    });
+    const coursesId = ratingsInWeek.map((rating) => rating.courseId);
     let outstandingCourseList = await CoursesServices.getCoursesListForHomePage(
       {
         startDate: null,
@@ -60,6 +66,7 @@ const getCoursesListForHomePage = async (req, res, next) => {
         isSortUpAscending: false,
         isSortCreatedAt: true,
         isCreatedAtSortUpAscending: false,
+        coursesId,
       }
     );
     let mostRegisteredCategory = await CoursesServices.getCategoryWithTheMostEnrollmentCourses(

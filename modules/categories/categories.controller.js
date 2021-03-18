@@ -17,6 +17,7 @@ const addCategory = async (req, res, next) => {
   try {
     const { categoryClusterId, name } = req.body;
     let responseData = null;
+    let category = null;
 
     const categoryCluster = await CategoryClusterServices.findCategoryClusterById(
       categoryClusterId
@@ -36,10 +37,15 @@ const addCategory = async (req, res, next) => {
       return res.status(HttpStatus.NOT_FOUND).json(responseData);
     }
 
-    let category = await CategoriesServices.findCategoryByName(name);
+    const categories = await CategoriesServices.findCategoriesByName(name);
 
-    if (category) {
-      if (category.name.toLocaleLowerCase() === name.toLocaleLowerCase()) {
+    if (categories.length > 0) {
+      category = categories.find(
+        (category) =>
+          category.name.toLocaleLowerCase() === name.toLocaleLowerCase()
+      );
+
+      if (category) {
         responseData = {
           status: HttpStatus.BAD_REQUEST,
           messages: [
@@ -162,6 +168,31 @@ const updateCategory = async (req, res, next) => {
       }
     }
 
+    if (name) {
+      const categories = await CategoriesServices.findCategoriesByName(name);
+
+      if (categories.length > 0) {
+        const categoryResult = categories.find(
+          (category) =>
+            category.name.toLocaleLowerCase() === name.toLocaleLowerCase()
+        );
+
+        if (categoryResult) {
+          responseData = {
+            status: HttpStatus.BAD_REQUEST,
+            messages: [
+              CategoriesConstant.MESSAGES.ADD_CATEGORY.CATEGORY_ALREADY_EXISTS,
+            ],
+          };
+
+          logger.info(
+            `${CategoriesConstant.LOGGER.CONTROLLER}::updateCategory::category already exists`
+          );
+          return res.status(HttpStatus.BAD_REQUEST).json(responseData);
+        }
+      }
+    }
+
     category = await CategoriesServices.updateCategory({
       name,
       categoryClusterId,
@@ -237,6 +268,46 @@ const deleteCategory = async (req, res, next) => {
         `${CategoriesConstant.LOGGER.CONTROLLER}::deleteCategory::The category contains the course`
       );
       return res.status(HttpStatus.BAD_REQUEST).json(responseData);
+
+      // const coursesId = courses.map((course) => course._id);
+      // const registeredCourse = courses.find(
+      //   (course) => course.numberOfRegistrations > 0
+      // );
+
+      // if (registeredCourse) {
+      //   responseData = {
+      //     status: HttpStatus.BAD_REQUEST,
+      //     messages: [
+      //       CategoriesConstant.MESSAGES.DELETE_CATEGORY
+      //         .CATEGORY_ALREADY_EXISTS_REGISTERED_COURSE,
+      //     ],
+      //   };
+
+      //   logger.info(
+      //     `${CategoriesConstant.LOGGER.CONTROLLER}::deleteCategory::The category contains the course`
+      //   );
+      //   return res.status(HttpStatus.BAD_REQUEST).json(responseData);
+      // }
+
+      // const favorites = await FavoritesServices.findFavoritesByCoursesIdGroupByStudentId(
+      //   coursesId
+      // );
+      // await CoursesServices.removeCoursesByCoursesId(coursesId);
+      // await FavoritesServices.removeFavoritesByCoursesId(coursesId);
+
+      // for (const course of courses) {
+      //   await LecturersServices.updateNumberOfCoursesPosted({
+      //     lecturerId: course.lecturerId,
+      //     cumulativeValue: -1,
+      //   });
+      // }
+
+      // for (const favorite of favorites) {
+      //   await StudentsServices.updateNumberOfFavoriteCourses({
+      //     studentId: favorite._id,
+      //     cumulativeValue: 0 - favorite.totalCourses,
+      //   });
+      // }
     }
 
     category["isDeleted"] = true;
@@ -262,15 +333,13 @@ const deleteCategory = async (req, res, next) => {
     //     }));
 
     //   await CoursesServices.removeCoursesByCategoryId({ categoryId });
-    //   await Promise.all(
-    //     lecturersId.map(
-    //       async (lecturerId) =>
-    //         await LecturersServices.updateNumberOfCoursesPosted({
-    //           lecturerId,
-    //           cumulativeValue: -1,
-    //         })
-    //     )
-    //   );
+
+    //   for (lecturerId of lecturersId) {
+    //     await LecturersServices.updateNumberOfCoursesPosted({
+    //       lecturerId,
+    //       cumulativeValue: -1,
+    //     });
+    //   }
     // }
 
     responseData = {

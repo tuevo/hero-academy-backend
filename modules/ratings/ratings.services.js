@@ -166,6 +166,38 @@ const removeRatingByStudentId = async (studentId) => {
   }
 };
 
+const getRatingsByDate = async ({ startDate, endDate }) => {
+  logger.info(`${RatingsConstant.LOGGER.SERVICE}::getRatingsByDate::is called`);
+  try {
+    let conditions = {
+      isDeleted: false,
+    };
+
+    if (startDate && endDate) {
+      conditions["createdAt"] = {
+        $gte: new Date(startDate),
+        $lte: new Date(endDate),
+      };
+    }
+
+    logger.info(
+      `${RatingsConstant.LOGGER.SERVICE}::getRatingsByDate::query`,
+      JSON.stringify(conditions)
+    );
+
+    const ratings = await RatingsModel.find(conditions);
+
+    logger.info(`${RatingsConstant.LOGGER.SERVICE}::getRatingsByDate::success`);
+    return ratings;
+  } catch (e) {
+    logger.error(
+      `${RatingsConstant.LOGGER.SERVICE}::getRatingsByDate::error`,
+      e
+    );
+    throw new Error(e);
+  }
+};
+
 module.exports = {
   createRating,
   getRatingHasConditions,
@@ -173,4 +205,5 @@ module.exports = {
   removeRatingByCourse,
   getRatingsHasConditions,
   removeRatingByStudentId,
+  getRatingsByDate,
 };

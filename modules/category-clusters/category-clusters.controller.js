@@ -5,6 +5,12 @@ const HttpStatus = require("http-status-codes");
 const CategoryClustersConstant = require("./category-clusters.constant");
 const CategoryClustersServices = require("./category-clusters.service");
 const PaginationConstant = require("../../constants/pagination.constant");
+const CategoriesServices = require("../categories/categories.service");
+const CoursesServices = require("../courses/courses.service");
+const AdminServices = require("../admins/admins.service");
+const LecturersServices = require("../lecturers/lecturers.service");
+const FavoritesServices = require("../favorites/favorites.service");
+const StudentsServices = require("../students/students.service");
 
 const getCategoryClustersInfo = async (req, res, next) => {
   logger.info(
@@ -66,15 +72,19 @@ const addCategoryCLuster = async (req, res, next) => {
   try {
     const { name } = req.body;
     let responseData = null;
+    let categoryCluster = null;
 
-    let categoryCluster = await CategoryClustersServices.findCategoryClusterByName(
+    let categoryClusters = await CategoryClustersServices.findCategoryClustersByName(
       name
     );
 
-    if (categoryCluster) {
-      if (
-        categoryCluster.name.toLocaleLowerCase() === name.toLocaleLowerCase()
-      ) {
+    if (categoryClusters.length > 0) {
+      categoryCluster = categoryClusters.find(
+        (categoryCluster) =>
+          categoryCluster.name.toLocaleLowerCase() === name.toLocaleLowerCase()
+      );
+
+      if (categoryCluster) {
         responseData = {
           status: HttpStatus.BAD_REQUEST,
           messages: [
@@ -118,7 +128,213 @@ const addCategoryCLuster = async (req, res, next) => {
   }
 };
 
+const updateCategoryCluster = async (req, res, next) => {
+  logger.info(
+    `${CategoryClustersConstant.LOGGER.CONTROLLER}::updateCategoryCluster::is called`
+  );
+  try {
+    const { categoryClusterId } = req.params;
+    const { name } = req.body;
+    let responseData = null;
+
+    let categoryCluster = await CategoryClustersServices.findCategoryClusterById(
+      categoryClusterId
+    );
+
+    if (!categoryCluster) {
+      responseData = {
+        status: HttpStatus.NOT_FOUND,
+        messages: [
+          CategoryClustersConstant.MESSAGES.UPDATE_CATEGORY_CLUSTER
+            .CATEGORY_CLUSTER_NOT_FOUND,
+        ],
+      };
+
+      logger.info(
+        `${CategoryClustersConstant.LOGGER.CONTROLLER}::updateCategoryCluster::category cluster not found`
+      );
+      return res.status(HttpStatus.NOT_FOUND).json(responseData);
+    }
+
+    if (name) {
+      const categoryClusters = await CategoryClustersServices.findCategoryClustersByName(
+        name
+      );
+
+      if (categoryClusters.length > 0) {
+        const categoryClusterInfo = categoryClusters.find(
+          (categoryCluster) =>
+            categoryCluster.name.toLocaleLowerCase() ===
+            name.toLocaleLowerCase()
+        );
+
+        if (categoryClusterInfo) {
+          responseData = {
+            status: HttpStatus.BAD_REQUEST,
+            messages: [
+              CategoryClustersConstant.MESSAGES.UPDATE_CATEGORY_CLUSTER
+                .CATEGORY_CLUSTER_ALREADY_EXISTS,
+            ],
+          };
+
+          logger.info(
+            `${CategoryClustersConstant.LOGGER.CONTROLLER}::updateCategoryCluster::name already exists`
+          );
+          return res.status(HttpStatus.BAD_REQUEST).json(responseData);
+        }
+      }
+
+      categoryCluster.name = name;
+      await categoryCluster.save();
+    }
+
+    responseData = {
+      status: HttpStatus.OK,
+      messages: [
+        CategoryClustersConstant.MESSAGES.UPDATE_CATEGORY_CLUSTER
+          .UPDATE_CATEGORY_CLUSTER_SUCCESSFULLY,
+      ],
+      data: {
+        categoryCluster,
+      },
+    };
+
+    logger.info(
+      `${CategoryClustersConstant.LOGGER.CONTROLLER}::updateCategoryCluster::success`
+    );
+    return res.status(HttpStatus.OK).json(responseData);
+  } catch (e) {
+    logger.error(
+      `${CategoryClustersConstant.LOGGER.CONTROLLER}::updateCategoryCluster::error`,
+      e
+    );
+    return next(e);
+  }
+};
+
+const deleteCategoryCluster = async (req, res, next) => {
+  logger.info(
+    `${CategoryClustersConstant.LOGGER.CONTROLLER}::deleteCategoryCluster::success`
+  );
+  try {
+    const { categoryClusterId } = req.params;
+    let responseData = null;
+
+    let categoryCluster = await CategoryClustersServices.findCategoryClusterById(
+      categoryClusterId
+    );
+
+    if (!categoryCluster) {
+      responseData = {
+        status: HttpStatus.NOT_FOUND,
+        messages: [
+          CategoryClustersConstant.MESSAGES.DELETE_CATEGORY_CLUSTER
+            .CATEGORY_CLUSTER_NOT_FOUND,
+        ],
+      };
+
+      logger.info(
+        `${CategoryClustersConstant.LOGGER.CONTROLLER}::updateCategoryCluster::category cluster not found`
+      );
+      return res.status(HttpStatus.NOT_FOUND).json(responseData);
+    }
+
+    const categories = await CategoriesServices.getCategoriesByCategoryClusterId(
+      categoryClusterId
+    );
+
+    if (categories.length > 0) {
+      const categoriesId = categories.map((category) => category._id);
+      const courses = await CoursesServices.findCoursesByCategoriesId(
+        categoriesId
+      );
+
+      if (courses.length > 0) {
+        responseData = {
+          status: HttpStatus.BAD_REQUEST,
+          messages: [
+            CategoryClustersConstant.MESSAGES.DELETE_CATEGORY_CLUSTER
+              .CATEGORY_CLUSTER_ALREADY_EXISTS_REGISTERED_COURSE,
+          ],
+        };
+
+        logger.info(
+          `${CategoryClustersConstant.LOGGER.CONTROLLER}::updateCategoryCluster::category cluster already exists registered course`
+        );
+        return res.status(HttpStatus.BAD_REQUEST).json(responseData);
+
+        // const coursesId = courses.map((course) => course._id);
+        // const registeredCourse = courses.find(
+        //   (course) => course.numberOfRegistrations > 0
+        // );
+
+        // if (registeredCourse) {
+        //   responseData = {
+        //     status: HttpStatus.BAD_REQUEST,
+        //     messages: [
+        //       CategoryClustersConstant.MESSAGES.DELETE_CATEGORY_CLUSTER
+        //         .CATEGORY_CLUSTER_ALREADY_EXISTS_REGISTERED_COURSE,
+        //     ],
+        //   };
+
+        //   logger.info(
+        //     `${CategoryClustersConstant.LOGGER.CONTROLLER}::updateCategoryCluster::category cluster already exists registered course`
+        //   );
+        //   return res.status(HttpStatus.BAD_REQUEST).json(responseData);
+        // }
+
+        // const favorites = await FavoritesServices.findFavoritesByCoursesIdGroupByStudentId(
+        //   coursesId
+        // );
+        // await CoursesServices.removeCoursesByCoursesId(coursesId);
+        // await AdminServices.updateNumberOfCourses(0 - courses.length);
+        // await FavoritesServices.removeFavoritesByCoursesId(coursesId);
+
+        // for (const course of courses) {
+        //   await LecturersServices.updateNumberOfCoursesPosted({
+        //     lecturerId: course.lecturerId,
+        //     cumulativeValue: -1,
+        //   });
+        // }
+
+        // for (const favorite of favorites) {
+        //   await StudentsServices.updateNumberOfFavoriteCourses({
+        //     studentId: favorite._id,
+        //     cumulativeValue: 0 - favorite.totalCourses,
+        //   });
+        // }
+      }
+
+      await CategoriesServices.removeCategoriesByIds(categoriesId);
+    }
+
+    categoryCluster["isDeleted"] = true;
+    await categoryCluster.save();
+
+    responseData = {
+      status: HttpStatus.OK,
+      messages: [
+        CategoryClustersConstant.MESSAGES.DELETE_CATEGORY_CLUSTER
+          .DELETE_CATEGORY_CLUSTER_SUCCESSFULLY,
+      ],
+    };
+
+    logger.info(
+      `${CategoryClustersConstant.LOGGER.CONTROLLER}::updateCategoryCluster::success`
+    );
+    return res.status(HttpStatus.OK).json(responseData);
+  } catch (e) {
+    logger.error(
+      `${CategoryClustersConstant.LOGGER.CONTROLLER}::deleteCategoryCluster::error`,
+      e
+    );
+    return next(e);
+  }
+};
+
 module.exports = {
   getCategoryClustersInfo,
   addCategoryCLuster,
+  updateCategoryCluster,
+  deleteCategoryCluster,
 };
