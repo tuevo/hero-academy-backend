@@ -3,22 +3,18 @@ const log4js = require("log4js");
 const logger = log4js.getLogger("Services");
 
 let from = "";
-// if (process.env.NODE_ENV === "production") {
-//   sgMail.setApiKey(
-//     "SG.iOfGDKHtTcyTYKUAWtvRTA.RzUYDKGqe3fzTteGPEkkBefCQUME_s3ONNUfyAupD-s"
-//   );
-//   from = "abc040898.vt@gmail.com";
-// } else {
-//   sgMail.setApiKey(
-//     "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"
-//   );
-//   from = "trantuanviet040898.vt@gmail.com";
-// }
 
-sgMail.setApiKey(
-  "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"
-);
-from = "trantuanviet040898.vt@gmail.com";
+if (process.env.NODE_ENV === "test") {
+  sgMail.setApiKey(
+    "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"
+  );
+  from = "trantuanviet040898.vt@gmail.com";
+} else {
+  sgMail.setApiKey(
+    "SG.iOfGDKHtTcyTYKUAWtvRTA.RzUYDKGqe3fzTteGPEkkBefCQUME_s3ONNUfyAupD-s"
+  );
+  from = "abc040898.vt@gmail.com";
+}
 
 const sendConfirmMail = ({ email, fullName, otpCode }) => {
   logger.info("Utils::sendConfirmMail::is called");
